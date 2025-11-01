@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import Image from 'next/image';
+//import Image from 'next/image';
 import { FaHome, FaUserAlt } from 'react-icons/fa';
 import styles from './header.module.css';
 

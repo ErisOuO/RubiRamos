@@ -3,10 +3,10 @@ import AdminLayoutClient from "@/components/dashboard/AdminLayoutClient";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Admin-AutoClick",
-    default: "Admin-AutoClick",
+    template: "%s | Admin",
+    default: "Admin",
   },
-  description: "Panel administrativo de AutoClick - Sistema de cotización de autos seminuevos",
+  description: "Panel administrativo de Rubi Ramos - Consultorio Nutricional",
 };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

@@ -17,6 +17,7 @@
 .logoContainer {
   display: flex;
   align-items: center;
+  margin-right: 2rem;
 }
 
 .logo {
@@ -31,6 +32,11 @@
 
 .nav {
   display: flex;
+  width: 100%;
+}
+
+.navItem:last-child {
+  margin-left: auto;
 }
 
 .navList {

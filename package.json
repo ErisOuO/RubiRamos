@@ -22,7 +22,7 @@
     "net": "^1.0.2",
     "next": "^15.3.5",
     "next-auth": "^4.24.11",
-    "nodemailer": "^6.10.1",
+    "nodemailer": "^7.0.10",
     "perf_hooks": "^0.0.1",
     "pg": "^8.16.0",
     "postgres": "^3.4.7",

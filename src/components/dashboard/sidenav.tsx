@@ -23,9 +23,9 @@ export default function SideNav({
         <Link className="flex h-24 items-center justify-center p-4 md:h-32" href="/">
           <div className="relative w-40 md:w-48 h-12">
             <Image
-              src="/logo.png"
+              src="/logo_rubi.png"
               fill
-              alt="AutoClick Logo"
+              alt="RubiRamos Logo"
               priority
               className="object-contain"
             />

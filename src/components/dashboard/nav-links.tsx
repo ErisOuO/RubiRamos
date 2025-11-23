@@ -1,13 +1,9 @@
 'use client';
 
 import {
-  CogIcon,
-  ReceiptPercentIcon,
-  TruckIcon,
+  UserGroupIcon,
   HomeIcon,
-  CurrencyDollarIcon,
-  GlobeAmericasIcon,
-  QueueListIcon,
+  CalendarIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -15,12 +11,16 @@ import clsx from 'clsx';
 
 const links = [
   { name: 'Inicio', href: '/admin', icon: HomeIcon },
+  { name: 'Pacientes', href: '/admin/pacientes', icon: UserGroupIcon },
+  { name: 'Citas', href: '/admin/calendar', icon: CalendarIcon },
+  /*
   { name: 'Marcas', href: '/admin/marcas', icon: CogIcon },
   { name: 'Modelos', href: '/admin/modelos', icon: TruckIcon },
   { name: 'Versiones', href: '/admin/versiones', icon: GlobeAmericasIcon },
   { name: 'Rangos de Kilometraje', href: '/admin/rangos', icon: QueueListIcon },
   { name: 'Facturas', href: '/admin/facturas', icon: ReceiptPercentIcon },
   { name: 'Ajuste de Precios', href: '/admin/precios', icon: CurrencyDollarIcon },
+  */
 ];
 
 export default function NavLinks({ mobile = false, onLinkClick }: { mobile?: boolean, onLinkClick?: () => void }) {

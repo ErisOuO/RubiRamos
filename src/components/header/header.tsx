@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-//import Image from 'next/image';
-import { FaHome, FaUserAlt } from 'react-icons/fa';
+import Image from 'next/image';
+import { FaHome, FaUserAlt, FaShoppingBag, FaCalendarAlt, FaShoppingCart, FaAddressCard } from 'react-icons/fa';
 import styles from './header.module.css';
 
 const Header = () => {
@@ -14,13 +14,11 @@ const Header = () => {
   return (
     <header className={styles.header}>
       <div className={styles.container}>
-        {/* Logo 
-        
         <div className={styles.logoContainer}>
           <Link href="/">
             <Image 
-              src="/logo.png" 
-              alt="AutoClick Logo" 
+              src="/logo_rubi.png" 
+              alt="RubiRamos Logo" 
               width={270} 
               height={50} 
               priority
@@ -28,7 +26,6 @@ const Header = () => {
             />
           </Link>
         </div>
-        */}
 
         {/* Navegación */}
         <nav className={styles.nav}>
@@ -43,7 +40,51 @@ const Header = () => {
                 {isActive('/') && <div className={styles.activeIndicator}></div>}
               </Link>
             </li>
+
+            <li className={styles.navItem}>
+              <Link 
+                href="/catalog" 
+                className={`${styles.navLink} ${isActive('/catalog') ? styles.active : ''}`}
+              >
+                <FaShoppingBag size={24} className={styles.icon} />
+                <span>Catálogo</span>
+                {isActive('/catalog') && <div className={styles.activeIndicator}></div>}
+              </Link>
+            </li>
+
+            <li className={styles.navItem}>
+              <Link 
+                href="/schedule" 
+                className={`${styles.navLink} ${isActive('/schedule') ? styles.active : ''}`}
+              >
+                <FaCalendarAlt size={24} className={styles.icon} />
+                <span>Agendar Cita</span>
+                {isActive('/schedule') && <div className={styles.activeIndicator}></div>}
+              </Link>
+            </li>
+
+            <li className={styles.navItem}>
+              <Link 
+                href="/shopping_cart" 
+                className={`${styles.navLink} ${isActive('/shopping_cart') ? styles.active : ''}`}
+              >
+                <FaShoppingCart size={24} className={styles.icon} />
+                <span>Carrito</span>
+                {isActive('/shopping_cart') && <div className={styles.activeIndicator}></div>}
+              </Link>
+            </li>       
             
+            <li className={styles.navItem}>
+              <Link 
+                href="/historial" 
+                className={`${styles.navLink} ${isActive('/historial') ? styles.active : ''}`}
+              >
+                <FaAddressCard size={24} className={styles.icon} />
+                <span>Historial Médico</span>
+                {isActive('/historial') && <div className={styles.activeIndicator}></div>}
+              </Link>
+            </li>                        
+
             <li className={styles.navItem}>
               <Link 
                 href="/login" 

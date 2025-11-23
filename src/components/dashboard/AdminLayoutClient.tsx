@@ -32,8 +32,8 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
       <div className="flex h-screen flex-col lg:flex-row lg:overflow-hidden bg-gray-50">
         {/* Header móvil */}
         <header className="flex items-center justify-between p-4 bg-[#1e343b] text-white lg:hidden">
-          <Link href="/" className="relative w-32 h-10">
-            <Image src="/logo.png" fill alt="AutoClick Logo" className="object-contain" />
+          <Link href="/admin" className="relative w-32 h-10">
+            <Image src="/logo_rubi.png" fill alt="RubiRamos Logo" className="object-contain" />
           </Link>
 
           <button

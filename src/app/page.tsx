@@ -9,7 +9,7 @@ import {
 import FeatureCard from '@/components/FeatureCard/featureCard';
 
 export const metadata: Metadata = {
-  title: 'Consultorio VitalCare',
+  title: 'Consultorio RubiRamos',
   description: 'Atención médica y nutricional personalizada para tu bienestar integral. Agenda tus citas fácilmente y mejora tu salud con nosotros.',
 };
 

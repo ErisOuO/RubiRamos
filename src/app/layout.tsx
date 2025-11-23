@@ -7,8 +7,8 @@ import { ReactNode } from "react";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | AutoClick",
-    default: "AutoClick",
+    template: "%s | RubiRamos",
+    default: "RubiRamos",
   },
   description: "La mejor plataforma de cotizaciones de autos en línea",
 };

@@ -131,25 +131,6 @@ export default function CartPage() {
             </div>
           </div>
         </div>
-
-        {/* Contacto de soporte */}
-        <div className="text-center bg-gradient-to-r from-green-500 to-blue-500 rounded-2xl p-8 text-white">
-          <h2 className="text-2xl font-bold mb-4">¿Necesitas ayuda?</h2>
-          <p className="mb-6 opacity-90">
-            Nuestro equipo de soporte está disponible para resolver tus dudas
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-6 py-3 bg-white text-green-600 font-semibold rounded-xl hover:bg-gray-100 transition-colors duration-300">
-              📞 Llamar a Soporte
-            </button>
-            <button className="px-6 py-3 bg-white text-blue-600 font-semibold rounded-xl hover:bg-gray-100 transition-colors duration-300">
-              💬 Chat en Vivo
-            </button>
-            <button className="px-6 py-3 bg-white text-gray-600 font-semibold rounded-xl hover:bg-gray-100 transition-colors duration-300">
-              📧 Enviar Email
-            </button>
-          </div>
-        </div>
       </div>
     </main>
   );

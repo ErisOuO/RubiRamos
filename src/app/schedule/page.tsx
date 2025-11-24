@@ -60,42 +60,7 @@ export default function Page() {
         {/* Calendario */}
         <section id="calendario" className="mb-16">
           <AppointmentCalendar />
-
-          {/* Mensaje debajo del calendario */}
-          <p className="text-center text-gray-600 text-sm mt-6">
-            Selecciona cualquier día del calendario para conocer su disponibilidad.
-          </p>
         </section>
-
-        {/* CTA final */}
-        <section className="text-center bg-white rounded-2xl shadow-lg p-8 border-t-4 border-green-500">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
-            ¿Listo para agendar tu cita?
-          </h2>
-          <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-            Contáctanos después de escoger el día para confirmar el horario disponible.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-8 py-3 bg-green-500 text-white font-semibold rounded-xl hover:bg-green-600 transition-colors duration-300 shadow-lg hover:shadow-xl">
-              📞 Llamar para Agendar
-            </button>
-            <button className="px-8 py-3 bg-blue-500 text-white font-semibold rounded-xl hover:bg-blue-600 transition-colors duration-300 shadow-lg hover:shadow-xl">
-              💬 WhatsApp
-            </button>
-            <button className="px-8 py-3 bg-gray-500 text-white font-semibold rounded-xl hover:bg-gray-600 transition-colors duration-300 shadow-lg hover:shadow-xl">
-              📧 Enviar Email
-            </button>
-          </div>
-        </section>
-
-        {/* Footer */}
-        <footer className="text-center mt-12 text-gray-500 text-sm pb-6">
-          <p>© 2024 Centro Médico Salud Integral. Todos los derechos reservados.</p>
-          <p className="mt-2">
-            Av. Principal #123, Ciudad • Tel: (555) 123-4567 • Email: info@centromedico.com
-          </p>
-        </footer>
 
       </div>
     </main>

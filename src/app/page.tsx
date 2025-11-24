@@ -4,7 +4,6 @@ import {
   UserCircleIcon,
   ChatBubbleLeftRightIcon,
   BeakerIcon,
-  UsersIcon,
   CalendarIcon,
   DocumentTextIcon,
   DevicePhoneMobileIcon

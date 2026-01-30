@@ -15,11 +15,19 @@ export default function RecuperacionForm() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const enviado = useRef(false);
+  const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
 
   useEffect(() => {
     if (fase === 'verificar') {
       const t = setInterval(() => setCounter((c) => (c > 0 ? c - 1 : 0)), 1000);
       return () => clearInterval(t);
+    }
+  }, [fase]);
+
+  // Enfocar el primer input cuando cambie a fase de verificación
+  useEffect(() => {
+    if (fase === 'verificar' && inputsRef.current[0]) {
+      inputsRef.current[0]?.focus();
     }
   }, [fase]);
 
@@ -92,6 +100,64 @@ export default function RecuperacionForm() {
     if (e.key === 'Backspace' && !codigo[index] && index > 0) {
       const prev = document.getElementById('dig' + (index - 1));
       prev?.focus();
+    }
+  }
+
+  // Función para manejar el pegado de código
+  function handlePaste(e: React.ClipboardEvent<HTMLInputElement>) {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text');
+    
+    // Filtrar solo dígitos
+    const digits = pastedData.replace(/\D/g, '');
+    
+    if (digits.length === 6) {
+      // Crear array con los 6 dígitos
+      const newCodigo = digits.split('').slice(0, 6);
+      setCodigo(newCodigo);
+      
+      // Enfocar el último input después de pegar
+      setTimeout(() => {
+        if (inputsRef.current[5]) {
+          inputsRef.current[5]?.focus();
+        }
+      }, 10);
+    }
+  }
+
+  // Función modificada para manejar cambios en los inputs
+  function handleChange(index: number, value: string) {
+    // Si el valor tiene más de 1 carácter (posible pegado), manejar como pegado
+    if (value.length > 1) {
+      const digits = value.replace(/\D/g, '');
+      if (digits.length >= 6) {
+        const newCodigo = digits.split('').slice(0, 6);
+        setCodigo(newCodigo);
+        
+        // Enfocar el último input
+        setTimeout(() => {
+          if (inputsRef.current[5]) {
+            inputsRef.current[5]?.focus();
+          }
+        }, 10);
+        return;
+      }
+    }
+    
+    // Manejo normal de un solo dígito
+    if (/\d/.test(value) || value === '') {
+      const arr = [...codigo];
+      arr[index] = value;
+      setCodigo(arr);
+      
+      // Mover al siguiente input si se ingresó un dígito
+      if (value !== '' && index < 5) {
+        setTimeout(() => {
+          if (inputsRef.current[index + 1]) {
+            inputsRef.current[index + 1]?.focus();
+          }
+        }, 10);
+      }
     }
   }
 
@@ -199,6 +265,9 @@ export default function RecuperacionForm() {
                 <p className="text-xs text-gray-500">
                   Ingresa el código de 6 dígitos que recibiste
                 </p>
+                <p className="text-xs text-gray-400">
+                  Puedes copiar y pegar todo el código de 6 dígitos en cualquier campo
+                </p>
               </div>
 
               <div className="flex justify-center gap-3">
@@ -207,19 +276,15 @@ export default function RecuperacionForm() {
                     title='pin'
                     key={idx}
                     id={`dig${idx}`}
+                    ref={(el) => {
+                      inputsRef.current[idx] = el;
+                    }}
                     type="text"
                     inputMode="numeric"
-                    maxLength={1}
+                    maxLength={6} // Permitir hasta 6 caracteres para pegado
                     value={digit}
-                    onChange={(e) => {
-                      if (/\d/.test(e.target.value)) {
-                        const arr = [...codigo];
-                        arr[idx] = e.target.value;
-                        setCodigo(arr);
-                        const nxt = document.getElementById(`dig${idx + 1}`);
-                        nxt?.focus();
-                      }
-                    }}
+                    onChange={(e) => handleChange(idx, e.target.value)}
+                    onPaste={handlePaste}
                     onKeyDown={(e) => handleKeyDown(idx, e)}
                     className="w-12 h-14 text-2xl font-medium text-center border border-green-500 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
                   />

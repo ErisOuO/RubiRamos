@@ -10,7 +10,7 @@ export async function POST(req: Request) {
 
   try {
     const res = await query(
-      'SELECT recovery_token, recovery_exp FROM tblusuarios WHERE usuario = $1',
+      'SELECT recovery_token, recovery_exp FROM tbladmins WHERE usuario = $1',
       [usuario]
     );
 

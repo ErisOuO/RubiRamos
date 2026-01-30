@@ -59,7 +59,7 @@ export const authConfig: AuthOptions = {
         }
 
         const res = await query(
-          "SELECT id, usuario, contrasena, email, code, verified FROM tblusuarios WHERE usuario = $1",
+          "SELECT id, usuario, contrasena, email, code, verified FROM tbladmins WHERE usuario = $1",
           [credentials.usuario]
         );
 

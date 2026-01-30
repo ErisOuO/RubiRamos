@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   try {
     // Verificamos token y expiración
     const res = await query(
-      'SELECT recovery_token, recovery_exp FROM tblusuarios WHERE usuario = $1',
+      'SELECT recovery_token, recovery_exp FROM tbladmins WHERE usuario = $1',
       [usuario]
     );
 
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     // Cambiamos la contraseña
     const hash = await bcrypt.hash(nuevaContrasena, 10);
     await query(
-      `UPDATE tblusuarios
+      `UPDATE tbladmins
        SET contrasena = $1, recovery_token = NULL, recovery_exp = NULL
        WHERE usuario = $2`,
       [hash, usuario]

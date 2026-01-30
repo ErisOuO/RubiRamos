@@ -16,6 +16,7 @@ export default function VerificarForm() {
   const router = useRouter();
 
   const enviado = useRef(false);
+  const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
 
   useEffect(() => {
     const storedUsuario = sessionStorage.getItem('usuario');
@@ -38,6 +39,13 @@ export default function VerificarForm() {
     }
   }, []);
 
+  // Enfocar el primer input cuando se cargue el componente
+  useEffect(() => {
+    if (inputsRef.current[0]) {
+      inputsRef.current[0]?.focus();
+    }
+  }, []);
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCounter((prev) => (prev > 0 ? prev - 1 : 0));
@@ -51,14 +59,62 @@ export default function VerificarForm() {
     return `${'*'.repeat(local.length - 3)}${visible}@${domain}`;
   }
 
+  // Función para manejar el pegado de código
+  function handlePaste(e: React.ClipboardEvent<HTMLInputElement>) {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text');
+    
+    // Filtrar solo dígitos
+    const digits = pastedData.replace(/\D/g, '');
+    
+    if (digits.length === 6) {
+      // Crear array con los 6 dígitos
+      const newCodigo = digits.split('').slice(0, 6);
+      setCodigo(newCodigo);
+      
+      // Enfocar el último input después de pegar
+      setTimeout(() => {
+        if (inputsRef.current[5]) {
+          inputsRef.current[5]?.focus();
+        }
+      }, 10);
+    }
+  }
+
+  // Función modificada para manejar cambios en los inputs
   function handleDigitChange(index: number, value: string) {
+    // Si el valor tiene más de 1 carácter (posible pegado), manejar como pegado
+    if (value.length > 1) {
+      const digits = value.replace(/\D/g, '');
+      if (digits.length >= 6) {
+        const newCodigo = digits.split('').slice(0, 6);
+        setCodigo(newCodigo);
+        
+        // Enfocar el último input
+        setTimeout(() => {
+          if (inputsRef.current[5]) {
+            inputsRef.current[5]?.focus();
+          }
+        }, 10);
+        return;
+      }
+    }
+    
+    // Manejo normal de un solo dígito
     if (!/^\d?$/.test(value)) return;
+    
     const newCode = [...codigo];
     newCode[index] = value;
     setCodigo(newCode);
 
-    const next = document.getElementById(`digit-${index + 1}`);
-    if (value && next) next.focus();
+    // Mover al siguiente input si se ingresó un dígito
+    if (value && index < 5) {
+      setTimeout(() => {
+        if (inputsRef.current[index + 1]) {
+          inputsRef.current[index + 1]?.focus();
+        }
+      }, 10);
+    }
   }
 
   function handleKeyDown(index: number, e: React.KeyboardEvent) {
@@ -145,6 +201,9 @@ export default function VerificarForm() {
               <p className="text-sm text-gray-500">
                 Ingresa el código de 6 dígitos que recibiste
               </p>
+              <p className="text-xs text-gray-400">
+                Puedes copiar y pegar todo el código de 6 dígitos en cualquier campo
+              </p>
             </div>
 
             <div className="flex justify-center gap-3">
@@ -153,12 +212,14 @@ export default function VerificarForm() {
                   title='Ingrese un dígito del código'
                   key={idx}
                   id={`digit-${idx}`}
+                  ref={(el) => { inputsRef.current[idx] = el; }}
                   type="text"
                   inputMode="numeric"
                   pattern="[0-9]*"
-                  maxLength={1}
+                  maxLength={6} // Permitir hasta 6 caracteres para pegado
                   value={digit}
                   onChange={(e) => handleDigitChange(idx, e.target.value)}
+                  onPaste={handlePaste}
                   onKeyDown={(e) => handleKeyDown(idx, e)}
                   className="w-12 h-14 text-2xl font-medium text-center border border-gray-300 rounded-lg 
                             focus:ring-2 focus:ring-[#66b0ca] focus:border-[#66b0ca] focus:outline-none

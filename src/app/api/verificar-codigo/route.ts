@@ -7,7 +7,7 @@ export async function POST(req: Request) {
 
   try {
     const res = await query(
-      'SELECT code, expiracion FROM tblusuarios WHERE usuario = $1',
+      'SELECT code, expiracion FROM tbladmins WHERE usuario = $1',
       [usuario]
     );
 
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     const vencimiento = new Date(Date.now() + 10 * 60 * 1000); // 10 minutos
 
     await query(
-      'UPDATE tblusuarios SET recovery_token = $1, recovery_exp = $2, verified = true WHERE usuario = $3',
+      'UPDATE tbladmins SET recovery_token = $1, recovery_exp = $2, verified = true WHERE usuario = $3',
       [token, vencimiento, usuario]
     );
 

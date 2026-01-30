@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 
   try {
     const res = await query(
-      'UPDATE tblusuarios SET code = $1, expiracion = $2 WHERE usuario = $3 RETURNING email',
+      'UPDATE tbladmins SET code = $1, expiracion = $2 WHERE usuario = $3 RETURNING email',
       [code, expiracion, usuario]
     );
 

@@ -20,7 +20,7 @@
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.511.0",
     "net": "^1.0.2",
-    "next": "^15.3.5",
+    "next": "15.3.8",
     "next-auth": "^4.24.11",
     "nodemailer": "^7.0.10",
     "perf_hooks": "^0.0.1",

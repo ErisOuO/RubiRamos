@@ -1,235 +1,177 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 
 export default function BadRequestPage() {
-  const [isShaking, setIsShaking] = useState(false);
-
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-b from-yellow-50 to-amber-50 p-4">
-      <div className="max-w-2xl mx-auto text-center">
-        {/* Encabezado con número 400 grande */}
-        <div className="mb-8">
-          <h1 className="text-8xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-600">
+    <main className="min-h-screen flex items-center justify-center bg-[#FAF9F7] p-6">
+      <div className="max-w-4xl w-full">
+        {/* Encabezado */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-[#5A8C7A]/10 to-[#A8CF45]/5 mb-8 border-2 border-[#5A8C7A]/20">
+            <div className="text-4xl">📋</div>
+          </div>
+          <h1 className="text-7xl md:text-8xl font-bold font-serif text-[#5A8C7A]">
             400
           </h1>
-        </div>
-
-        {/* Subtítulo principal */}
-        <div className="mb-10">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
-            ¡Solicitud mal digerida!
-          </h2>
-          <p className="text-xl text-gray-600 max-w-lg mx-auto">
-            La información que enviaste no sigue la dieta correcta
+          <p className="text-lg text-[#6E7C72] mt-4 max-w-md mx-auto">
+            Solicitud nutricional incorrecta
           </p>
         </div>
 
-        {/* Contenedor de la zanahoria */}
-        <div className="relative flex justify-center mb-12">
+        {/* Contenido principal */}
+        <div className="grid md:grid-cols-2 gap-12 items-center">
+          {/* Visualización del problema */}
           <div className="relative">
-            {/* Zanahoria animada */}
-            <div className={`relative w-48 h-72 ${isShaking ? 'animate-[shake_0.5s_ease-in-out]' : ''}`}>
-              {/* Hojas de la zanahoria */}
-              <div className="absolute -top-16 left-1/2 transform -translate-x-1/2">
-                <div className="flex space-x-4">
-                  <div className="w-5 h-24 bg-gradient-to-b from-green-400 to-emerald-600 rounded-t-lg transform -rotate-12"></div>
-                  <div className="w-5 h-28 bg-gradient-to-b from-green-300 to-emerald-500 rounded-t-lg"></div>
-                  <div className="w-5 h-20 bg-gradient-to-b from-green-500 to-emerald-700 rounded-t-lg transform rotate-12"></div>
-                </div>
+            {/* Formulario "dañado" */}
+            <div className="bg-white rounded-2xl p-8 shadow-sm border border-[#E6E3DE] relative overflow-hidden">
+              {/* Título del formulario */}
+              <h3 className="text-lg font-semibold mb-6 font-serif text-[#2C3E34]">
+                Análisis de la solicitud
+              </h3>
+
+              {/* Campos con errores */}
+              <div className="space-y-6">
+                {[
+                  { label: 'Nombre completo', error: true },
+                  { label: 'Correo electrónico', error: false },
+                  { label: 'Teléfono', error: true },
+                  { label: 'Mensaje', error: true },
+                ].map((field, index) => (
+                  <div key={index} className="relative">
+                    <div className={`text-sm font-medium mb-2 ${field.error ? 'text-[#F58634]' : 'text-[#6E7C72]'}`}>
+                      {field.label}
+                      {field.error && (
+                        <span className="ml-2 text-xs bg-[#F58634]/10 text-[#F58634] px-2 py-0.5 rounded-full">
+                          Error
+                        </span>
+                      )}
+                    </div>
+                    <div className={`h-10 rounded-lg border ${field.error ? 'border-[#F58634] bg-[#F58634]/5' : 'border-[#E6E3DE] bg-[#FAF9F7]'}`}></div>
+                    {field.error && (
+                      <div className="absolute -right-2 top-1/2 -translate-y-1/2 w-6 h-6 bg-[#F58634] rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">✗</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
-              
-              {/* Cuerpo de la zanahoria */}
-              <div className="w-full h-56 bg-gradient-to-b from-orange-400 via-orange-500 to-orange-600 rounded-t-3xl rounded-b-lg shadow-2xl relative overflow-hidden">
-                
-                {/* Cara confundida */}
-                <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 w-32">
-                  {/* Ojos entrecerrados */}
-                  <div className="flex justify-between mb-6">
-                    <div className="w-8 h-4 bg-black rounded-full relative">
-                      <div className="absolute top-0.5 left-1/2 transform -translate-x-1/2 w-6 h-1.5 bg-white rounded-full"></div>
-                    </div>
-                    <div className="w-8 h-4 bg-black rounded-full relative">
-                      <div className="absolute top-0.5 left-1/2 transform -translate-x-1/2 w-6 h-1.5 bg-white rounded-full"></div>
-                    </div>
-                  </div>
-                  
-                  {/* Boca confundida */}
-                  <div className="relative mx-auto w-16 h-8">
-                    <svg viewBox="0 0 64 32" className="w-full h-full">
-                      <path 
-                        d="M8,20 Q32,12 56,20" 
-                        fill="none" 
-                        stroke="black" 
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                  </div>
-                </div>
-                
-                {/* Etiqueta "FORMATO" destacada */}
-                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-                  <div className="bg-red-100 border-2 border-red-300 px-5 py-2 rounded-full shadow-lg">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-red-600 text-lg">⚠️</span>
-                      <span className="text-sm font-bold text-red-700 tracking-wider">FORMATO INCORRECTO</span>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Líneas de textura */}
-                <div className="absolute inset-0">
-                  {[...Array(5)].map((_, i) => (
-                    <div 
-                      key={i}
-                      className="absolute h-full w-1.5 bg-gradient-to-b from-orange-300/40 to-transparent"
-                      style={{ left: `${15 + i * 20}%` }}
-                    ></div>
-                  ))}
-                </div>
+
+              {/* Icono de alerta */}
+              <div className="absolute -top-3 -right-3 w-14 h-14 bg-gradient-to-br from-[#F58634] to-[#BD7D4A] rounded-full flex items-center justify-center shadow-lg">
+                <div className="text-white text-xl">!</div>
               </div>
-              
-              {/* Raíces pequeñas */}
-              <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                <div className="w-1 h-6 bg-amber-800 rounded-full"></div>
-                <div className="w-1 h-8 bg-amber-800 rounded-full"></div>
-                <div className="w-1 h-7 bg-amber-800 rounded-full"></div>
+
+              {/* Línea diagonal decorativa */}
+              <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-0.5 bg-gradient-to-r from-transparent via-[#F58634]/30 to-transparent rotate-45"></div>
               </div>
             </div>
-            
-            {/* Elementos decorativos flotantes */}
-            <div className="absolute -top-6 -left-6 animate-[float_3s_ease-in-out_infinite]">
-              <div className="w-12 h-12 bg-gradient-to-br from-red-300 to-pink-400 rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-xl">❌</span>
-              </div>
-            </div>
-            
-            <div className="absolute top-1/3 -right-8 animate-[float_3s_ease-in-out_infinite]" style={{animationDelay: '0.4s'}}>
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-300 to-cyan-400 rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-lg">🚫</span>
+
+            {/* Etiqueta flotante */}
+            <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white border border-[#E6E3DE] px-4 py-2 rounded-full shadow-sm">
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 rounded-full bg-[#F58634]"></div>
+                <span className="text-sm font-medium text-[#2C3E34]">Revisión requerida</span>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Mensaje explicativo */}
-        <div className="mb-10 bg-white/95 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-amber-100">
-          <div className="flex items-center justify-center mb-6">
-            <div className="text-amber-600 text-4xl mr-4">📋</div>
+          {/* Información y solución */}
+          <div className="space-y-8">
             <div>
-              <h3 className="text-2xl font-bold text-gray-800">Análisis de solicitud</h3>
-              <p className="text-gray-600">Diagnóstico nutricional digital</p>
+              <h2 className="text-2xl font-bold mb-4 font-serif text-[#2C3E34]">
+                Datos mal estructurados
+              </h2>
+              <p className="text-[#6E7C72] leading-relaxed">
+                La información enviada no cumple con los estándares de formato requeridos. 
+                Como en una dieta balanceada, cada dato debe estar en su lugar correcto 
+                y en la proporción adecuada.
+              </p>
             </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-amber-50 p-5 rounded-xl border-2 border-amber-200">
-              <div className="text-amber-600 text-3xl mb-3">🔍</div>
-              <h4 className="font-bold text-amber-800 text-lg mb-2">Datos incompletos</h4>
-              <p className="text-sm text-gray-600">Faltan campos por llenar</p>
-            </div>
-            
-            <div className="bg-red-50 p-5 rounded-xl border-2 border-red-200">
-              <div className="text-red-600 text-3xl mb-3">📝</div>
-              <h4 className="font-bold text-red-800 text-lg mb-2">Formato incorrecto</h4>
-              <p className="text-sm text-gray-600">Estructura no válida</p>
-            </div>
-            
-            <div className="bg-blue-50 p-5 rounded-xl border-2 border-blue-200">
-              <div className="text-blue-600 text-3xl mb-3">⚡</div>
-              <h4 className="font-bold text-blue-800 text-lg mb-2">Sintaxis errónea</h4>
-              <p className="text-sm text-gray-600">Caracteres no permitidos</p>
-            </div>
-          </div>
-          
-          <div className="bg-gradient-to-r from-amber-100 to-orange-100 rounded-xl p-5 border-l-4 border-amber-500">
-            <p className="text-lg text-gray-800 italic">
-              Los datos deben estar tan bien estructurados como una dieta balanceada
-            </p>
-          </div>
-        </div>
 
-        {/* Botones de acción */}
-        <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
-          <button
-            onClick={() => {
-              setIsShaking(true);
-              setTimeout(() => setIsShaking(false), 500);
-              window.history.back();
-            }}
-            className="px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center min-w-[200px]"
-          >
-            <span className="mr-3 text-2xl">↩️</span>
-            <div className="text-left">
-              <div className="text-lg">Revisar solicitud</div>
-              <div className="text-sm font-normal text-white/80">Volver y corregir</div>
+            {/* Lista de problemas */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold font-serif text-[#5A8C7A]">
+                Problemas detectados:
+              </h3>
+              <ul className="space-y-3">
+                {[
+                  'Campos obligatorios incompletos',
+                  'Formato de correo electrónico inválido',
+                  'Números de teléfono incorrectos',
+                  'Caracteres no permitidos en los campos'
+                ].map((issue, index) => (
+                  <li key={index} className="flex items-start">
+                    <div className="w-5 h-5 rounded-full bg-[#F58634]/10 flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#F58634]"></div>
+                    </div>
+                    <span className="text-[#6E7C72]">{issue}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-          </button>
-          
-          <Link
-            href="/"
-            className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center min-w-[200px]"
-          >
-            <span className="mr-3 text-2xl">🏠</span>
-            <div className="text-left">
-              <div className="text-lg">Ir al inicio</div>
-              <div className="text-sm font-normal text-white/80">Comenzar de nuevo</div>
-            </div>
-          </Link>
-        </div>
 
-        {/* Panel de solución */}
-        <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200 mb-8">
-          <h3 className="text-xl font-bold text-emerald-800 mb-4 flex items-center">
-            <span className="mr-3 text-2xl">💡</span>
-            ¿Cómo solucionarlo?
-          </h3>
-          
-          <div className="space-y-4">
-            <div className="flex items-start">
-              <div className="bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 mt-1 text-sm font-bold">1</div>
-              <div>
-                <h4 className="font-bold text-gray-800">Revisa todos los campos</h4>
-                <p className="text-gray-600 text-sm">Asegúrate de que no haya campos vacíos o con información incorrecta</p>
-              </div>
+            {/* Solución */}
+            <div className="bg-gradient-to-br from-[#5A8C7A]/5 to-[#A8CF45]/5 rounded-xl p-6 border border-[#5A8C7A]/20">
+              <h3 className="text-lg font-semibold mb-4 font-serif text-[#5A8C7A]">
+                Solución recomendada:
+              </h3>
+              <ol className="space-y-3">
+                {[
+                  'Revisa que todos los campos obligatorios estén completos',
+                  'Verifica el formato de tu correo electrónico',
+                  'Asegúrate de que los números sean válidos',
+                  'Elimina caracteres especiales no permitidos'
+                ].map((step, index) => (
+                  <li key={index} className="flex items-start">
+                    <div className="w-6 h-6 rounded-full bg-white border border-[#5A8C7A] flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                      <span className="text-[#5A8C7A] text-sm font-bold">{index + 1}</span>
+                    </div>
+                    <span className="text-[#6E7C72]">{step}</span>
+                  </li>
+                ))}
+              </ol>
             </div>
-            
-            <div className="flex items-start">
-              <div className="bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 mt-1 text-sm font-bold">2</div>
-              <div>
-                <h4 className="font-bold text-gray-800">Verifica el formato</h4>
-                <p className="text-gray-600 text-sm">Comprueba que los datos sigan el patrón requerido (email, teléfono, etc.)</p>
+
+            {/* Acciones */}
+            <div className="pt-4">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
+                  onClick={() => window.history.back()}
+                  className="flex-1 bg-white border border-[#5A8C7A] text-[#5A8C7A] font-semibold px-6 py-3 rounded-lg hover:bg-[#5A8C7A] hover:text-white transition-all duration-300 flex items-center justify-center"
+                >
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                  </svg>
+                  <span>Volver y corregir</span>
+                </button>
+
+                <Link
+                  href="/"
+                  className="flex-1 bg-gradient-to-r from-[#5A8C7A] to-[#4a7768] text-white font-semibold px-6 py-3 rounded-lg hover:shadow-md transition-all duration-300 flex items-center justify-center"
+                >
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                  <span>Ir al inicio</span>
+                </Link>
               </div>
-            </div>
-            
-            <div className="flex items-start">
-              <div className="bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 mt-1 text-sm font-bold">3</div>
-              <div>
-                <h4 className="font-bold text-gray-800">Vuelve a intentar</h4>
-                <p className="text-gray-600 text-sm">Una vez corregidos los errores, envía la solicitud nuevamente</p>
-              </div>
+              
+              <p className="text-sm text-[#6E7C72] mt-4 text-center">
+                ¿Necesitas ayuda? <a href="mailto:ayuda@consultorio.com" className="text-[#5A8C7A] hover:underline">
+                  Contáctanos
+                </a>
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Frutas y verduras decorativas */}
-        <div className="mt-10">
-          <div className="flex justify-center space-x-6 text-3xl mb-4">
-            {['🥕', '🥦', '🍅', '🌽', '🥒', '🍆'].map((veg, index) => (
-              <span 
-                key={index}
-                className="animate-bounce inline-block"
-                style={{animationDelay: `${index * 0.1}s`}}
-              >
-                {veg}
-              </span>
-            ))}
-          </div>
-          
-          <p className="text-sm text-gray-500 max-w-md mx-auto">
-            Consultorio Nutricional Digital - Tu salud en línea también necesita cuidado
+        {/* Footer */}
+        <div className="mt-16 pt-8 border-t border-[#E6E3DE] text-center">
+          <p className="text-sm text-[#6E7C72]">
+            Consultorio Nutricional • Procesamiento seguro de datos • 
+            <span className="ml-2 text-[#A8CF45]">✓ Certificado SSL</span>
           </p>
         </div>
       </div>

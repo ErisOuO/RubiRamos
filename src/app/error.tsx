@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 export default function InternalServerError({
   error,
   reset,
@@ -8,195 +8,158 @@ export default function InternalServerError({
   reset: () => void;
 }) {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-b from-red-50 to-orange-50 p-4">
-      <div className="max-w-2xl mx-auto text-center">
-        {/* Título animado */}
-        <div className="mb-8">
-          <h1 className="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-600">
+    <main className="min-h-screen flex items-center justify-center bg-[#FAF9F7] p-6">
+      <div className="max-w-4xl w-full">
+        {/* Encabezado minimalista */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-[#BD7D4A]/10 to-[#F58634]/5 mb-8 border-2 border-[#BD7D4A]/20">
+            <div className="text-4xl">⚡</div>
+          </div>
+          <h1 className="text-7xl md:text-8xl font-bold font-serif text-[#BD7D4A]">
             500
           </h1>
-          <h2 className="text-3xl font-bold text-gray-800 mt-2">
-            ¡Indigestión del sistema!
-          </h2>
+          <p className="text-lg text-[#6E7C72] mt-4 max-w-md mx-auto">
+            Error interno del sistema nutricional
+          </p>
         </div>
 
-        {/* Fruta animada con problemas digestivos */}
-        <div className="relative flex justify-center mb-12">
+        {/* Contenido principal */}
+        <div className="grid md:grid-cols-2 gap-12 items-start">
+          {/* Diagnóstico visual */}
           <div className="relative">
-            {/* Cuerpo de la manzana con "dolor" */}
-            <div className="w-72 h-72 rounded-full bg-gradient-to-r from-red-300 via-red-400 to-red-500 relative overflow-hidden shadow-2xl animate-pulse">
-              
-              {/* Cara con expresión de dolor */}
-              <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32">
-                {/* Ojos entrecerrados */}
-                <div className="flex justify-between mb-6">
-                  <div className="w-10 h-6 bg-white rounded-full relative overflow-hidden">
-                    <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-8 h-3 bg-black rounded-full"></div>
+            {/* Gráfico de diagnóstico */}
+            <div className="relative bg-white rounded-2xl p-8 shadow-sm border border-[#E6E3DE]">
+              {/* Título del gráfico */}
+              <div className="flex items-center justify-between mb-8">
+                <h3 className="text-lg font-semibold font-serif text-[#2C3E34]">
+                  Diagnóstico del sistema
+                </h3>
+                <div className="text-xs font-medium px-3 py-1 rounded-full bg-[#F58634]/10 text-[#F58634]">
+                  CRÍTICO
+                </div>
+              </div>
+
+              {/* Barras de métricas */}
+              <div className="space-y-6">
+                {[
+                  { label: 'Procesamiento', value: 35, color: '#F58634' },
+                  { label: 'Memoria', value: 65, color: '#BD7D4A' },
+                  { label: 'Conexión', value: 85, color: '#5A8C7A' },
+                  { label: 'Respuesta', value: 25, color: '#F58634' },
+                ].map((metric, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-[#6E7C72]">{metric.label}</span>
+                      <span className="font-medium" style={{ color: metric.color }}>
+                        {metric.value}%
+                      </span>
+                    </div>
+                    <div className="h-2 bg-[#FAF9F7] rounded-full overflow-hidden">
+                      <div 
+                        className="h-full rounded-full transition-all duration-1000 ease-out"
+                        style={{ 
+                          width: `${metric.value}%`,
+                          backgroundColor: metric.color,
+                        }}
+                      ></div>
+                    </div>
                   </div>
-                  <div className="w-10 h-6 bg-white rounded-full relative overflow-hidden">
-                    <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-8 h-3 bg-black rounded-full"></div>
-                  </div>
-                </div>
-                
-                {/* Boca abierta (gritando) */}
-                <div className="relative mx-auto w-20 h-12">
-                  <div className="absolute inset-0 bg-black rounded-b-full"></div>
-                  <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-4 h-6 bg-white rounded-full"></div>
-                </div>
+                ))}
               </div>
-              
-              {/* Líneas de "dolor" o mareo */}
-              <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-full">
-                  {[...Array(6)].map((_, i) => (
-                    <div 
-                      key={i}
-                      className="absolute w-2 h-20 bg-white opacity-20 rotate-45"
-                      style={{
-                        top: `${i * 30}%`,
-                        left: `${i * 20}%`,
-                        animation: `spin 2s linear infinite`,
-                        animationDelay: `${i * 0.2}s`
-                      }}
-                    ></div>
-                  ))}
-                </div>
-              </div>
-              
-              {/* "Gas" o burbujas saliendo */}
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <div className="flex space-x-2">
-                  {[...Array(3)].map((_, i) => (
-                    <div 
-                      key={i}
-                      className="w-8 h-8 bg-white rounded-full opacity-70 animate-bounce"
-                      style={{
-                        animationDelay: `${i * 0.3}s`
-                      }}
-                    ></div>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Pastilla o medicamento */}
-              <div className="absolute bottom-6 left-6">
-                <div className="w-12 h-6 bg-blue-400 rounded-full flex items-center justify-center shadow-lg">
-                  <div className="w-8 h-1 bg-white"></div>
-                </div>
-              </div>
-              
-              {/* Termómetro digital */}
-              <div className="absolute bottom-6 right-6 bg-gray-800 text-white p-2 rounded-lg shadow-lg">
-                <div className="text-xs font-mono">ERROR</div>
-                <div className="text-sm font-bold text-red-300">500°</div>
+
+              {/* Icono de error */}
+              <div className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-br from-[#F58634] to-[#BD7D4A] rounded-full flex items-center justify-center shadow-lg">
+                <div className="text-white text-2xl">!</div>
               </div>
             </div>
-            
-            {/* Etiqueta "No disponible" */}
-            <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-4 py-2 rounded-full shadow-lg animate-bounce">
-              <div className="flex items-center">
-                <span className="mr-2">⚠️</span>
-                <span className="font-bold">SISTEMA INDIGESTO</span>
-              </div>
+
+            {/* Elementos decorativos */}
+            <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-gradient-to-br from-[#A8CF45]/20 to-[#5A8C7A]/20 rounded-lg rotate-12"></div>
+            <div className="absolute -top-4 -right-4 w-10 h-10 bg-gradient-to-br from-[#F58634]/10 to-[#BD7D4A]/10 rounded-full"></div>
+          </div>
+
+          {/* Información y acciones */}
+          <div className="space-y-8">
+            <div>
+              <h2 className="text-2xl font-bold mb-4 font-serif text-[#2C3E34]">
+                Sistema en mantenimiento
+              </h2>
+              <p className="text-[#6E7C72] leading-relaxed">
+                Nuestro sistema nutricional está experimentando dificultades técnicas 
+                inesperadas. Nuestro equipo especializado ya está trabajando para 
+                restablecer el servicio lo antes posible.
+              </p>
             </div>
-            
-            {/* Jarabe/botella */}
-            <div className="absolute -right-8 top-1/2 transform -translate-y-1/2">
-              <div className="w-16 h-24 bg-gradient-to-b from-blue-400 to-blue-600 rounded-t-lg rounded-b-xl shadow-lg relative">
-                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-4 bg-blue-300 rounded-b-lg"></div>
-                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-xs font-bold rotate-90">
-                  ANTÍDOTO
+
+            {/* Detalles técnicos (acordeón) */}
+            <div className="bg-white rounded-xl border border-[#E6E3DE] overflow-hidden">
+              <details className="group">
+                <summary className="flex items-center justify-between p-4 cursor-pointer hover:bg-[#FAF9F7] transition-colors">
+                  <span className="text-[#5A8C7A] font-semibold">Detalles técnicos</span>
+                  <svg className="w-5 h-5 text-[#6E7C72] transform group-open:rotate-180 transition-transform" 
+                       fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div className="p-4 pt-0">
+                  <div className="bg-[#FAF9F7] rounded-lg p-4 font-mono text-sm">
+                    <code className="text-[#6E7C72] break-words">
+                      {error.message || "Error interno del servidor"}
+                    </code>
+                  </div>
                 </div>
-              </div>
+              </details>
+            </div>
+
+            {/* Acciones */}
+            <div className="space-y-4">
+              <button
+                onClick={() => reset()}
+                className="w-full bg-gradient-to-r from-[#BD7D4A] to-[#F58634] text-white font-semibold px-6 py-4 rounded-lg hover:shadow-md transition-all duration-300 flex items-center justify-center group"
+              >
+                <svg className="w-5 h-5 mr-3 group-hover:rotate-180 transition-transform" 
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span>Reintentar operación</span>
+              </button>
+
+              <Link
+                href="/"
+                className="w-full bg-white border border-[#5A8C7A] text-[#5A8C7A] font-semibold px-6 py-4 rounded-lg hover:bg-[#5A8C7A] hover:text-white transition-all duration-300 flex items-center justify-center group shadow-sm"
+              >
+                <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                <span>Volver al inicio</span>
+              </Link>
+
+              <a
+                href="mailto:soporte@consultorio.com"
+                className="w-full bg-white border border-[#E6E3DE] text-[#6E7C72] font-medium px-6 py-4 rounded-lg hover:border-[#BD7D4A] hover:text-[#BD7D4A] transition-all duration-300 flex items-center justify-center text-sm"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2" />
+                </svg>
+                <span>Contactar soporte técnico</span>
+              </a>
             </div>
           </div>
         </div>
 
-        {/* Mensaje explicativo */}
-        <div className="mb-10 bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg">
-          <p className="text-2xl text-gray-800 mb-4">
-            ¡Nuestro sistema nutricional tiene una indigestión de datos!
-          </p>
-          <p className="text-lg text-gray-600 mb-6">
-            Parece que algo no cayó bien en nuestro procesamiento de alimentos informáticos.
-          </p>
-          
-          {/* Detalles del error (colapsable) */}
-          <div className="mb-8">
-            <details className="bg-red-50 rounded-xl p-4">
-              <summary className="cursor-pointer font-medium text-red-700 flex items-center justify-center">
-                <span className="mr-2">🔍 Ver detalles técnicos</span>
-              </summary>
-              <div className="mt-4 p-4 bg-white rounded-lg font-mono text-sm text-left overflow-x-auto">
-                <code className="text-gray-700">
-                  {error.message || "Error interno del servidor"}
-                </code>
-              </div>
-            </details>
+        {/* Mensaje tranquilizador */}
+        <div className="mt-12 pt-8 border-t border-[#E6E3DE]">
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#A8CF45]/10 mb-4">
+              <div className="text-[#A8CF45] text-xl">✓</div>
+            </div>
+            <p className="text-[#6E7C72]">
+              Mientras restablecemos el sistema, recuerda que tu salud nutricional 
+              sigue siendo nuestra prioridad. Pronto estaremos de vuelta.
+            </p>
           </div>
-        </div>
-
-        {/* Botones de acción */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          <button
-            onClick={() => reset()}
-            className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-lg px-8 py-4 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group"
-          >
-            <div className="flex items-center justify-center">
-              <span className="mr-3">💊</span>
-              <span>Administrar antídoto</span>
-              <span className="ml-3 group-hover:animate-ping">🔄</span>
-            </div>
-            <div className="text-sm font-normal mt-1 opacity-90">
-              Reintentar la operación
-            </div>
-          </button>
-          
-          <link
-            href="/"
-            className="bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold text-lg px-8 py-4 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group"
-          >
-            <div className="flex items-center justify-center">
-              <span className="mr-3">🏥</span>
-              <span>Volver al consultorio</span>
-              <span className="ml-3">🏃‍♂️</span>
-            </div>
-            <div className="text-sm font-normal mt-1 opacity-90">
-              Regresar a la página principal
-            </div>
-          </link>
-        </div>
-
-        {/* Consejo nutricional de emergencia */}
-        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-orange-500 rounded-r-xl p-6 shadow-md">
-          <h3 className="text-lg font-bold text-orange-800 mb-3 flex items-center">
-            <span className="mr-3">🩺</span>
-            Consejo nutricional de emergencia
-          </h3>
-          <p className="text-gray-700">
-            Si tú también tienes una indigestión, recuerda: bebe agua tibia con limón y descansa.
-            ¡El sistema digestivo (y el servidor) necesitan su tiempo!
-          </p>
-        </div>
-
-        {/* Frutas decorativas */}
-        <div className="mt-10 flex justify-center space-x-6 text-4xl opacity-80">
-          <span className="animate-bounce" style={{animationDelay: "0s"}}>🍏</span>
-          <span className="animate-bounce" style={{animationDelay: "0.2s"}}>🍊</span>
-          <span className="animate-bounce" style={{animationDelay: "0.4s"}}>🍌</span>
-          <span className="animate-bounce" style={{animationDelay: "0.6s"}}>🥝</span>
-          <span className="animate-bounce" style={{animationDelay: "0.8s"}}>🍇</span>
         </div>
       </div>
-
-      {/* Estilos CSS para animaciones */}
-      <style jsx>{`
-        @keyframes spin {
-          0% { transform: rotate(45deg) translateX(0); }
-          50% { transform: rotate(45deg) translateX(10px); }
-          100% { transform: rotate(45deg) translateX(0); }
-        }
-      `}</style>
     </main>
   );
 }

@@ -1,173 +1,157 @@
 "use client";
 
-import Image from "next/image";
-import { useState } from "react";
-import { FaShoppingCart, FaHeart, FaRegHeart } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import ProductCard from "./ProductCard";
+import EmptyState from "./EmptyState";
+import { Producto, Categoria } from '@/lib/definitions';
+import { FaShoppingCart } from 'react-icons/fa';
 
-/* ============================
-   Tipos
-============================ */
-interface Product {
-  name: string;
-  image: string;
-  price: number;
-  originalPrice: number;
-  category: string;
+// Tipo simplificado para el carrito
+type ProductoCarrito = Omit<Producto, 'created_at' | 'updated_at' | 'active'>;
+
+interface ProductsGridProps {
+  productos: Producto[];
+  categorias: Categoria[];
+  query: string;
+  categoriaSeleccionada: string;
 }
 
-/* ============================
-   Datos (mock)
-============================ */
-const products: Product[] = [
-  { name: "Colágeno Premium", image: "colageno.png", price: 399, originalPrice: 449, category: "Colágeno" },
-  { name: "Prowinner Protein", image: "prowinner.png", price: 549, originalPrice: 599, category: "Proteínas" },
-  { name: "Gold Start Aminos", image: "goldstandar.png", price: 299, originalPrice: 349, category: "Aminoácidos" },
-  { name: "PeakFormance Boost", image: "peakperformance.png", price: 469, originalPrice: 519, category: "Pre-Workout" },
-  { name: "Protein Power", image: "proteinpowder.png", price: 529, originalPrice: 579, category: "Proteínas" },
-  { name: "Pure Pre-Workout", image: "purepre.png", price: 449, originalPrice: 499, category: "Pre-Workout" },
-  { name: "Suplin Daily Vitamins", image: "suplint.png", price: 199, originalPrice: 249, category: "Vitaminas" },
-  { name: "Black Bear Mass", image: "blackbear.png", price: 599, originalPrice: 649, category: "Ganadores de Masa" },
-  { name: "Protein Shake V2", image: "proteinshake2.png", price: 459, originalPrice: 509, category: "Proteínas" },
-];
+export default function ProductsGrid({ 
+  productos, 
+  query,
+  categoriaSeleccionada 
+}: ProductsGridProps) {
+  const [cart, setCart] = useState<ProductoCarrito[]>([]);
+  const [favorites, setFavorites] = useState<Set<number>>(new Set());
+  const [filteredProducts, setFilteredProducts] = useState<Producto[]>([]);
 
-/* ============================
-   Componente
-============================ */
-export default function ProductsGrid({
-  search,
-  category,
-}: {
-  search: string;
-  category: string;
-}) {
-  const [cart, setCart] = useState<Product[]>([]);
-  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  // Solo filtrar por búsqueda, no por categoría (ya se hizo en el servidor)
+  useEffect(() => {
+    console.log('ProductsGrid - Productos recibidos:', productos.length);
+    console.log('ProductsGrid - Query:', query);
+    console.log('ProductsGrid - Categoría seleccionada:', categoriaSeleccionada);
+    
+    let filtered = [...productos];
 
-  /* ============================
-     Filtrado
-  ============================ */
-  const filteredProducts = products.filter((p) => {
-    const matchesSearch = p.name
-      .toLowerCase()
-      .includes(search.toLowerCase());
+    // Solo filtrar por búsqueda (la categoría ya fue filtrada en el servidor)
+    if (query) {
+      filtered = filtered.filter(producto =>
+        producto.name.toLowerCase().includes(query.toLowerCase()) ||
+        producto.description.toLowerCase().includes(query.toLowerCase())
+      );
+    }
 
-    const matchesCategory =
-      category === "Todos" || p.category === category;
+    console.log('ProductsGrid - Productos después de filtrar búsqueda:', filtered.length);
+    setFilteredProducts(filtered);
+  }, [productos, query]); // Quitamos categoriaSeleccionada y categorias de las dependencias
 
-    return matchesSearch && matchesCategory;
-  });
-
-  /* ============================
-     Acciones
-  ============================ */
-  const handleAdd = (product: Product) => {
-    setCart([...cart, product]);
+  // Manejar agregar al carrito
+  const handleAddToCart = (producto: Producto) => {
+    if (producto.stock > 0) {
+      // Crear un producto simplificado para el carrito
+      const productoCarrito: ProductoCarrito = {
+        id: producto.id,
+        name: producto.name,
+        description: producto.description,
+        price: producto.price,
+        stock: producto.stock,
+        image_url: producto.image_url
+      };
+      
+      const newCart = [...cart, productoCarrito];
+      setCart(newCart);
+      
+      // Mostrar notificación
+      showNotification(`${producto.name} agregado al carrito`);
+      
+      // Guardar en localStorage
+      localStorage.setItem('cart', JSON.stringify(newCart));
+    }
   };
 
-  const toggleFavorite = (productName: string) => {
+  // Manejar favoritos
+  const toggleFavorite = (productoId: number) => {
     setFavorites((prev) => {
       const newFavorites = new Set(prev);
-
-      if (newFavorites.has(productName)) {
-        newFavorites.delete(productName);
-      } else {
-        newFavorites.add(productName);
-      }
-
+      newFavorites.has(productoId) 
+        ? newFavorites.delete(productoId) 
+        : newFavorites.add(productoId);
+      
+      // Guardar en localStorage
+      localStorage.setItem('favorites', JSON.stringify(Array.from(newFavorites)));
+      
       return newFavorites;
     });
   };
 
+  // Función para mostrar notificaciones
+  const showNotification = (message: string) => {
+    // Puedes implementar un sistema de toast aquí
+    console.log('Notificación:', message);
+    // O usar un toast library como react-hot-toast
+  };
+
+  // Obtener productos favoritos y carrito del localStorage al cargar
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem('favorites');
+    if (savedFavorites) {
+      setFavorites(new Set(JSON.parse(savedFavorites)));
+    }
+    
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
+  }, []);
+
   return (
-    <section className="w-full py-10 px-6">
-      {filteredProducts.length === 0 && (
-        <p className="text-center text-gray-500 text-lg">
-          No se encontraron productos
+    <section className="w-full py-6">
+      {/* Contador de resultados */}
+      <div className="mb-8 text-center">
+        <p className="text-lg" style={{ color: '#6E7C72' }}>
+          <span className="font-bold" style={{ color: '#5A8C7A' }}>
+            {filteredProducts.length}
+          </span> producto{filteredProducts.length !== 1 ? 's' : ''} encontrado{filteredProducts.length !== 1 ? 's' : ''}
         </p>
+      </div>
+
+      {/* Estado vacío - CORREGIDO: usar filteredProducts */}
+      {filteredProducts.length === 0 ? (
+        <EmptyState search={query} categoria={categoriaSeleccionada} />
+      ) : (
+        /* Grid de productos */
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredProducts.map((producto) => (
+            <ProductCard
+              key={producto.id}
+              producto={producto}
+              isFavorite={favorites.has(producto.id)}
+              onToggleFavorite={toggleFavorite}
+              onAddToCart={handleAddToCart}
+            />
+          ))}
+        </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-        {filteredProducts.map((p) => {
-          const isFavorite = favorites.has(p.name);
-          const discount = Math.round(
-            ((p.originalPrice - p.price) / p.originalPrice) * 100
-          );
-
-          return (
-            <div
-              key={p.name}
-              className="bg-white shadow-lg rounded-2xl p-5 border border-gray-100 hover:shadow-xl transition-all duration-300 hover:scale-105 group relative"
-            >
-              {/* Descuento */}
-              <div className="absolute top-3 left-3 z-10">
-                <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                  -{discount}%
-                </span>
-              </div>
-
-              {/* Favoritos */}
-              <button
-                onClick={() => toggleFavorite(p.name)}
-                className="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 backdrop-blur-sm shadow-md hover:scale-110 transition-transform"
-                aria-label={
-                  isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"
-                }
-              >
-                {isFavorite ? (
-                  <FaHeart className="text-red-500 text-lg" />
-                ) : (
-                  <FaRegHeart className="text-gray-400 text-lg hover:text-red-400" />
-                )}
-              </button>
-
-              {/* Imagen */}
-              <div className="w-full h-56 relative mb-4 group-hover:scale-105 transition-transform duration-300">
-                <Image
-                  src={`/${p.image}`}
-                  alt={p.name}
-                  fill
-                  className="object-contain drop-shadow-md"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                />
-              </div>
-
-              {/* Texto */}
-              <div className="flex flex-col items-center text-center">
-                <h3 className="text-xl font-bold text-gray-800 mb-2 min-h-[3rem] flex items-center justify-center">
-                  {p.name}
-                </h3>
-
-                <div className="flex items-baseline gap-2 mb-4">
-                  <span className="text-sm text-gray-500 line-through">
-                    ${p.originalPrice}
-                  </span>
-                  <span
-                    className="text-2xl font-extrabold"
-                    style={{
-                      background: "linear-gradient(135deg, #C96518, #E87C1E)",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                    }}
-                  >
-                    ${p.price}
-                  </span>
-                </div>
-
-                <button
-                  onClick={() => handleAdd(p)}
-                  className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
-                  style={{
-                    background: "linear-gradient(135deg, #A8CF45, #7DA82E)",
-                  }}
-                  aria-label={`Agregar ${p.name} al carrito`}
-                >
-                  <FaShoppingCart className="text-white text-lg" />
-                </button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      {/* Indicador de carrito */}
+      {cart.length > 0 && (
+        <div className="fixed bottom-4 right-4 p-4 rounded-xl shadow-lg z-50 animate-in slide-in-from-bottom" 
+          style={{ 
+            backgroundColor: '#5A8C7A',
+            color: '#FFFFFF'
+          }}
+        >
+          <a href="/shopping_cart" className="flex items-center gap-2">
+            <FaShoppingCart className="h-5 w-5" />
+            <span className="font-semibold">
+              {cart.length} producto{cart.length !== 1 ? 's' : ''} en el carrito
+            </span>
+            <span className="ml-2 px-2 py-1 rounded text-xs font-bold" style={{ backgroundColor: '#F58634' }}>
+              Ver
+            </span>
+          </a>
+        </div>
+      )}
     </section>
   );
 }

@@ -1,15 +1,15 @@
 .footer {
-  background: linear-gradient(180deg, #527b34 0%, #45752b 40%, #407a25 100%);
-  padding: 3rem 2rem 1.5rem;
-  color: #ffffff;
+  background-color: #2C3E34; /* Texto Principal - Verde grisáceo muy oscuro (como fondo) */
+  padding: 3rem 1.5rem 1.5rem;
+  color: #FAF9F7; /* Base Neutra - Para texto principal */
   font-size: 0.95rem;
-  border-top: 1px solid rgba(255, 124, 0, 0.3);
+  border-top: 1px solid #5A8C7A; /* Línea sutil con el verde primario */
 }
 
 .container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2.5rem;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -19,12 +19,14 @@
 }
 
 .sectionTitle {
-  font-weight: 600;
+  font-family: 'Merriweather', serif;
+  font-weight: 700;
   font-size: 1.1rem;
-  margin-bottom: 1.2rem;
-  color: #ffffff;
+  margin-bottom: 1.5rem;
+  color: #FFFFFF;
   position: relative;
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.75rem;
+  letter-spacing: 0.5px;
 }
 
 .sectionTitle::after {
@@ -32,9 +34,9 @@
   position: absolute;
   left: 0;
   bottom: 0;
-  width: 40px;
+  width: 50px;
   height: 2px;
-  background-color: #FF7C00;
+  background-color: #BD7D4A; /* Color Secundario - Terracota suave */
 }
 
 .navList {
@@ -43,18 +45,20 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 1rem;
 }
 
 .navLink {
   text-decoration: none;
-  color: #e6fff0;
+  color: #E6E3DE; /* Líneas y bordes - Gris cálido muy claro (como texto) */
   transition: all 0.3s ease;
   display: inline-block;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
 }
 
 .navLink:hover {
-  color: #FF7C00;
+  color: #BD7D4A; /* Color Secundario - Terracota suave */
   transform: translateX(5px);
 }
 
@@ -64,19 +68,21 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.2rem;
 }
 
 .contactList li {
   display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  color: #e6fff0;
+  align-items: flex-start;
+  gap: 0.9rem;
+  color: #E6E3DE;
+  line-height: 1.5;
 }
 
 .contactIcon {
-  color: #ffffff;
+  color: #BD7D4A; /* Color Secundario - Terracota suave */
   flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .socialIcons {
@@ -86,58 +92,142 @@
 }
 
 .socialLink {
-  color: #e6fff0;
+  color: #FAF9F7;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.06);
+  background-color: rgba(90, 140, 122, 0.3); /* Color Primario con transparencia */
+  border: 1px solid rgba(90, 140, 122, 0.5);
 }
 
 .socialLink:hover {
-  color: #ffffff;
-  background-color: #FF7C00;
+  color: #FFFFFF;
+  background-color: #5A8C7A; /* Color Primario - Verde salvia apagado */
   transform: translateY(-3px);
+  border-color: #5A8C7A;
+  box-shadow: 0 4px 12px rgba(90, 140, 122, 0.3);
 }
 
 .copyright {
   text-align: center;
   margin-top: 3rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  color: rgba(255,255,255,0.9);
+  border-top: 1px solid rgba(90, 140, 122, 0.3); /* Color Primario con transparencia */
+  color: rgba(250, 249, 247, 0.8);
   font-size: 0.85rem;
+  font-family: 'Open Sans', sans-serif;
+}
+
+/* Estilo para el acento de confirmación en elementos especiales */
+.navList li:first-child .navLink {
+  font-weight: 600;
+}
+
+.contactList li:first-child .contactIcon {
+  color: #A8CF45; /* Acento de Confirmación - Verde Logo (uso estratégico) */
 }
 
 @media (max-width: 768px) {
+  .footer {
+    padding: 2.5rem 1.5rem 1.5rem;
+  }
+  
   .container {
     grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    gap: 2rem;
+  }
+  
+  .sectionTitle {
+    font-size: 1rem;
+    margin-bottom: 1.2rem;
   }
 }
 
 @media (max-width: 480px) {
   .container {
     grid-template-columns: 1fr;
+    gap: 2rem;
   }
-
+  
   .section {
     text-align: center;
+    margin-bottom: 2rem;
   }
-
+  
   .sectionTitle::after {
     left: 50%;
     transform: translateX(-50%);
   }
-
+  
   .contactList li {
     justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    gap: 0.5rem;
   }
-
+  
+  .contactIcon {
+    margin-top: 0;
+  }
+  
   .socialIcons {
     justify-content: center;
   }
+  
+  .navLink:hover {
+    transform: translateY(-2px);
+  }
+  
+  .copyright {
+    margin-top: 2rem;
+    padding-top: 1.2rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Versión alternativa con fondo más claro */
+.footer.lightVersion {
+  background-color: #5A8C7A; /* Color Primario - Verde salvia apagado */
+  border-top: 1px solid #BD7D4A; /* Línea con terracota */
+}
+
+.footer.lightVersion .sectionTitle {
+  color: #FFFFFF;
+}
+
+.footer.lightVersion .navLink,
+.footer.lightVersion .contactList li {
+  color: #FAF9F7;
+}
+
+.footer.lightVersion .copyright {
+  border-top: 1px solid rgba(189, 125, 74, 0.3); /* Terracota con transparencia */
+}
+
+/* Efectos de hover mejorados */
+.navLink {
+  position: relative;
+  padding-left: 8px;
+}
+
+.navLink::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 4px;
+  background-color: #BD7D4A;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.navLink:hover::before {
+  opacity: 1;
 }

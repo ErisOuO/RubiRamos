@@ -10,7 +10,6 @@ export const metadata: Metadata = {
     template: "%s | RubiRamos",
     default: "RubiRamos",
   },
-  description: "La mejor plataforma de cotizaciones de autos en línea",
 };
 
 const geistSans = Geist({

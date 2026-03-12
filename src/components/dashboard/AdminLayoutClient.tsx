@@ -29,16 +29,27 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
     <>
       <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
 
-      <div className="flex h-screen flex-col lg:flex-row lg:overflow-hidden bg-gray-50">
+      <div className="flex h-screen flex-col lg:flex-row lg:overflow-hidden" style={{ backgroundColor: '#FAF9F7' }}>
         {/* Header móvil */}
-        <header className="flex items-center justify-between p-4 bg-[#1e343b] text-white lg:hidden">
-          <Link href="/admin" className="relative w-32 h-10">
-            <Image src="/logo_rubi.png" fill alt="RubiRamos Logo" className="object-contain" />
+        <header className="flex items-center justify-between p-4 lg:hidden shadow-sm" 
+          style={{ 
+            backgroundColor: '#5A8C7A',
+            color: '#FFFFFF'
+          }}
+        >
+          <Link href="/admin" className="relative w-36 h-10">
+            <Image 
+              src="/logo_rubi.png" 
+              fill 
+              alt="RubiRamos Logo" 
+              className="object-contain"
+              priority
+            />
           </Link>
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="p-2 rounded-md hover:bg-[#2d4b55]"
+            className="p-2 rounded-md transition-colors hover:bg-white/10"
             aria-label="Abrir menú"
           >
             <Bars3Icon className="h-6 w-6" />
@@ -47,7 +58,11 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
           {isMenuOpen && (
             <div
               ref={menuRef}
-              className="absolute top-16 right-4 z-50 w-52 rounded-lg bg-white text-sm shadow-lg ring-1 ring-black/10"
+              className="absolute top-16 right-4 z-50 w-64 rounded-lg shadow-xl"
+              style={{ 
+                backgroundColor: '#2C3E34',
+                border: '1px solid #5A8C7A'
+              }}
             >
               <SideNav mobile onClose={() => setIsMenuOpen(false)}/>
             </div>
@@ -55,12 +70,12 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
         </header>
 
         {/* Sidebar escritorio */}
-        <div className="hidden lg:block w-64 flex-none">
+        <div className="hidden lg:flex w-64 flex-none flex-col shadow-lg" style={{ backgroundColor: '#2C3E34' }}>
           <SideNav />
         </div>
 
         {/* Contenido principal */}
-        <main className="flex-grow p-4 lg:overflow-y-auto lg:p-8 bg-white/95 backdrop-blur-sm">
+        <main className="flex-grow p-4 lg:overflow-y-auto lg:p-8">
           <div className="mx-auto max-w-7xl">{children}</div>
         </main>
       </div>

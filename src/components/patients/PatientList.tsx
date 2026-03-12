@@ -7,7 +7,6 @@ interface Patient {
   nombre_completo: string;
   phone: string;
   email: string;
-  estado: string;
   age?: number;
 }
 
@@ -81,13 +80,6 @@ export default function PatientList({ patients, loading, onViewDetails }: Patien
                 <span className="text-sm font-medium text-gray-800">{patient.phone}</span>
                 <p className="text-xs text-gray-500">Teléfono</p>
               </div>
-            </div>
-
-            {/* Estado */}
-            <div className="col-span-3 flex items-center justify-center">
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(patient.estado)}`}>
-                {patient.estado}
-              </span>
             </div>
 
             {/* Acciones */}

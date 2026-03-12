@@ -71,7 +71,7 @@ const Footer = () => {
           <h3 className={styles.sectionTitle}>Síguenos</h3>
           <div className={styles.socialIcons}>
             <a
-              href="https://facebook.com/consultorionutricion"
+              href="https://web.facebook.com/profile.php?id=100063593888991"
               title="Facebook"
               target="_blank"
               rel="noopener noreferrer"
@@ -80,7 +80,7 @@ const Footer = () => {
               <FaFacebook size={20} />
             </a>
             <a
-              href="https://instagram.com/consultorionutricion"
+              href="https://www.instagram.com/nutrirubiramos/?hl=es-la"
               title="Instagram"
               target="_blank"
               rel="noopener noreferrer"

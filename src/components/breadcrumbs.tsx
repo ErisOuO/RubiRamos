@@ -1,6 +1,9 @@
+'use client';
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronRight } from 'lucide-react';
+import { breadcrumbLabels } from '@/lib/breadcrumbs';
 
 export default function Breadcrumbs() {
   const pathname = usePathname();
@@ -9,45 +12,48 @@ export default function Breadcrumbs() {
   if (segments.length === 0) return null;
 
   return (
-    <nav
-      className="w-full 
-                 bg-gradient-to-b from-[#B8FF80] via-[#6FEA50] to-[#3DAE26]
-                 border-b-[1px] border-[#FF7C00]
-                 px-6 py-2 text-sm text-white shadow-lg"
-    >
-      <ol className="flex items-center space-x-2">
-        <li>
-          <Link
-            href="/"
-            className="text-white hover:text-[#FF7C00] font-semibold transition-colors"
-          >
-            Inicio
-          </Link>
-        </li>
+    <nav className="w-full bg-white border-y border-[#E6E3DE] px-6 py-2.5 text-sm shadow-xs">
+      <div className="max-w-7xl mx-auto">
+        <ol className="flex items-center space-x-2">
+          <li>
+            <Link
+              href="/"
+              className="text-[#5A8C7A] hover:text-[#BD7D4A] font-medium flex items-center gap-1 group"
+            >
+              <span className="group-hover:underline">Inicio</span>
+            </Link>
+          </li>
 
-        {segments.map((segment, index) => {
-          const href = '/' + segments.slice(0, index + 1).join('/');
-          const isLast = index === segments.length - 1;
+          {segments.map((segment, index) => {
+            const href = '/' + segments.slice(0, index + 1).join('/');
+            const isLast = index === segments.length - 1;
 
-          return (
-            <li key={href} className="flex items-center space-x-2">
-              <ChevronRight className="w-4 h-4 text-[#FF7C00]" />
-              {isLast ? (
-                <span className="text-white font-bold capitalize drop-shadow-md">
-                  {decodeURIComponent(segment)}
-                </span>
-              ) : (
-                <Link
-                  href={href}
-                  className="text-white hover:text-[#FF7C00] capitalize transition-colors"
-                >
-                  {decodeURIComponent(segment)}
-                </Link>
-              )}
-            </li>
-          );
-        })}
-      </ol>
+            const label =
+              breadcrumbLabels[segment] ??
+              decodeURIComponent(segment)
+                .replace(/-/g, ' ')
+                .replace(/\b\w/g, char => char.toUpperCase());
+
+            return (
+              <li key={href} className="flex items-center space-x-2">
+                <ChevronRight className="w-3.5 h-3.5 text-[#6E7C72]" />
+                {isLast ? (
+                  <span className="text-[#2C3E34] font-semibold">
+                    {label}
+                  </span>
+                ) : (
+                  <Link
+                    href={href}
+                    className="text-[#6E7C72] hover:text-[#BD7D4A] transition-colors group"
+                  >
+                    <span className="group-hover:underline">{label}</span>
+                  </Link>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      </div>
     </nav>
   );
 }

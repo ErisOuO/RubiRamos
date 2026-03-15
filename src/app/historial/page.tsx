@@ -2,6 +2,11 @@
 
 import { useState } from 'react';
 import { FaUser, FaPhone, FaEnvelope, FaWeight, FaRulerVertical, FaCalendar, FaNotesMedical, FaFileMedical, FaStar } from 'react-icons/fa';
+/*import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: 'Historial Médico',
+};*/
 
 // Datos de ejemplo del paciente
 const patientData = {

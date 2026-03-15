@@ -83,8 +83,7 @@ export async function crearPaciente(formData: FormData) {
         phone,
         email,
         password,
-        verified,
-        active
+        verified
       ) VALUES (
         ${firstName.trim()},
         ${secondName?.trim() || null},
@@ -95,7 +94,6 @@ export async function crearPaciente(formData: FormData) {
         ${email.trim().toLowerCase()},
         ${hashedContrasena},
         false,
-        true
       ) RETURNING id, email, first_name, last_name
     `;
     
@@ -118,51 +116,5 @@ export async function crearPaciente(formData: FormData) {
     }
     
     throw new Error('No se pudo crear el paciente');
-  }
-}
-
-export async function obtenerPacientesBasicos() {
-  try {
-    const pacientes = await sql`
-      SELECT 
-        id,
-        -- Nombre completo formateado
-        TRIM(
-          CONCAT(
-            first_name,
-            CASE WHEN second_name IS NOT NULL AND second_name != '' THEN ' ' || second_name ELSE '' END,
-            ' ',
-            last_name,
-            CASE WHEN second_last_name IS NOT NULL AND second_last_name != '' THEN ' ' || second_last_name ELSE '' END
-          )
-        ) as nombre_completo,
-        phone,
-        email,
-        -- Estado formateado
-        CASE 
-          WHEN active = true AND verified = true THEN 'Activo y verificado'
-          WHEN active = true AND verified = false THEN 'Activo (no verificado)'
-          WHEN active = false THEN 'Inactivo'
-          ELSE 'Estado desconocido'
-        END as estado
-      FROM tblpatients
-      ORDER BY 
-        active DESC,
-        verified DESC,
-        last_name ASC,
-        first_name ASC
-    `;
-    
-    return {
-      success: true,
-      pacientes: pacientes,
-      total: pacientes.length,
-      activos: pacientes.filter(p => p.estado.includes('Activo')).length,
-      verificados: pacientes.filter(p => p.estado.includes('verificado')).length
-    };
-    
-  } catch (error) {
-    console.error('Error al obtener pacientes básicos:', error);
-    throw new Error('No se pudieron obtener los pacientes');
   }
 }

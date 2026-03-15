@@ -1,19 +1,55 @@
 'use client';
 
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
-import { FaHome, FaUserAlt, FaShoppingBag, FaCalendarAlt, FaShoppingCart, FaAddressCard } from 'react-icons/fa';
+import { 
+  FaHome, 
+  FaUserAlt, 
+  FaShoppingBag, 
+  FaCalendarAlt, 
+  FaShoppingCart, 
+  FaAddressCard,
+  FaBars,
+  FaTimes 
+} from 'react-icons/fa';
 import styles from './header.module.css';
 
 const Header = () => {
   const pathname = usePathname();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const isActive = (path: string) => pathname === path;
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    }
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
+  const navLinks = [
+    { href: '/', icon: FaHome, label: 'Inicio' },
+    { href: '/catalog', icon: FaShoppingBag, label: 'Catálogo' },
+    { href: '/schedule', icon: FaCalendarAlt, label: 'Agendar Cita' },
+    { href: '/shopping_cart', icon: FaShoppingCart, label: 'Carrito' },
+    { href: '/historial', icon: FaAddressCard, label: 'Historial Médico' },
+    { href: '/login', icon: FaUserAlt, label: 'Iniciar Sesión' },
+  ];
 
   return (
     <header className={styles.header}>
       <div className={styles.container}>
+        {/* Logo */}
         <div className={styles.logoContainer}>
           <Link href="/">
             <Image 
@@ -27,77 +63,56 @@ const Header = () => {
           </Link>
         </div>
 
-        {/* Navegación */}
-        <nav className={styles.nav}>
+        {/* Botón menú móvil */}
+        <button
+          className={styles.mobileMenuButton}
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
+        >
+          {isMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+        </button>
+
+        {/* Navegación escritorio */}
+        <nav className={styles.desktopNav}>
           <ul className={styles.navList}>
-            <li className={styles.navItem}>
-              <Link 
-                href="/" 
-                className={`${styles.navLink} ${isActive('/') ? styles.active : ''}`}
-              >
-                <FaHome size={24} className={styles.icon} />
-                <span>Inicio</span>
-                {isActive('/') && <div className={styles.activeIndicator}></div>}
-              </Link>
-            </li>
-
-            <li className={styles.navItem}>
-              <Link 
-                href="/catalog" 
-                className={`${styles.navLink} ${isActive('/catalog') ? styles.active : ''}`}
-              >
-                <FaShoppingBag size={24} className={styles.icon} />
-                <span>Catálogo</span>
-                {isActive('/catalog') && <div className={styles.activeIndicator}></div>}
-              </Link>
-            </li>
-
-            <li className={styles.navItem}>
-              <Link 
-                href="/schedule" 
-                className={`${styles.navLink} ${isActive('/schedule') ? styles.active : ''}`}
-              >
-                <FaCalendarAlt size={24} className={styles.icon} />
-                <span>Agendar Cita</span>
-                {isActive('/schedule') && <div className={styles.activeIndicator}></div>}
-              </Link>
-            </li>
-
-            <li className={styles.navItem}>
-              <Link 
-                href="/shopping_cart" 
-                className={`${styles.navLink} ${isActive('/shopping_cart') ? styles.active : ''}`}
-              >
-                <FaShoppingCart size={24} className={styles.icon} />
-                <span>Carrito</span>
-                {isActive('/shopping_cart') && <div className={styles.activeIndicator}></div>}
-              </Link>
-            </li>       
-            
-            <li className={styles.navItem}>
-              <Link 
-                href="/historial" 
-                className={`${styles.navLink} ${isActive('/historial') ? styles.active : ''}`}
-              >
-                <FaAddressCard size={24} className={styles.icon} />
-                <span>Historial Médico</span>
-                {isActive('/historial') && <div className={styles.activeIndicator}></div>}
-              </Link>
-            </li>                        
-
-            <li className={styles.navItem}>
-              <Link 
-                href="/login" 
-                className={`${styles.navLink} ${isActive('/login') ? styles.active : ''}`}
-              >
-                <FaUserAlt size={24} className={styles.icon} />
-                <span>Iniciar Sesión</span>
-                {isActive('/login') && <div className={styles.activeIndicator}></div>}
-              </Link>
-            </li>
+            {navLinks.map((link) => (
+              <li key={link.href} className={styles.navItem}>
+                <Link 
+                  href={link.href} 
+                  className={`${styles.navLink} ${isActive(link.href) ? styles.active : ''}`}
+                >
+                  <link.icon size={20} className={styles.icon} />
+                  <span>{link.label}</span>
+                  {isActive(link.href) && <div className={styles.activeIndicator}></div>}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
       </div>
+
+      {/* Menú móvil desplegable */}
+      {isMenuOpen && (
+        <div ref={menuRef} className={styles.mobileMenu}>
+          <div className={styles.mobileMenuContent}>
+            <ul className={styles.mobileNavList}>
+              {navLinks.map((link) => (
+                <li key={link.href} className={styles.mobileNavItem}>
+                  <Link 
+                    href={link.href}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`${styles.mobileNavLink} ${isActive(link.href) ? styles.mobileActive : ''}`}
+                  >
+                    <link.icon size={20} className={styles.mobileIcon} />
+                    <span>{link.label}</span>
+                    {isActive(link.href) && <div className={styles.mobileActiveIndicator}></div>}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

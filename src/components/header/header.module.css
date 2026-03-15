@@ -1,23 +1,26 @@
+/* Estilos base del header */
 .header {
   width: 100%;
-  background: linear-gradient(180deg, #527b34 0%, #45752b 40%, #407a25 100%);
-  border-bottom: 2px solid #FF7C00; /* margen inferior naranja */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  background-color: #5A8C7A; /* Color Primario de Marca - Verde salvia apagado */
+  border-bottom: 1px solid #E6E3DE; /* Líneas y bordes - Gris cálido muy claro */
+  box-shadow: 0 2px 8px rgba(44, 62, 52, 0.08); /* Sombra sutil con matiz verde */
+  position: relative;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0.8rem 1.5rem;
+  padding: 1rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 }
 
 .logoContainer {
   display: flex;
   align-items: center;
-  margin-right: 2rem;
+  z-index: 50;
 }
 
 .logo {
@@ -26,25 +29,41 @@
 }
 
 .logo:hover {
-  transform: scale(1.05);
-  opacity: 0.9;
+  transform: scale(1.03);
+  opacity: 0.95;
 }
 
-.nav {
+/* Botón menú móvil */
+.mobileMenuButton {
+  display: none;
+  background: none;
+  border: none;
+  color: #FFFFFF;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  z-index: 50;
+}
+
+.mobileMenuButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Navegación escritorio */
+.desktopNav {
   display: flex;
   width: 100%;
 }
 
-.navItem:last-child {
-  margin-left: auto;
-}
-
 .navList {
   display: flex;
-  gap: 2rem;
+  gap: 1.5rem;
   list-style: none;
   margin: 0;
   padding: 0;
+  width: 100%;
+  justify-content: flex-end;
 }
 
 .navItem {
@@ -54,47 +73,209 @@
 .navLink {
   color: #FFFFFF;
   text-decoration: none;
+  font-family: 'Open Sans', sans-serif;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.9rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: color 0.3s ease, transform 0.2s ease;
+  transition: all 0.3s ease;
+  padding: 0.5rem 0.8rem;
+  border-radius: 4px;
+  min-width: 80px;
 }
 
 .navLink:hover {
-  color: #FF7C00;
-  transform: scale(1.05);
+  color: #FFFFFF;
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
 }
 
 .navLink.active {
-  color: #FF7C00;
+  color: #FFFFFF;
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
 .icon {
   margin-bottom: 5px;
   transition: color 0.3s ease;
+  color: #FFFFFF;
 }
 
 .navLink:hover .icon {
-  color: #FF7C00;
+  color: #FFFFFF;
+}
+
+.navLink.active .icon {
+  color: #FFFFFF;
 }
 
 .activeIndicator {
-  width: 60%;
+  width: 70%;
   height: 3px;
-  background-color: #FF7C00;
+  background-color: #F58634; /* Acento de Máximo Impacto - Naranja Logo */
   border-radius: 2px;
   margin-top: 4px;
 }
 
+/* Estilo especial para el botón de login */
+.navItem:last-child .navLink {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.navItem:last-child .navLink:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Menú móvil */
+.mobileMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  z-index: 100;
+  padding: 0 1rem;
+}
+
+.mobileMenuContent {
+  background-color: #FFFFFF; /* Fondo blanco para el menú desplegable */
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(44, 62, 52, 0.15);
+  border: 1px solid #E6E3DE;
+  overflow: hidden;
+}
+
+.mobileNavList {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0;
+}
+
+.mobileNavItem {
+  border-bottom: 1px solid #FAF9F7; /* Separadores con el color de fondo */
+}
+
+.mobileNavItem:last-child {
+  border-bottom: none;
+}
+
+.mobileNavLink {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  text-decoration: none;
+  color: #2C3E34; /* Texto Principal - Verde grisáceo muy oscuro */
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.mobileNavLink:hover {
+  background-color: #FAF9F7; /* Fondo marfil en hover */
+  color: #5A8C7A; /* Color primario en hover */
+}
+
+.mobileNavLink.mobileActive {
+  background-color: #FAF9F7;
+  color: #5A8C7A;
+  font-weight: 600;
+}
+
+.mobileIcon {
+  color: #6E7C72; /* Texto Secundario - Gris verdoso medio */
+  min-width: 24px;
+}
+
+.mobileNavLink:hover .mobileIcon,
+.mobileNavLink.mobileActive .mobileIcon {
+  color: #5A8C7A;
+}
+
+.mobileActiveIndicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: #F58634; /* Naranja del logo */
+  border-radius: 0 2px 2px 0;
+}
+
+/* Estilo especial para login en móvil */
+.mobileNavItem:last-child .mobileNavLink {
+  background-color: #FAF9F7;
+  color: #5A8C7A;
+  font-weight: 600;
+}
+
+.mobileNavItem:last-child .mobileNavLink:hover {
+  background-color: #E6E3DE;
+}
+
+.mobileNavItem:last-child .mobileIcon {
+  color: #5A8C7A;
+}
+
+/* Media Queries */
+@media (max-width: 1024px) {
+  .navList {
+    gap: 1rem;
+  }
+  
+  .navLink {
+    font-size: 0.85rem;
+    min-width: 70px;
+    padding: 0.5rem 0.6rem;
+  }
+}
+
 @media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-    gap: 0.5rem;
+  .mobileMenuButton {
+    display: block;
   }
 
-  .navList {
-    gap: 1.2rem;
+  .desktopNav {
+    display: none;
+  }
+
+  .container {
+    padding: 0.8rem 1rem;
+  }
+
+  .logo {
+    width: 200px;
+    height: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0.7rem 1rem;
+  }
+
+  .logo {
+    width: 180px;
+  }
+
+  .mobileMenu {
+    padding: 0 0.5rem;
+  }
+
+  .mobileMenuContent {
+    border-radius: 6px;
+  }
+
+  .mobileNavLink {
+    padding: 0.875rem 1.25rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobileMenu {
+    display: none;
   }
 }

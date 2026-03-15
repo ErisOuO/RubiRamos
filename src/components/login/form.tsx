@@ -9,8 +9,8 @@ import { Eye, EyeOff, BriefcaseMedical, Lock, User, HelpCircle, Phone, Mail } fr
 
 export default function LoginForm() {
   const router = useRouter();
-  const [usuario, setUsuario] = useState('');
-  const [contrasena, setContrasena] = useState('');
+  const [username, setUsuario] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -22,14 +22,14 @@ export default function LoginForm() {
 
     const result = await signIn('credentials', {
       redirect: false,
-      usuario,
-      contrasena,
+      username,
+      password,
     });
 
     if (result?.error) {
       setError(result.error);
     } else {
-      sessionStorage.setItem('usuario', usuario);
+      sessionStorage.setItem('username', username);
       router.push('/login/verificacion');
     }
 
@@ -74,7 +74,7 @@ export default function LoginForm() {
               <input
                 id="usuario"
                 type="text"
-                value={usuario}
+                value={username}
                 onChange={e => setUsuario(e.target.value)}
                 required
                 className="border border-gray-400 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#64C23A] focus:border-[#64C23A] focus:outline-none transition pl-10"
@@ -92,8 +92,8 @@ export default function LoginForm() {
               <input
                 id="contrasena"
                 type={showPassword ? 'text' : 'password'}
-                value={contrasena}
-                onChange={e => setContrasena(e.target.value)}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
                 required
                 className="border border-gray-400 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#64C23A] focus:border-[#64C23A] focus:outline-none transition pl-10 pr-10"
                 placeholder="Ingresa tu contraseña"

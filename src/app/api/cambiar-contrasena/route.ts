@@ -4,9 +4,9 @@ import { query } from '@/lib/db';
 import bcrypt from 'bcrypt';
 
 export async function POST(req: Request) {
-  const { usuario, nuevaContrasena, token } = await req.json();
+  const { username, token, nuevaContrasena } = await req.json();
 
-  if (!usuario || !nuevaContrasena || !token) {
+  if (!username || !token || !nuevaContrasena) {
     return NextResponse.json({ success: false, error: 'Faltan datos requeridos' }, { status: 400 });
   }
 
@@ -18,8 +18,8 @@ export async function POST(req: Request) {
   try {
     // Verificamos token y expiración
     const res = await query(
-      'SELECT recovery_token, recovery_exp FROM tbladmins WHERE usuario = $1',
-      [usuario]
+      'SELECT recovery_token, recovery_exp FROM tblusers WHERE username = $1',
+      [username]
     );
 
     const data = res.rows[0];
@@ -37,10 +37,10 @@ export async function POST(req: Request) {
     // Cambiamos la contraseña
     const hash = await bcrypt.hash(nuevaContrasena, 10);
     await query(
-      `UPDATE tbladmins
-       SET contrasena = $1, recovery_token = NULL, recovery_exp = NULL
-       WHERE usuario = $2`,
-      [hash, usuario]
+      `UPDATE tblusers
+       SET password_hash = $1, recovery_token = NULL, recovery_exp = NULL
+       WHERE username = $2`,
+      [hash, username]
     );
 
     return NextResponse.json({ success: true });

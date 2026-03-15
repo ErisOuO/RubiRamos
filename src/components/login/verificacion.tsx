@@ -9,7 +9,7 @@ export default function VerificarForm() {
   const [codigo, setCodigo] = useState(Array(6).fill(''));
   const [counter, setCounter] = useState(180);
   const [email, setEmail] = useState('');
-  const [usuario, setUsuario] = useState('');
+  const [username, setUsuario] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [isResending, setIsResending] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
@@ -132,7 +132,7 @@ export default function VerificarForm() {
     const fullCode = codigo.join('');
     const res = await fetch('/api/verificar-codigo', {
       method: 'POST',
-      body: JSON.stringify({ usuario, code: fullCode }),
+      body: JSON.stringify({ username, code: fullCode }),
       headers: { 'Content-Type': 'application/json' },
     });
 
@@ -158,7 +158,7 @@ export default function VerificarForm() {
     setMensaje('');
     await fetch('/api/enviar-codigo', {
       method: 'POST',
-      body: JSON.stringify({ usuario }),
+      body: JSON.stringify({ username }),
       headers: { 'Content-Type': 'application/json' },
     });
     setIsResending(false);

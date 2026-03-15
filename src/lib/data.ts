@@ -7,7 +7,7 @@ const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
 export async function fetchUsuarios(): Promise<Usuario[]> {
   try {
-    return await sql<Usuario[]>`SELECT * FROM tbladmins`;
+    return await sql<Usuario[]>`SELECT * FROM tblusers`;
   } catch (error) {
     console.error('Error al obtener usuarios:', error);
     throw new Error('No se pudieron obtener los usuarios');
@@ -16,7 +16,7 @@ export async function fetchUsuarios(): Promise<Usuario[]> {
 
 export async function fetchUsuarioById(id: string): Promise<Usuario | null> {
   try {
-    const result = await sql<Usuario[]>`SELECT * FROM tbladmins WHERE id = ${id}`;
+    const result = await sql<Usuario[]>`SELECT * FROM tblusers WHERE id = ${id}`;
     return result[0] || null;
   } catch (error) {
     console.error('Error al obtener el usuario por ID:', error);

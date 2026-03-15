@@ -3,12 +3,12 @@ import { query } from '@/lib/db';
 import crypto from 'crypto';
 
 export async function POST(req: Request) {
-  const { usuario, code } = await req.json();
+  const { username, code } = await req.json();
 
   try {
     const res = await query(
-      'SELECT code, expiracion FROM tbladmins WHERE usuario = $1',
-      [usuario]
+      'SELECT code, expiracion FROM tblusers WHERE username = $1',
+      [username]
     );
 
     if (!res.rows.length) {
@@ -41,8 +41,8 @@ export async function POST(req: Request) {
     const vencimiento = new Date(Date.now() + 10 * 60 * 1000); // 10 minutos
 
     await query(
-      'UPDATE tbladmins SET recovery_token = $1, recovery_exp = $2, verified = true WHERE usuario = $3',
-      [token, vencimiento, usuario]
+      'UPDATE tblusers SET recovery_token = $1, recovery_exp = $2, verified = true WHERE username = $3',
+      [token, vencimiento, username]
     );
 
     // Enviar token en la respuesta

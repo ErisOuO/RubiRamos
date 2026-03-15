@@ -18,7 +18,7 @@ async function jwtCallback({
   token: JWT;
   user?: Usuario | User;
 }): Promise<JWT & { user?: Usuario }> {
-  if (user && "usuario" in user) {
+  if (user && "username" in user) {
     token.user = user as Usuario;
     (token.user as Usuario).verified = (user).verified ?? false;
   }
@@ -34,7 +34,7 @@ async function sessionCallback({
 }): Promise<Session> {
   if (token.user) {
     session.user = token.user;
-    session.user.usuario = token.user.usuario;
+    session.user.username = token.user.username;
     session.user.id = token.user.id;
   }
   return session;
@@ -50,17 +50,17 @@ export const authConfig: AuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        usuario: { label: "Usuario", type: "text" },
-        contrasena: { label: "Contraseña", type: "password" },
+        username: { label: "Usuario", type: "text" },
+        password: { label: "Contraseña", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.usuario || !credentials?.contrasena) {
+        if (!credentials?.username || !credentials?.password) {
           throw new Error("Faltan credenciales");
         }
 
         const res = await query(
-          "SELECT id, usuario, contrasena, email, code, verified FROM tbladmins WHERE usuario = $1",
-          [credentials.usuario]
+          "SELECT id, username, email, password_hash FROM tblusers WHERE username = $1",
+          [credentials.username]
         );
 
         const user = res.rows[0] as Usuario | undefined;
@@ -70,8 +70,8 @@ export const authConfig: AuthOptions = {
         }
 
         const isValid = await bcrypt.compare(
-          credentials.contrasena,
-          user.contrasena
+          credentials.password,
+          user.password_hash
         );
 
         if (!isValid) {
@@ -80,12 +80,11 @@ export const authConfig: AuthOptions = {
 
         return {
           id: user.id.toString(),
-          usuario: user.usuario,
-          email: user.email ?? "",
-          name: user.usuario,
-          contrasena: user.contrasena,
-          code: user.code ?? null,
-          verified: user.verified
+          username: user.username,
+          email: user.email,
+          password_hash: user.password_hash,
+          verified: user.verified,
+          active: user.active,
         } satisfies Usuario;
       },
     }),

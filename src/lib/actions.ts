@@ -12,8 +12,8 @@ export async function updateContrasena(id: string, formData: FormData) {
     const hashedContrasena = await bycript.hash(contrasena, 10);
 
     await sql`
-      UPDATE tbladmins
-      SET contrasena = ${hashedContrasena}
+      UPDATE tblusers
+      SET password = ${hashedContrasena}
       WHERE id = ${id}
     `;
   } catch (error) {

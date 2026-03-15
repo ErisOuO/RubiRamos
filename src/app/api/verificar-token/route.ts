@@ -2,16 +2,16 @@ import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 
 export async function POST(req: Request) {
-  const { usuario, token } = await req.json();
+  const { username, token } = await req.json();
 
-  if (!usuario || !token) {
+  if (!username || !token) {
     return NextResponse.json({ valid: false, error: 'Faltan datos' }, { status: 400 });
   }
 
   try {
     const res = await query(
-      'SELECT recovery_token, recovery_exp FROM tbladmins WHERE usuario = $1',
-      [usuario]
+      'SELECT recovery_token, recovery_exp FROM tblusers WHERE username = $1',
+      [username]
     );
 
     const data = res.rows[0];
@@ -19,7 +19,7 @@ export async function POST(req: Request) {
 
     const ahora = new Date();
     const expira = new Date(data.recovery_exp);
-
+    
     if (data.recovery_token !== token || ahora > expira) {
       return NextResponse.json({ valid: false, error: 'Token inválido o expirado' }, { status: 403 });
     }

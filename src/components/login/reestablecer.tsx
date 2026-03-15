@@ -9,7 +9,7 @@ export default function ReestablecerForm() {
   const router = useRouter();
   const params = useSearchParams();
 
-  const usuario = params.get('user') || '';
+  const username = params.get('user') || '';
   const token = params.get('token') || '';
 
   const [pwd, setPwd] = useState('');
@@ -22,7 +22,7 @@ export default function ReestablecerForm() {
 
   useEffect(() => {
     async function validarToken() {
-      if (!usuario || !token) {
+      if (!username || !token) {
         setError('Faltan datos en la URL.');
         setLoading(false);
         return;
@@ -32,7 +32,7 @@ export default function ReestablecerForm() {
         const res = await fetch('/api/verificar-token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ usuario, token }),
+          body: JSON.stringify({ username, token }),
         });
 
         const data = await res.json();
@@ -52,7 +52,7 @@ export default function ReestablecerForm() {
       }
     }
     validarToken();
-  }, [usuario, token]);
+  }, [username, token]);
 
   function validarPass(p: string) {
     const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/;
@@ -74,7 +74,7 @@ export default function ReestablecerForm() {
       const res = await fetch('/api/cambiar-contrasena', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ usuario, token, nuevaContrasena: pwd }),
+        body: JSON.stringify({ username, token, nuevaContrasena: pwd }),
       });
 
       const data = await res.json();

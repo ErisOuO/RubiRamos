@@ -7,7 +7,7 @@ import { Mail, Clock, RefreshCw, ShieldCheck, Key } from 'lucide-react';
 
 export default function RecuperacionForm() {
   const router = useRouter();
-  const [usuario, setUsuario] = useState('');
+  const [username, setUsuario] = useState('');
   const [fase, setFase] = useState<'email' | 'verificar'>('email');
   const [codigo, setCodigo] = useState(Array(6).fill(''));
   const [counter, setCounter] = useState(180);
@@ -39,7 +39,7 @@ export default function RecuperacionForm() {
     try {
       const res = await fetch('/api/enviar-codigo', {
         method: 'POST',
-        body: JSON.stringify({ usuario }),
+        body: JSON.stringify({ username }),
       });
 
       const data = await res.json();
@@ -51,7 +51,7 @@ export default function RecuperacionForm() {
         return;
       }
 
-      setMensaje(`Código enviado a ${enmascararEmail(data.email || usuario)}`);
+      setMensaje(`Código enviado a ${enmascararEmail(data.email || username)}`);
       setFase('verificar');
       enviado.current = true;
       setCounter(180);
@@ -71,14 +71,14 @@ export default function RecuperacionForm() {
     try {
       const res = await fetch('/api/verificar-codigo', {
         method: 'POST',
-        body: JSON.stringify({ usuario, code: full }),
+        body: JSON.stringify({ username, code: full }),
         headers: { 'Content-Type': 'application/json' },
       });
       const d = await res.json();
 
       if (d.success) {
         router.push(
-          `/login/recuperacion/reestablecer?user=${encodeURIComponent(usuario)}&token=${encodeURIComponent(d.token)}`
+          `/login/recuperacion/reestablecer?user=${encodeURIComponent(username)}&token=${encodeURIComponent(d.token)}`
         );
       } else {
         setError(d.error || 'Código inválido o expirado');
@@ -196,7 +196,7 @@ export default function RecuperacionForm() {
                 <input
                   id="usuario"
                   type="text"
-                  value={usuario}
+                  value={username}
                   onChange={(e) => setUsuario(e.target.value.trim())}
                   required
                   className="border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition"

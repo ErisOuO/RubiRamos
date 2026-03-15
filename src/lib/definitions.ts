@@ -1,10 +1,8 @@
 export type Usuario = {
     id: string;
-    usuario: string;
-    contrasena: string;
-    name?: string | null;
+    username: string;
     email: string;
-    code: string;
-    image?: string | null;
+    password_hash: string;
     verified: boolean;
+    active: boolean;
 };

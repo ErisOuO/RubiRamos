@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function POST(req: Request) {
-  const { usuario } = await req.json();
+  const { username } = await req.json();
 
   const code = randomInt(100000, 999999).toString();
   const now = new Date();
@@ -20,8 +20,8 @@ export async function POST(req: Request) {
 
   try {
     const res = await query(
-      'UPDATE tbladmins SET code = $1, expiracion = $2 WHERE usuario = $3 RETURNING email',
-      [code, expiracion, usuario]
+      'UPDATE tblusers SET code = $1, expiracion = $2 WHERE username = $3 RETURNING email',
+      [code, expiracion, username]
     );
 
     const email = res.rows[0]?.email;

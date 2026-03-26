@@ -19,15 +19,16 @@ const mainLinks = [
   { name: 'Dashboard', href: '/admin', icon: HomeIcon },
   { name: 'Pacientes', href: '/admin/pacientes', icon: UserGroupIcon },
   { name: 'Citas', href: '/admin/calendar', icon: CalendarIcon },
-  { name: 'Expedientes', href: '/admin/expedientes', icon: DocumentTextIcon },
-  { name: 'Suplementos', href: '/admin/suplementos', icon: ShoppingBagIcon },
-  { name: 'Reportes', href: '/admin/reportes', icon: ChartBarIcon },
+  //{ name: 'Expedientes', href: '/admin/expedientes', icon: DocumentTextIcon },
+  { name: 'Productos', href: '/admin/productos', icon: ShoppingBagIcon },
+  //{ name: 'Reportes', href: '/admin/reportes', icon: ChartBarIcon },
 ];
 
 // Enlaces de configuración
 const configLinks = [
   { name: 'Notificaciones', href: '/admin/notificaciones', icon: BellIcon },
   { name: 'Configuración', href: '/admin/configuracion', icon: Cog6ToothIcon },
+  { name: 'Monitoreo', href: '/admin/monitoreo', icon: ChartBarIcon }
 ];
 
 export default function NavLinks({ mobile = false, onLinkClick }: { mobile?: boolean, onLinkClick?: () => void }) {

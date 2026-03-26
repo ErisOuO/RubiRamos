@@ -5,6 +5,7 @@ export type Usuario = {
     password_hash: string;
     verified: boolean;
     active: boolean;
+    rol_id: number;
 };
 
 export type Paciente = {
@@ -24,17 +25,7 @@ export type Paciente = {
     verified: boolean;
     created_at: Date;
     updated_at: Date;
-    active: Date | null; // Solo pacientes con null en active
-};
-
-// Tipo para crear un nuevo paciente (sin campos auto-generados)
-export type PacienteInsert = Omit<Paciente, 'id' | 'created_at' | 'updated_at' | 'expiracion' | 'recovery_token' | 'recovery_exp' | 'verified'> & {
-    verified?: boolean;
-};
-
-// Tipo para actualizar paciente (todos los campos opcionales excepto id)
-export type PacienteUpdate = Partial<Omit<Paciente, 'id'>> & {
-    id: number;
+    active: Boolean;
 };
 
 export type Categoria = {
@@ -43,7 +34,7 @@ export type Categoria = {
     description: string;
     created_at: Date;
     updated_at: Date;
-    active: Date | null;
+    active: Boolean;
 };
 
 export type Producto = {
@@ -55,7 +46,7 @@ export type Producto = {
     image_url: string;
     created_at: Date;
     updated_at: Date;
-    active: Date | null;
+    active: Boolean;
 };
 
 export type Producto_Categoria = {
@@ -63,3 +54,14 @@ export type Producto_Categoria = {
     categoria_id: number;
     created_at: Date;
 }
+
+export type Auditoria = {
+    id: number;
+    usuario: string;
+    accion: 'INSERT' | 'UPDATE' | 'DELETE';
+    tabla_afectada: string;
+    query_text: string | null;
+    datos_anteriores: any | null;
+    datos_nuevos: any | null;
+    created_at: Date;
+};

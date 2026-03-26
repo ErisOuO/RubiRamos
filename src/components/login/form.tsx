@@ -1,19 +1,29 @@
+// components/login/form.tsx
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { Button } from '@/components/button';
-import { Eye, EyeOff, BriefcaseMedical, Lock, User, HelpCircle, Phone, Mail } from 'lucide-react';
+import { Eye, EyeOff, BriefcaseMedical, Lock, User, HelpCircle, Phone, Mail, AlertTriangle } from 'lucide-react';
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [username, setUsuario] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Verificar si hay error de autorización en la URL
+  useEffect(() => {
+    const errorParam = searchParams.get('error');
+    if (errorParam === 'unauthorized') {
+      setError('No tienes permisos para acceder a esta página');
+    }
+  }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -28,17 +38,32 @@ export default function LoginForm() {
 
     if (result?.error) {
       setError(result.error);
+      setLoading(false);
     } else {
-      sessionStorage.setItem('username', username);
-      router.push('/login/verificacion');
+      try {
+        // Obtener la sesión para conocer el rol del usuario
+        const sessionResponse = await fetch('/api/auth/session');
+        const session = await sessionResponse.json();
+        
+        // Redirigir según el rol
+        if (session?.user?.rol_id === 1) {
+          router.push('/admin');
+        } else if (session?.user?.rol_id === 2) {
+          router.push('/patient');
+        } else {
+          setError('Rol de usuario no válido');
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Error al obtener sesión:', error);
+        setError('Error al obtener información del usuario');
+        setLoading(false);
+      }
     }
-
-    setLoading(false);
   }
 
   return (
     <div className="relative w-full max-w-md bg-white/95 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden border border-[#25631a] mb-8">
-
       {/* Fondos decorativos en verde más oscuro */}
       <div className="absolute inset-0 overflow-hidden z-0">
         <div className="absolute -right-20 -top-20 w-64 h-64 bg-[#3b7d2b] rounded-full opacity-25"></div>
@@ -62,7 +87,7 @@ export default function LoginForm() {
             Iniciar sesión
           </h3>
           <p className="text-center text-sm text-gray-600 pb-2">
-            Acceso exclusivo para pacientes
+            Acceso exclusivo para personal autorizado
           </p>
 
           <div className="space-y-5">
@@ -81,7 +106,7 @@ export default function LoginForm() {
                 placeholder="Ingresa tu usuario"
                 disabled={loading}
               />
-              <User className="absolute ml-3 mt-10 h-4 w-4 text-gray-500" />
+              <User className="absolute left-3 top-[38px] h-4 w-4 text-gray-500" />
             </div>
 
             <div className="flex flex-col relative">
@@ -99,11 +124,11 @@ export default function LoginForm() {
                 placeholder="Ingresa tu contraseña"
                 disabled={loading}
               />
-              <Lock className="absolute ml-3 mt-10 h-4 w-4 text-gray-500" />
+              <Lock className="absolute left-3 top-[38px] h-4 w-4 text-gray-500" />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-10 text-gray-500 hover:text-[#225514] transition"
+                className="absolute right-3 top-[38px] text-gray-500 hover:text-[#225514] transition"
                 tabIndex={-1}
               >
                 {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
@@ -112,7 +137,8 @@ export default function LoginForm() {
           </div>
 
           {error && (
-            <div className="bg-red-50 border-l-4 border-red-600 p-3 rounded">
+            <div className="bg-red-50 border-l-4 border-red-600 p-3 rounded flex items-start gap-2">
+              <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
               <p className="text-red-700 text-sm font-medium">{error}</p>
             </div>
           )}

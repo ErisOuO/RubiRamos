@@ -165,7 +165,7 @@ export async function fetchPacientesRecientes(): Promise<Paciente[]> {
 
 export async function fetchCategorias(): Promise<Categoria[]> {
   try {
-    return await sql<Categoria[]>`SELECT * FROM tblcategories WHERE active IS NULL ORDER BY name ASC`;
+    return await sql<Categoria[]>`SELECT * FROM tblcategories WHERE active IS true ORDER BY name ASC`;
   } catch (error) {
     console.error('Error al obtener categorías:', error);
     throw new Error('No se pudieron obtener las categorías');
@@ -188,7 +188,7 @@ export async function fetchProductos(params?: {
         WHERE pc.category_id = ${categoriaId}
           ${precioMin !== undefined ? sql`AND p.price >= ${precioMin}` : sql``}
           ${precioMax !== undefined ? sql`AND p.price <= ${precioMax}` : sql``}
-          AND p.active IS NULL
+          AND p.active IS true
         ORDER BY p.name ASC
       `;
     }
@@ -198,7 +198,7 @@ export async function fetchProductos(params?: {
       FROM tblproducts p
       WHERE ${precioMin !== undefined ? sql`p.price >= ${precioMin}` : sql`1=1`}
         ${precioMax !== undefined ? sql`AND p.price <= ${precioMax}` : sql``}
-        AND p.active IS NULL
+        AND p.active IS true
       ORDER BY p.name ASC
     `;
 

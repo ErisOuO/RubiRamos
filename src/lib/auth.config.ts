@@ -11,16 +11,23 @@ declare module "next-auth" {
   }
 }
 
+declare module "next-auth/jwt" {
+  interface JWT {
+    user?: Usuario;
+  }
+}
+
 async function jwtCallback({
   token,
   user,
 }: {
   token: JWT;
   user?: Usuario | User;
-}): Promise<JWT & { user?: Usuario }> {
+}): Promise<JWT> {
   if (user && "username" in user) {
     token.user = user as Usuario;
     (token.user as Usuario).verified = (user).verified ?? false;
+    (token.user as Usuario).rol_id = (user).rol_id ?? null;
   }
   return token;
 }
@@ -36,15 +43,19 @@ async function sessionCallback({
     session.user = token.user;
     session.user.username = token.user.username;
     session.user.id = token.user.id;
+    session.user.rol_id = token.user.rol_id;
+    session.user.email = token.user.email;
+    session.user.verified = token.user.verified;
+    session.user.active = token.user.active;
   }
   return session;
 }
-
 
 export const authConfig: AuthOptions = {
   pages: {
     signIn: "/login",
     signOut: "/login",
+    error: "/login", // Página de error personalizada
   },
   providers: [
     CredentialsProvider({
@@ -59,14 +70,14 @@ export const authConfig: AuthOptions = {
         }
 
         const res = await query(
-          "SELECT id, username, email, password_hash FROM tblusers WHERE username = $1",
+          "SELECT id, username, email, password_hash, rol_id, verified, active FROM tblusers WHERE username = $1 AND active = true",
           [credentials.username]
         );
 
         const user = res.rows[0] as Usuario | undefined;
 
         if (!user) {
-          throw new Error("Usuario no encontrado");
+          throw new Error("Usuario no encontrado o inactivo");
         }
 
         const isValid = await bcrypt.compare(
@@ -85,6 +96,7 @@ export const authConfig: AuthOptions = {
           password_hash: user.password_hash,
           verified: user.verified,
           active: user.active,
+          rol_id: user.rol_id,
         } satisfies Usuario;
       },
     }),
@@ -98,4 +110,5 @@ export const authConfig: AuthOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 días
   },
   secret: process.env.NEXTAUTH_SECRET,
+  debug: process.env.NODE_ENV === "development", // Agregar para debugging
 };

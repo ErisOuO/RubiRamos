@@ -4,11 +4,11 @@ import {
   HomeIcon,
   UserGroupIcon,
   CalendarIcon,
-  DocumentTextIcon,
   ShoppingBagIcon,
   ChartBarIcon,
   BellIcon,
-  Cog6ToothIcon
+  Cog6ToothIcon,
+  CircleStackIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -28,7 +28,9 @@ const mainLinks = [
 const configLinks = [
   { name: 'Notificaciones', href: '/admin/notificaciones', icon: BellIcon },
   { name: 'Configuración', href: '/admin/configuracion', icon: Cog6ToothIcon },
-  { name: 'Monitoreo', href: '/admin/monitoreo', icon: ChartBarIcon }
+  { name: 'Monitoreo', href: '/admin/monitoreo', icon: ChartBarIcon },
+  { name: 'Administrar BD', href: '/admin/db', icon: CircleStackIcon },
+
 ];
 
 export default function NavLinks({ mobile = false, onLinkClick }: { mobile?: boolean, onLinkClick?: () => void }) {

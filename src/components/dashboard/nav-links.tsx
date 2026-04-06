@@ -26,8 +26,8 @@ const mainLinks = [
 
 // Enlaces de configuración
 const configLinks = [
-  { name: 'Notificaciones', href: '/admin/notificaciones', icon: BellIcon },
-  { name: 'Configuración', href: '/admin/configuracion', icon: Cog6ToothIcon },
+  //{ name: 'Notificaciones', href: '/admin/notificaciones', icon: BellIcon },
+  //{ name: 'Configuración', href: '/admin/configuracion', icon: Cog6ToothIcon },
   { name: 'Monitoreo', href: '/admin/monitoreo', icon: ChartBarIcon }
 ];
 

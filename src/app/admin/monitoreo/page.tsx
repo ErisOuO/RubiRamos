@@ -19,10 +19,10 @@ export default async function AuditoriaPage() {
     <div className="min-h-screen bg-[#FAF9F7]">
       <div className="p-6">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-[#5A8C7A] font-['Merriweather']">
+          <h1 className="text-2xl font-bold text-[#5A8C7A]">
             Dashboard de Monitoreo
           </h1>
-          <p className="text-sm text-[#6E7C72] mt-1 font-['Open_Sans']">
+          <p className="text-sm text-[#6E7C72] mt-1">
             Métricas de rendimiento y actividad de la base de datos
           </p>
         </div>
@@ -41,17 +41,17 @@ export default async function AuditoriaPage() {
         </Suspense>
         
         <div className="mt-8 mb-6">
-          <h2 className="text-xl font-semibold text-[#5A8C7A] font-['Merriweather']">
+          <h2 className="text-xl font-semibold text-[#5A8C7A]">
             Historial de Auditoría
           </h2>
-          <p className="text-sm text-[#6E7C72] mt-1 font-['Open_Sans']">
+          <p className="text-sm text-[#6E7C72] mt-1">
             Registro detallado de todas las operaciones realizadas en el sistema
           </p>
         </div>
         
         <Suspense fallback={
           <div className="flex justify-center items-center h-64">
-            <div className="text-[#6E7C72] font-['Open_Sans']">Cargando historial de auditoría...</div>
+            <div className="text-[#6E7C72]">Cargando historial de auditoría...</div>
           </div>
         }>
           <AuditoriaClient auditoriaInicial={data} total={total} />

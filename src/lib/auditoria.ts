@@ -50,8 +50,6 @@ export async function registrarAuditoria(data: AuditoriaData) {
         ${datosNuevos ? JSON.stringify(datosNuevos) : null}::jsonb
       )
     `;
-    
-    console.log(`Auditoría registrada: ${data.accion} en ${data.tabla_afectada} por ${usuario}`);
   } catch (error) {
     console.error('Error al registrar auditoría:', error);
     // No lanzamos el error para que no afecte la operación principal

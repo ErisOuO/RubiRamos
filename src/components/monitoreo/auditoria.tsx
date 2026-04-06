@@ -31,19 +31,19 @@ export default function AuditoriaClient({ auditoriaInicial, total }: AuditoriaCl
         <table className="min-w-full divide-y divide-[#E6E3DE]">
           <thead className="bg-[#FAF9F7]">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider font-['Open_Sans']">
+              <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">
                 Fecha
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider font-['Open_Sans']">
+              <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">
                 Usuario
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider font-['Open_Sans']">
+              <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">
                 Acción
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider font-['Open_Sans']">
+              <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">
                 Tabla
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider font-['Open_Sans']">
+              <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">
                 Detalles
               </th>
             </tr>
@@ -51,11 +51,11 @@ export default function AuditoriaClient({ auditoriaInicial, total }: AuditoriaCl
           <tbody className="bg-white divide-y divide-[#E6E3DE]">
             {auditoria.map((registro) => (
               <tr key={registro.id} className="hover:bg-[#FAF9F7] transition-colors">
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6E7C72] font-['Open_Sans']">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6E7C72]">
                   {format(new Date(registro.created_at), "dd/MM/yyyy HH:mm:ss", { locale: es })}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm font-medium text-[#2C3E34] font-['Open_Sans']">
+                  <span className="text-sm font-medium text-[#2C3E34]">
                     {registro.usuario}
                   </span>
                 </td>

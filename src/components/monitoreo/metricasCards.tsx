@@ -57,13 +57,13 @@ export default function MetricasCards() {
         {/* Card: Tamaño total DB */}
         <div className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow border border-[#E6E3DE]">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-semibold text-[#6E7C72] font-['Open_Sans']">Tamaño Total DB</h3>
+            <h3 className="text-sm font-semibold text-[#6E7C72]">Tamaño Total DB</h3>
             <svg className="w-5 h-5 text-[#5A8C7A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2 1.5 3 3 3h10c1.5 0 3-1 3-3V7c0-2-1.5-3-3-3H7c-1.5 0-3 1-3 3z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h8M12 8v8" />
             </svg>
           </div>
-          <p className="text-2xl font-bold text-[#2C3E34] font-['Merriweather']">{tamano_total.humano}</p>
+          <p className="text-2xl font-bold text-[#2C3E34]">{tamano_total.humano}</p>
           <button
             onClick={() => setTablasModalOpen(true)}
             className="mt-2 text-xs text-[#BD7D4A] hover:text-[#F58634] transition-colors font-semibold"
@@ -75,12 +75,12 @@ export default function MetricasCards() {
         {/* Card: Sesiones Activas */}
         <div className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow border border-[#E6E3DE]">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-semibold text-[#6E7C72] font-['Open_Sans']">Sesiones Activas</h3>
+            <h3 className="text-sm font-semibold text-[#6E7C72]">Sesiones Activas</h3>
             <svg className="w-5 h-5 text-[#5A8C7A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
           </div>
-          <p className="text-2xl font-bold text-[#2C3E34] font-['Merriweather']">{sesiones_activas.total}</p>
+          <p className="text-2xl font-bold text-[#2C3E34]">{sesiones_activas.total}</p>
           <button
             onClick={() => setSesionesModalOpen(true)}
             className="mt-2 text-xs text-[#BD7D4A] hover:text-[#F58634] transition-colors font-semibold"
@@ -92,12 +92,12 @@ export default function MetricasCards() {
         {/* Card: Conexiones */}
         <div className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow border border-[#E6E3DE]">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-semibold text-[#6E7C72] font-['Open_Sans']">Conexiones</h3>
+            <h3 className="text-sm font-semibold text-[#6E7C72]">Conexiones</h3>
             <svg className="w-5 h-5 text-[#5A8C7A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
             </svg>
           </div>
-          <p className="text-2xl font-bold text-[#2C3E34] font-['Merriweather']">
+          <p className="text-2xl font-bold text-[#2C3E34]">
             {estadisticas.conexiones_actuales} <span className="text-sm font-normal text-[#6E7C72]">/ {estadisticas.conexiones_maximas}</span>
           </p>
           <div className="mt-2">
@@ -113,13 +113,13 @@ export default function MetricasCards() {
         {/* Card: Tablas e Índices */}
         <div className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow border border-[#E6E3DE]">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-semibold text-[#6E7C72] font-['Open_Sans']">Estructura</h3>
+            <h3 className="text-sm font-semibold text-[#6E7C72]">Estructura</h3>
             <svg className="w-5 h-5 text-[#5A8C7A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M6 14h6m-6 4h12M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z" />
             </svg>
           </div>
           <div className="flex justify-between items-baseline">
-            <p className="text-2xl font-bold text-[#2C3E34] font-['Merriweather']">{estadisticas.total_tablas}</p>
+            <p className="text-2xl font-bold text-[#2C3E34]">{estadisticas.total_tablas}</p>
             <p className="text-sm text-[#6E7C72]">tablas</p>
           </div>
           <div className="flex justify-between items-baseline mt-1">
@@ -132,26 +132,26 @@ export default function MetricasCards() {
       {/* Tablas más pesadas */}
       <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-[#E6E3DE]">
         <div className="px-6 py-4 border-b border-[#E6E3DE] bg-[#FAF9F7]">
-          <h3 className="text-lg font-bold text-[#5A8C7A] font-['Merriweather']">Tablas más pesadas</h3>
-          <p className="text-sm text-[#6E7C72] mt-1 font-['Open_Sans']">Top 5 tablas por tamaño total</p>
+          <h3 className="text-lg font-bold text-[#5A8C7A]">Tablas más pesadas</h3>
+          <p className="text-sm text-[#6E7C72] mt-1">Top 5 tablas por tamaño total</p>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-[#E6E3DE]">
             <thead className="bg-[#FAF9F7]">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider font-['Open_Sans']">Tabla</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider font-['Open_Sans']">Tamaño Total</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider font-['Open_Sans']">Datos</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider font-['Open_Sans']">Índices</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider font-['Open_Sans']">Filas</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider font-['Open_Sans']">% DB</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Tabla</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Tamaño Total</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Datos</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Índices</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Filas</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">% DB</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-[#E6E3DE]">
               {tablas_mas_pesadas.slice(0, 5).map((tabla) => (
                 <tr key={tabla.nombre_tabla} className="hover:bg-[#FAF9F7] transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm font-mono text-[#2C3E34] font-['Open_Sans']">{tabla.nombre_tabla}</span>
+                    <span className="text-sm font-mono text-[#2C3E34]">{tabla.nombre_tabla}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="text-sm font-semibold text-[#2C3E34]">{tabla.tamano_total_humano}</span>
@@ -187,7 +187,7 @@ export default function MetricasCards() {
       <div className="bg-white rounded-xl shadow-sm p-4 border border-[#E6E3DE]">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-semibold text-[#5A8C7A] font-['Open_Sans']">Último mantenimiento</h3>
+            <h3 className="text-sm font-semibold text-[#5A8C7A]">Último mantenimiento</h3>
             <div className="mt-2 space-y-1">
               <p className="text-xs text-[#6E7C72]">
                 Último VACUUM: {estadisticas.ultimo_vacuum 
@@ -202,19 +202,19 @@ export default function MetricasCards() {
             </div>
           </div>
           {actualizando && (
-            <div className="text-xs text-[#BD7D4A] animate-pulse font-['Open_Sans']">
+            <div className="text-xs text-[#BD7D4A] animate-pulse">
               Actualizando...
             </div>
           )}
         </div>
       </div>
 
-      {/* Modal de Sesiones Activas - Rediseñado */}
+      {/* Modal de Sesiones Activas */}
       {sesionesModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[80vh] overflow-y-auto">
             <div className="sticky top-0 bg-white border-b border-[#E6E3DE] px-6 py-4 flex justify-between items-center bg-[#FAF9F7]">
-              <h3 className="text-lg font-bold text-[#5A8C7A] font-['Merriweather']">
+              <h3 className="text-lg font-bold text-[#5A8C7A]">
                 Sesiones Activas ({sesiones_activas.total})
               </h3>
               <button
@@ -228,7 +228,7 @@ export default function MetricasCards() {
             </div>
             <div className="p-6">
               {sesiones_activas.detalle.length === 0 ? (
-                <p className="text-center text-[#6E7C72] py-8 font-['Open_Sans']">No hay sesiones activas</p>
+                <p className="text-center text-[#6E7C72] py-8">No hay sesiones activas</p>
               ) : (
                 <div className="space-y-4">
                   {sesiones_activas.detalle.map((sesion) => (
@@ -236,19 +236,19 @@ export default function MetricasCards() {
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
                           <span className="font-semibold text-[#5A8C7A]">PID:</span>
-                          <span className="ml-2 text-[#2C3E34] font-['Open_Sans']">{sesion.pid}</span>
+                          <span className="ml-2 text-[#2C3E34]">{sesion.pid}</span>
                         </div>
                         <div>
                           <span className="font-semibold text-[#5A8C7A]">Usuario:</span>
-                          <span className="ml-2 text-[#2C3E34] font-['Open_Sans']">{sesion.usuario}</span>
+                          <span className="ml-2 text-[#2C3E34]">{sesion.usuario}</span>
                         </div>
                         <div>
                           <span className="font-semibold text-[#5A8C7A]">Aplicación:</span>
-                          <span className="ml-2 text-[#2C3E34] font-['Open_Sans']">{sesion.aplicacion}</span>
+                          <span className="ml-2 text-[#2C3E34]">{sesion.aplicacion}</span>
                         </div>
                         <div>
                           <span className="font-semibold text-[#5A8C7A]">Cliente:</span>
-                          <span className="ml-2 text-[#2C3E34] font-['Open_Sans']">{sesion.cliente}</span>
+                          <span className="ml-2 text-[#2C3E34]">{sesion.cliente}</span>
                         </div>
                         <div>
                           <span className="font-semibold text-[#5A8C7A]">Estado:</span>
@@ -260,7 +260,7 @@ export default function MetricasCards() {
                         </div>
                         <div>
                           <span className="font-semibold text-[#5A8C7A]">Conexión desde:</span>
-                          <span className="ml-2 text-[#2C3E34] font-['Open_Sans']">{sesion.tiempo_conexion}</span>
+                          <span className="ml-2 text-[#2C3E34]">{sesion.tiempo_conexion}</span>
                         </div>
                       </div>
                       {sesion.query_actual && (
@@ -280,12 +280,12 @@ export default function MetricasCards() {
         </div>
       )}
 
-      {/* Modal de Detalle de Tablas - Rediseñado */}
+      {/* Modal de Detalle de Tablas */}
       {tablasModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-5xl w-full max-h-[80vh] overflow-y-auto">
             <div className="sticky top-0 bg-white border-b border-[#E6E3DE] px-6 py-4 flex justify-between items-center bg-[#FAF9F7]">
-              <h3 className="text-lg font-bold text-[#5A8C7A] font-['Merriweather']">
+              <h3 className="text-lg font-bold text-[#5A8C7A]">
                 Detalle de Tablas - Tamaño Total: {tamano_total.humano}
               </h3>
               <button

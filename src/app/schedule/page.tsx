@@ -1,11 +1,10 @@
-import AppointmentCalendar from "@/components/calendar/AppointmentCalendar";
+/*import AppointmentCalendar from "@/components/calendar/AppointmentCalendar";
 
 export default function Page() {
   return (
     <main className="min-h-screen w-full bg-gradient-to-br from-blue-50 to-green-50 py-10">
       <div className="max-w-6xl mx-auto px-4">
 
-        {/* Header */}
         <header className="text-center mb-14">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">
             Agenda tu Cita Médica
@@ -15,7 +14,6 @@ export default function Page() {
           </p>
         </header>
 
-        {/* Tarjeta informativa */}
         <section className="bg-white rounded-2xl shadow-lg p-6 mb-10 border-l-4 border-blue-500">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
             ℹ️ Información Importante
@@ -54,10 +52,8 @@ export default function Page() {
           </div>
         </section>
 
-        {/* Separador suave */}
         <div className="w-full h-[1px] bg-gray-300/40 rounded-full mb-10"></div>
 
-        {/* Calendario */}
         <section id="calendario" className="mb-16">
           <AppointmentCalendar />
         </section>
@@ -65,4 +61,4 @@ export default function Page() {
       </div>
     </main>
   );
-}
+}*/

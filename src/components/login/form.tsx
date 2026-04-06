@@ -1,4 +1,3 @@
-// components/login/form.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -6,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { Button } from '@/components/button';
-import { Eye, EyeOff, BriefcaseMedical, Lock, User, HelpCircle, Phone, Mail, AlertTriangle } from 'lucide-react';
+import { Eye, EyeOff, BriefcaseMedical, Lock, User, HelpCircle, AlertTriangle } from 'lucide-react';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -17,7 +16,6 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Verificar si hay error de autorización en la URL
   useEffect(() => {
     const errorParam = searchParams.get('error');
     if (errorParam === 'unauthorized') {
@@ -41,11 +39,9 @@ export default function LoginForm() {
       setLoading(false);
     } else {
       try {
-        // Obtener la sesión para conocer el rol del usuario
         const sessionResponse = await fetch('/api/auth/session');
         const session = await sessionResponse.json();
         
-        // Redirigir según el rol
         if (session?.user?.rol_id === 1) {
           router.push('/admin');
         } else if (session?.user?.rol_id === 2) {
@@ -63,37 +59,36 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="relative w-full max-w-md bg-white/95 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden border border-[#25631a] mb-8">
-      {/* Fondos decorativos en verde más oscuro */}
+    <div className="relative w-full max-w-md bg-white rounded-xl shadow-lg overflow-hidden border border-[#E6E3DE]">
+      {/* Fondos decorativos */}
       <div className="absolute inset-0 overflow-hidden z-0">
-        <div className="absolute -right-20 -top-20 w-64 h-64 bg-[#3b7d2b] rounded-full opacity-25"></div>
-        <div className="absolute -left-10 -bottom-10 w-48 h-48 bg-[#2f6e1c] rounded-full opacity-20"></div>
-        <div className="absolute right-1/4 bottom-1/3 w-32 h-32 bg-[#225514] rounded-lg opacity-15 rotate-45"></div>
+        <div className="absolute -right-20 -top-20 w-64 h-64 bg-[#5A8C7A]/10 rounded-full"></div>
+        <div className="absolute -left-10 -bottom-10 w-48 h-48 bg-[#BD7D4A]/10 rounded-full"></div>
       </div>
 
       <div className="relative z-10">
-        <div className="bg-gradient-to-r from-[#64C23A] via-[#4CA32E] to-[#2F6E1C] p-6 text-white border-b-2 border-[#FF7C00]">
+        <div className="bg-[#5A8C7A] p-6 text-white border-b-2 border-[#F58634]">
           <div className="flex items-center justify-center space-x-3">
-            <BriefcaseMedical className="h-8 w-8 text-[#FFB84C]" />
-            <h2 className="text-2xl font-bold tracking-tight">Rubí Ramos</h2>
+            <BriefcaseMedical className="h-8 w-8 text-[#F58634]" />
+            <h2 className="text-2xl font-bold">Rubí Ramos</h2>
           </div>
-          <p className="text-center text-[#d9ffd4] text-sm mt-1">
-            Sistema Integral de Gestión de Consultorio
+          <p className="text-center text-white/80 text-sm mt-1">
+            Sistema Integral de Gestión
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-8 space-y-6">
-          <h3 className="text-xl font-semibold text-[#225514] text-center">
+          <h3 className="text-xl font-semibold text-[#2C3E34] text-center">
             Iniciar sesión
           </h3>
-          <p className="text-center text-sm text-gray-600 pb-2">
+          <p className="text-center text-sm text-[#6E7C72] pb-2">
             Acceso exclusivo para personal autorizado
           </p>
 
           <div className="space-y-5">
             <div className="flex flex-col relative">
-              <label htmlFor="usuario" className="text-sm font-medium text-[#225514] mb-1 flex items-center">
-                <User className="h-4 w-4 text-[#64C23A] mr-2" />
+              <label htmlFor="usuario" className="text-sm font-medium text-[#2C3E34] mb-1 flex items-center">
+                <User className="h-4 w-4 text-[#5A8C7A] mr-2" />
                 Usuario
               </label>
               <input
@@ -102,43 +97,43 @@ export default function LoginForm() {
                 value={username}
                 onChange={e => setUsuario(e.target.value)}
                 required
-                className="border border-gray-400 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#64C23A] focus:border-[#64C23A] focus:outline-none transition pl-10"
+                className="w-full border border-[#E6E3DE] rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#5A8C7A] focus:border-[#5A8C7A] focus:outline-none transition"
                 placeholder="Ingresa tu usuario"
                 disabled={loading}
               />
-              <User className="absolute left-3 top-[38px] h-4 w-4 text-gray-500" />
             </div>
 
             <div className="flex flex-col relative">
-              <label htmlFor="contrasena" className="text-sm font-medium text-[#225514] mb-1 flex items-center">
-                <Lock className="h-4 w-4 text-[#64C23A] mr-2" />
+              <label htmlFor="contrasena" className="text-sm font-medium text-[#2C3E34] mb-1 flex items-center">
+                <Lock className="h-4 w-4 text-[#5A8C7A] mr-2" />
                 Contraseña
               </label>
-              <input
-                id="contrasena"
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-                className="border border-gray-400 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#64C23A] focus:border-[#64C23A] focus:outline-none transition pl-10 pr-10"
-                placeholder="Ingresa tu contraseña"
-                disabled={loading}
-              />
-              <Lock className="absolute left-3 top-[38px] h-4 w-4 text-gray-500" />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-[38px] text-gray-500 hover:text-[#225514] transition"
-                tabIndex={-1}
-              >
-                {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
-              </button>
+              <div className="relative">
+                <input
+                  id="contrasena"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  required
+                  className="w-full border border-[#E6E3DE] rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#5A8C7A] focus:border-[#5A8C7A] focus:outline-none transition pr-10"
+                  placeholder="Ingresa tu contraseña"
+                  disabled={loading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6E7C72] hover:text-[#2C3E34] transition"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                </button>
+              </div>
             </div>
           </div>
 
           {error && (
-            <div className="bg-red-50 border-l-4 border-red-600 p-3 rounded flex items-start gap-2">
-              <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <div className="bg-red-50 border-l-4 border-[#F58634] p-3 rounded flex items-start gap-2">
+              <AlertTriangle className="h-5 w-5 text-[#F58634] flex-shrink-0 mt-0.5" />
               <p className="text-red-700 text-sm font-medium">{error}</p>
             </div>
           )}
@@ -146,7 +141,7 @@ export default function LoginForm() {
           <div className="flex justify-between items-center pt-1">
             <Link
               href="/login/recuperacion"
-              className="text-sm text-[#2F6E1C] hover:text-[#FF7C00] underline transition flex items-center"
+              className="text-sm text-[#5A8C7A] hover:text-[#F58634] transition flex items-center"
             >
               <HelpCircle className="h-4 w-4 mr-1" />
               ¿Olvidaste tu contraseña?
@@ -156,7 +151,7 @@ export default function LoginForm() {
           <div className="pt-2">
             <Button
               type="submit"
-              className="w-full py-3 bg-[#2F6E1C] hover:bg-[#225514] text-white transition-colors shadow-md border-b-2 border-[#FF7C00]"
+              className="w-full py-3 bg-[#BD7D4A] hover:bg-[#F58634] text-white transition-colors shadow-sm"
               disabled={loading}
             >
               {loading ? (
@@ -172,18 +167,8 @@ export default function LoginForm() {
           </div>
         </form>
 
-        <div className="bg-[#f3fff0] px-8 py-4 border-t border-[#c0e8b8]">
-          <div className="flex items-center justify-center space-x-4 text-xs text-[#225514]">
-            <div className="flex items-center">
-              <Mail className="h-3 w-3 mr-1 text-[#64C23A]" />
-              <span>soporte@rubiramos.com</span>
-            </div>
-            <div className="flex items-center">
-              <Phone className="h-3 w-3 mr-1 text-[#64C23A]" />
-              <span>+52 77 **** ****</span>
-            </div>
-          </div>
-          <p className="text-center text-xs text-gray-500 mt-2">
+        <div className="bg-[#FAF9F7] px-8 py-4 border-t border-[#E6E3DE]">
+          <p className="text-center text-xs text-[#6E7C72]">
             © {new Date().getFullYear()} Rubí Ramos - Todos los derechos reservados
           </p>
         </div>

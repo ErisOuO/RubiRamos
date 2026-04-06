@@ -18,20 +18,18 @@ export function Button({
   ...rest
 }: ButtonProps) {
   const baseClasses = clsx(
-    'font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-2',
-    'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#66b0ca]',
-    'disabled:opacity-70 disabled:cursor-not-allowed',
+    'font-medium rounded-lg transition-colors duration-200 flex items-center justify-center gap-2',
+    'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#5A8C7A]',
+    'disabled:opacity-60 disabled:cursor-not-allowed',
     {
-      // Tamaños
       'px-4 py-2 text-sm': size === 'sm',
       'px-6 py-3 text-base': size === 'md',
       'px-8 py-4 text-lg': size === 'lg',
       
-      // Variantes
-      'bg-[#1e343b] text-white hover:bg-[#14262b] shadow-md': variant === 'primary',
-      'bg-[#66b0ca] text-[#1e343b] hover:bg-[#5aa5c0] shadow-md': variant === 'secondary',
-      'bg-transparent border border-[#1e343b] text-[#1e343b] hover:bg-[#f0f8ff]': variant === 'outline',
-      'bg-transparent text-[#1e343b] hover:bg-[#f0f8ff]': variant === 'ghost',
+      'bg-[#BD7D4A] text-white hover:bg-[#F58634] shadow-sm': variant === 'primary',
+      'bg-[#5A8C7A] text-white hover:bg-[#4A7C6A] shadow-sm': variant === 'secondary',
+      'bg-transparent border border-[#5A8C7A] text-[#5A8C7A] hover:bg-[#FAF9F7]': variant === 'outline',
+      'bg-transparent text-[#5A8C7A] hover:bg-[#FAF9F7]': variant === 'ghost',
     },
     className
   );

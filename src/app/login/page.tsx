@@ -1,47 +1,39 @@
 import Form from "@/components/login/form"; 
 import { HelpCircle } from "lucide-react";
 import { Metadata } from 'next';
-//import Link from "next/link";
-//import Image from 'next/image'; 
 
 export const metadata: Metadata = {
   title: 'Acceso al Consultorio',
-  description: 'Sistema interno de gestión de pacientes y citas del Consultorio Salud Integral.',
+  description: 'Sistema interno de gestión de pacientes y citas del Consultorio Nutricional.',
 };
 
 export default function LoginPage() {
   return (
-    <main className="min-h-screen flex items-center justify-center">
-
-      <div className="relative w-full max-w-5xl mx-auto flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16">
+    <main className="min-h-screen flex items-center justify-center bg-[#FAF9F7]">
+      <div className="relative w-full max-w-5xl mx-auto flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16 p-6">
         {/* Sección informativa */}
         <div className="w-full lg:w-1/2 max-w-md space-y-6 text-center lg:text-left">
-          {/*
-          <div className="flex items-center justify-center lg:justify-start space-x-3">
-            <div>
-              <Link href="/">
-                <Image src="/logo.png" alt="Logo Consultorio" width={270} height={50} priority />
-              </Link>
-            </div>
+          <div>
+            <h1 className="text-3xl font-bold text-[#5A8C7A]">Rubí Ramos</h1>
+            <p className="text-sm text-[#6E7C72] mt-1">Consultorio Nutricional</p>
           </div>
-          */}
           
-          <h2 className="text-xl font-semibold text-gray-700">
-            Sistema de gestión del Consultorio Salud Integral
+          <h2 className="text-xl font-semibold text-[#2C3E34]">
+            Sistema de gestión del consultorio
           </h2>
           
-          <p className="text-gray-600">
+          <p className="text-[#6E7C72]">
             Plataforma interna para el control de pacientes, citas y expedientes clínicos. 
-            El acceso está restringido únicamente a los pacientes.
+            El acceso está restringido únicamente al personal autorizado.
           </p>
           
           <div className="hidden lg:block pt-8">
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-              <h3 className="font-medium text-gray-800 mb-3 flex items-center">
-                <HelpCircle className="h-5 w-5 text-green-600 mr-2" />
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-[#E6E3DE]">
+              <h3 className="font-medium text-[#2C3E34] mb-3 flex items-center">
+                <HelpCircle className="h-5 w-5 text-[#5A8C7A] mr-2" />
                 ¿Necesitas ayuda?
               </h3>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-[#6E7C72]">
                 Si tienes problemas para iniciar sesión o necesitas asistencia, 
                 contacta al área administrativa del consultorio.
               </p>

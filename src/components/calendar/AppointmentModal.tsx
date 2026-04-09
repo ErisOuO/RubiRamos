@@ -39,6 +39,9 @@ export default function AppointmentModal({ isOpen, onClose, selectedDate, onSucc
     gender: '',
     phone: '',
     notes: '',
+    fecha_nacimiento: '',
+    estado_civil: '',
+    ocupacion: ''
   });
 
   useEffect(() => {
@@ -70,14 +73,12 @@ export default function AppointmentModal({ isOpen, onClose, selectedDate, onSucc
 
   const loadPatientsList = async () => {
     const result = await searchPatients('');
-    // Asegurar que result sea un array
     const patientsArray = Array.isArray(result) ? result : (result as any)?.patients || [];
     setPatients(patientsArray);
   };
 
   const handleSearchPatients = async () => {
     const result = await searchPatients(searchTerm);
-    // Asegurar que result sea un array
     const patientsArray = Array.isArray(result) ? result : (result as any)?.patients || [];
     setPatients(patientsArray);
   };
@@ -124,6 +125,9 @@ export default function AppointmentModal({ isOpen, onClose, selectedDate, onSucc
         gender: newPatient.gender || null,
         phone: newPatient.phone || null,
         notes: newPatient.notes || null,
+        fecha_nacimiento: newPatient.fecha_nacimiento || null,
+        estado_civil: newPatient.estado_civil || null,
+        ocupacion: newPatient.ocupacion || null
       });
       if (result.success) {
         const newPatientData = {
@@ -174,6 +178,16 @@ export default function AppointmentModal({ isOpen, onClose, selectedDate, onSucc
   };
 
   if (!isOpen) return null;
+
+  // Opciones para estado civil
+  const estadoCivilOptions = [
+    { value: '', label: 'No especificado' },
+    { value: 'Soltero(a)', label: 'Soltero(a)' },
+    { value: 'Casado(a)', label: 'Casado(a)' },
+    { value: 'Divorciado(a)', label: 'Divorciado(a)' },
+    { value: 'Viudo(a)', label: 'Viudo(a)' },
+    { value: 'Unión libre', label: 'Unión libre' }
+  ];
 
   return (
     <>
@@ -247,6 +261,13 @@ export default function AppointmentModal({ isOpen, onClose, selectedDate, onSucc
                         <option value="M">Masculino</option>
                         <option value="F">Femenino</option>
                       </select>
+                      <input type="date" placeholder="Fecha de nacimiento" value={newPatient.fecha_nacimiento} onChange={(e) => setNewPatient({...newPatient, fecha_nacimiento: e.target.value})} className="px-3 py-2 border border-[#E6E3DE] rounded-lg" />
+                      <select value={newPatient.estado_civil} onChange={(e) => setNewPatient({...newPatient, estado_civil: e.target.value})} className="px-3 py-2 border border-[#E6E3DE] rounded-lg">
+                        {estadoCivilOptions.map(option => (
+                          <option key={option.value} value={option.value}>{option.label}</option>
+                        ))}
+                      </select>
+                      <input type="text" placeholder="Ocupación" value={newPatient.ocupacion} onChange={(e) => setNewPatient({...newPatient, ocupacion: e.target.value})} className="px-3 py-2 border border-[#E6E3DE] rounded-lg" />
                       <input type="email" placeholder="Correo electrónico *" value={newPatient.email} onChange={(e) => setNewPatient({...newPatient, email: e.target.value})} className="col-span-2 px-3 py-2 border border-[#E6E3DE] rounded-lg" />
                       <input type="text" placeholder="Nombre de usuario *" value={newPatient.username} onChange={(e) => setNewPatient({...newPatient, username: e.target.value})} onBlur={handleUsernameBlur} className={`col-span-2 px-3 py-2 border rounded-lg ${usernameError ? 'border-[#F58634]' : 'border-[#E6E3DE]'}`} />
                       {usernameError && <p className="text-sm text-[#F58634] -mt-2">{usernameError}</p>}
@@ -260,7 +281,6 @@ export default function AppointmentModal({ isOpen, onClose, selectedDate, onSucc
                 )}
               </>
             ) : (
-              // Mostrar paciente seleccionado y horarios
               <div>
                 <div className="bg-[#FAF9F7] p-3 rounded-lg border border-[#E6E3DE] mb-4">
                   <div className="font-medium text-[#2C3E34]">{selectedPatient.nombre_completo}</div>

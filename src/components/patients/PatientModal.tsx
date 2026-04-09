@@ -23,12 +23,22 @@ export default function PatientModal({ isOpen, onClose, patient, mode, onSuccess
     phone: '',
     notes: '',
     email: '',
-    username: ''
+    username: '',
+    fecha_nacimiento: '',
+    estado_civil: '',
+    ocupacion: ''
   });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (patient) {
+      // Formatear fecha para el input date (YYYY-MM-DD)
+      let fechaNacimiento = '';
+      if (patient.fecha_nacimiento) {
+        const date = new Date(patient.fecha_nacimiento);
+        fechaNacimiento = date.toISOString().split('T')[0];
+      }
+      
       setFormData({
         first_name: patient.first_name || '',
         second_name: patient.second_name || '',
@@ -39,7 +49,10 @@ export default function PatientModal({ isOpen, onClose, patient, mode, onSuccess
         phone: patient.phone || '',
         notes: patient.notes || '',
         email: patient.email || '',
-        username: patient.username || ''
+        username: patient.username || '',
+        fecha_nacimiento: fechaNacimiento,
+        estado_civil: patient.estado_civil || '',
+        ocupacion: patient.ocupacion || ''
       });
     }
   }, [patient]);
@@ -58,7 +71,10 @@ export default function PatientModal({ isOpen, onClose, patient, mode, onSuccess
         phone: formData.phone || null,
         notes: formData.notes || null,
         email: formData.email,
-        username: formData.username
+        username: formData.username,
+        fecha_nacimiento: formData.fecha_nacimiento || null,
+        estado_civil: formData.estado_civil || null,
+        ocupacion: formData.ocupacion || null
       });
       toast.success('Paciente actualizado exitosamente');
       onSuccess();
@@ -72,6 +88,16 @@ export default function PatientModal({ isOpen, onClose, patient, mode, onSuccess
   if (!isOpen || !patient) return null;
 
   const isViewMode = mode === 'view';
+
+  // Opciones para estado civil
+  const estadoCivilOptions = [
+    { value: '', label: 'No especificado' },
+    { value: 'Soltero(a)', label: 'Soltero(a)' },
+    { value: 'Casado(a)', label: 'Casado(a)' },
+    { value: 'Divorciado(a)', label: 'Divorciado(a)' },
+    { value: 'Viudo(a)', label: 'Viudo(a)' },
+    { value: 'Unión libre', label: 'Unión libre' }
+  ];
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -99,6 +125,9 @@ export default function PatientModal({ isOpen, onClose, patient, mode, onSuccess
                   <div><span className="font-semibold text-[#2C3E34]">Apellidos:</span> <span className="text-[#6E7C72]">{patient.first_lastname} {patient.second_lastname}</span></div>
                   <div><span className="font-semibold text-[#2C3E34]">Edad:</span> <span className="text-[#6E7C72]">{patient.age}</span></div>
                   <div><span className="font-semibold text-[#2C3E34]">Género:</span> <span className="text-[#6E7C72]">{patient.gender === 'M' ? 'Masculino' : patient.gender === 'F' ? 'Femenino' : 'No especificado'}</span></div>
+                  <div><span className="font-semibold text-[#2C3E34]">Fecha de nacimiento:</span> <span className="text-[#6E7C72]">{patient.fecha_nacimiento ? new Date(patient.fecha_nacimiento).toLocaleDateString('es-ES') : 'No registrada'}</span></div>
+                  <div><span className="font-semibold text-[#2C3E34]">Estado civil:</span> <span className="text-[#6E7C72]">{patient.estado_civil || 'No especificado'}</span></div>
+                  <div><span className="font-semibold text-[#2C3E34]">Ocupación:</span> <span className="text-[#6E7C72]">{patient.ocupacion || 'No especificada'}</span></div>
                   <div><span className="font-semibold text-[#2C3E34]">Teléfono:</span> <span className="text-[#6E7C72]">{patient.phone || '—'}</span></div>
                   <div><span className="font-semibold text-[#2C3E34]">Correo:</span> <span className="text-[#6E7C72]">{patient.email}</span></div>
                   <div><span className="font-semibold text-[#2C3E34]">Usuario:</span> <span className="text-[#6E7C72]">{patient.username}</span></div>
@@ -198,6 +227,22 @@ export default function PatientModal({ isOpen, onClose, patient, mode, onSuccess
                     <option value="M">Masculino</option>
                     <option value="F">Femenino</option>
                   </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-[#2C3E34] mb-1">Fecha de nacimiento</label>
+                  <input type="date" value={formData.fecha_nacimiento} onChange={(e) => setFormData({...formData, fecha_nacimiento: e.target.value})} className="w-full px-3 py-2 border border-[#E6E3DE] rounded-lg" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-[#2C3E34] mb-1">Estado civil</label>
+                  <select value={formData.estado_civil} onChange={(e) => setFormData({...formData, estado_civil: e.target.value})} className="w-full px-3 py-2 border border-[#E6E3DE] rounded-lg">
+                    {estadoCivilOptions.map(option => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-[#2C3E34] mb-1">Ocupación</label>
+                  <input type="text" value={formData.ocupacion} onChange={(e) => setFormData({...formData, ocupacion: e.target.value})} className="w-full px-3 py-2 border border-[#E6E3DE] rounded-lg" />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-[#2C3E34] mb-1">Teléfono</label>

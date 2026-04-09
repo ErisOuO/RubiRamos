@@ -168,7 +168,8 @@ export async function getPatientById(id: number) {
 export async function searchPatients(query: string) {
   try {
     if (!query || query.trim().length < 2) {
-      return await getPatients();
+      const result = await getPatients();
+      return result.patients;
     }
     
     const searchTerm = `%${query.trim()}%`;
@@ -267,13 +268,18 @@ export async function updatePatient(id: number, data: {
   notes?: string | null;
   email?: string;
   username?: string;
+  fecha_nacimiento?: Date | string | null;
+  estado_civil?: string | null;
+  ocupacion?: string | null;
 }) {
   try {
     // Actualizar datos del paciente
     if (data.first_name !== undefined || data.second_name !== undefined || 
         data.first_lastname !== undefined || data.second_lastname !== undefined || 
         data.age !== undefined || data.gender !== undefined || 
-        data.phone !== undefined || data.notes !== undefined) {
+        data.phone !== undefined || data.notes !== undefined ||
+        data.fecha_nacimiento !== undefined || data.estado_civil !== undefined ||
+        data.ocupacion !== undefined) {
       
       const updates: string[] = [];
       const values: any[] = [];
@@ -309,6 +315,18 @@ export async function updatePatient(id: number, data: {
       if (data.notes !== undefined) {
         updates.push(`notes = $${values.length + 1}`);
         values.push(data.notes);
+      }
+      if (data.fecha_nacimiento !== undefined) {
+        updates.push(`fecha_nacimiento = $${values.length + 1}`);
+        values.push(data.fecha_nacimiento);
+      }
+      if (data.estado_civil !== undefined) {
+        updates.push(`estado_civil = $${values.length + 1}`);
+        values.push(data.estado_civil);
+      }
+      if (data.ocupacion !== undefined) {
+        updates.push(`ocupacion = $${values.length + 1}`);
+        values.push(data.ocupacion);
       }
       
       updates.push(`updated_at = NOW()`);
@@ -455,6 +473,9 @@ export async function createPatientAndUser(data: {
   gender?: string | null;
   phone?: string | null;
   notes?: string | null;
+  fecha_nacimiento?: Date | string | null;
+  estado_civil?: string | null;
+  ocupacion?: string | null;
 }) {
   try {
     // Verificar si el email ya existe
@@ -480,16 +501,19 @@ export async function createPatientAndUser(data: {
       RETURNING id
     `;
 
-    // Crear paciente
+    // Crear paciente con los nuevos campos
     const [newPatient] = await sql`
       INSERT INTO tblpatients (
         user_id, first_name, second_name, first_lastname, second_lastname,
-        age, gender, phone, notes, active
+        age, gender, phone, notes, active,
+        fecha_nacimiento, estado_civil, ocupacion
       ) VALUES (
         ${newUser.id}, ${data.first_name}, ${data.second_name || null},
         ${data.first_lastname}, ${data.second_lastname || null},
         ${data.age}, ${data.gender || null}, ${data.phone || null},
-        ${data.notes || null}, true
+        ${data.notes || null}, true,
+        ${data.fecha_nacimiento || null}, ${data.estado_civil || null},
+        ${data.ocupacion || null}
       )
       RETURNING id
     `;

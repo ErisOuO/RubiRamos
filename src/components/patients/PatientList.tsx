@@ -188,9 +188,7 @@ export default function PatientsList({ initialPatients, initialTotal, initialSta
                 <th onClick={() => handleSort('first_lastname')} className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider cursor-pointer hover:text-[#5A8C7A]">
                   <span className="flex items-center gap-1">Apellido {getSortIcon('first_lastname')}</span>
                 </th>
-                <th onClick={() => handleSort('email')} className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider cursor-pointer hover:text-[#5A8C7A]">
-                  <span className="flex items-center gap-1">Email {getSortIcon('email')}</span>
-                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Email</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Usuario</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Edad</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Género</th>

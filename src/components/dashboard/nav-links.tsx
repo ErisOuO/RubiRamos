@@ -18,7 +18,9 @@ import clsx from 'clsx';
 const mainLinks = [
   { name: 'Dashboard', href: '/admin', icon: HomeIcon },
   { name: 'Pacientes', href: '/admin/pacientes', icon: UserGroupIcon },
-  { name: 'Citas', href: '/admin/calendar', icon: CalendarIcon },
+  { name: 'Citas', href: '/admin/appointments', icon: CalendarIcon },
+  { name: 'Calendario', href: '/admin/calendar', icon: CalendarIcon },
+  { name: 'Historial Médico', href: '/admin/historial', icon: UserGroupIcon },
   //{ name: 'Expedientes', href: '/admin/expedientes', icon: DocumentTextIcon },
   { name: 'Productos', href: '/admin/productos', icon: ShoppingBagIcon },
   //{ name: 'Reportes', href: '/admin/reportes', icon: ChartBarIcon },
@@ -104,14 +106,6 @@ export default function NavLinks({ mobile = false, onLinkClick }: { mobile?: boo
       {/* Enlaces principales */}
       {renderLinks(mainLinks, mobile ? undefined : 'Principal')}
       
-      {/* Separador para configuración */}
-      <div className={`${mobile ? 'my-2' : 'my-4'}`}>
-        <div style={{ 
-          height: '1px', 
-          backgroundColor: mobile ? '#5A8C7A' : '#5A8C7A',
-          opacity: 0.3 
-        }}></div>
-      </div>
       
       {/* Enlaces de configuración - MISMO COLOR DE LETRA */}
       {renderLinks(configLinks, mobile ? undefined : 'Configuración')}

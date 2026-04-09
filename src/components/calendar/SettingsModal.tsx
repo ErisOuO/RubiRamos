@@ -277,12 +277,12 @@ export default function SettingsModal({ isOpen, onClose, onSave, type, selectedD
                     );
                   })}
                 </div>
-                <p className="text-xs text-[#6E7C72] mt-2">
-                  ⚠️ Los horarios en gris (horario de comida) no están disponibles para agendar citas.
+                <p className="text-s text-[#6E7C72] mt-2">
+                   Los horarios en gris (horario de comida) no están disponibles para agendar citas.
                 </p>
                 {dayAppointments.length > 0 && (
-                  <p className="text-xs text-[#6E7C72] mt-1">
-                    ⚠️ Los horarios marcados con punto naranja tienen citas registradas.
+                  <p className="text-s text-[#6E7C72] mt-1">
+                    Los horarios marcados con punto naranja tienen citas registradas.
                   </p>
                 )}
               </div>

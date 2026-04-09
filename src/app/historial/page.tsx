@@ -294,18 +294,6 @@ export default function PatientMedicalHistory() {
                             ))}
                           </ul>
                         </div>
-
-                        {/* Información adicional */}
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <span className="text-gray-500">Presión arterial:</span>
-                            <span className="font-medium ml-2">{appointment.bloodPressure}</span>
-                          </div>
-                          <div>
-                            <span className="text-gray-500">Nutrióloga:</span>
-                            <span className="font-medium ml-2">{appointment.nutritionist}</span>
-                          </div>
-                        </div>
                       </div>
                     )}
                   </div>
@@ -322,23 +310,6 @@ export default function PatientMedicalHistory() {
                   </button>
                 </div>
               )}
-            </div>
-
-            {/* Información de contacto de emergencia */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 mt-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Contacto de Emergencia</h3>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-                  <h4 className="font-semibold text-red-800 mb-2">Urgencias Médicas</h4>
-                  <p className="text-red-700 text-sm">Hospital ABC</p>
-                  <p className="text-red-700 text-sm">Tel: (555) 123-4567</p>
-                </div>
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                  <h4 className="font-semibold text-blue-800 mb-2">Contacto Nutriología</h4>
-                  <p className="text-blue-700 text-sm">Dra. Rubi Ramos</p>
-                  <p className="text-blue-700 text-sm">Tel: (555) 987-6543</p>
-                </div>
-              </div>
             </div>
           </div>
         </div>

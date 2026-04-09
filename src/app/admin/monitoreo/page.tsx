@@ -19,7 +19,7 @@ export default async function AuditoriaPage() {
     <div className="min-h-screen bg-[#FAF9F7]">
       <div className="p-6">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-[#5A8C7A]">
+          <h1 className="text-2xl font-bold text-[#6B8E7B]">
             Dashboard de Monitoreo
           </h1>
           <p className="text-sm text-[#6E7C72] mt-1">
@@ -41,7 +41,7 @@ export default async function AuditoriaPage() {
         </Suspense>
         
         <div className="mt-8 mb-6">
-          <h2 className="text-xl font-semibold text-[#5A8C7A]">
+          <h2 className="text-xl font-semibold text-[#6B8E7B]">
             Historial de Auditoría
           </h2>
           <p className="text-sm text-[#6E7C72] mt-1">

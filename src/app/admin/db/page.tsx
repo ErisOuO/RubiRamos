@@ -98,8 +98,8 @@ function StatCard({ title, value, icon: Icon }: StatCardProps) {
           <p className="text-xs tracking-wide font-semibold text-[#6E7C72]">{title}</p>
           <p className="mt-1 text-2xl font-black text-[#2C3E34]">{value}</p>
         </div>
-        <div className="rounded-xl bg-[#5A8C7A]/10 p-2">
-          <Icon className="h-6 w-6 text-[#5A8C7A]" />
+        <div className="rounded-xl bg-[#6B8E7B]/10 p-2">
+          <Icon className="h-6 w-6 text-[#6B8E7B]" />
         </div>
       </div>
     </div>
@@ -117,7 +117,7 @@ function Pill({ text }: PillProps) {
     value.toUpperCase() === "ADMIN"
       ? "bg-[#F58634]/20 text-[#F58634] ring-[#F58634]/30"
       : value.toUpperCase() === "PACIENTE"
-        ? "bg-[#5A8C7A]/20 text-[#5A8C7A] ring-[#5A8C7A]/30"
+        ? "bg-[#6B8E7B]/20 text-[#6B8E7B] ring-[#6B8E7B]/30"
         : "bg-[#A8CF45]/20 text-[#A8CF45] ring-[#A8CF45]/30";
 
   return (
@@ -159,7 +159,7 @@ function Field({ label, icon: Icon, children }: FieldProps) {
   return (
     <label className="block">
       <span className="mb-2 inline-flex items-center gap-2 text-xs font-semibold text-[#6E7C72]">
-        <Icon className="h-4 w-4 text-[#5A8C7A]" />
+        <Icon className="h-4 w-4 text-[#6B8E7B]" />
         {label}
       </span>
       {children}
@@ -372,8 +372,8 @@ export default function AdminDbPage() {
       <div className="rounded-2xl bg-white p-6 shadow-sm border border-[#E6E3DE] mb-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
-            <div className="rounded-xl bg-[#5A8C7A]/10 p-3">
-              <CircleStackIcon className="h-7 w-7 text-[#5A8C7A]" />
+            <div className="rounded-xl bg-[#6B8E7B]/10 p-3">
+              <CircleStackIcon className="h-7 w-7 text-[#6B8E7B]" />
             </div>
             <div>
               <h1 className="text-2xl font-bold font-serif text-[#2C3E34]">Administrar Base de Datos</h1>
@@ -387,7 +387,7 @@ export default function AdminDbPage() {
             <button
               onClick={refreshAll}
               disabled={loadingUsers || loadingStats}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#5A8C7A] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#4a7768] disabled:opacity-50 shadow-sm"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#6B8E7B] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#4a7768] disabled:opacity-50 shadow-sm"
             >
               <UsersIcon className="h-5 w-5" />
               Actualizar dashboard
@@ -430,8 +430,8 @@ export default function AdminDbPage() {
 >
   <div className="grid grid-cols-1 gap-4">
     {/* Info del formato del archivo */}
-    <div className="rounded-xl bg-[#5A8C7A]/5 p-4 border border-[#5A8C7A]/20">
-      <p className="text-xs font-semibold text-[#5A8C7A]">
+    <div className="rounded-xl bg-[#6B8E7B]/5 p-4 border border-[#6B8E7B]/20">
+      <p className="text-xs font-semibold text-[#6B8E7B]">
         Formato del archivo:
       </p>
       <p className="mt-1 text-sm font-mono text-[#2C3E34]">
@@ -468,7 +468,7 @@ export default function AdminDbPage() {
                 <select
                   value={selectedTable}
                   onChange={(e) => setSelectedTable(e.target.value)}
-                  className="w-full rounded-xl bg-[#FAF9F7] px-4 py-2 text-sm text-[#2C3E34] border border-[#E6E3DE] focus:border-[#5A8C7A] focus:outline-none focus:ring-1 focus:ring-[#5A8C7A]"
+                  className="w-full rounded-xl bg-[#FAF9F7] px-4 py-2 text-sm text-[#2C3E34] border border-[#E6E3DE] focus:border-[#6B8E7B] focus:outline-none focus:ring-1 focus:ring-[#6B8E7B]"
                 >
                   <option value="">Selecciona una tabla</option>
                   {tables.map((table) => (
@@ -485,7 +485,7 @@ export default function AdminDbPage() {
                   onChange={(e) =>
                     setExportFormat(e.target.value as "csv" | "tar")
                   }
-                  className="w-full rounded-xl bg-[#FAF9F7] px-4 py-2 text-sm text-[#2C3E34] border border-[#E6E3DE] focus:border-[#5A8C7A] focus:outline-none focus:ring-1 focus:ring-[#5A8C7A]"
+                  className="w-full rounded-xl bg-[#FAF9F7] px-4 py-2 text-sm text-[#2C3E34] border border-[#E6E3DE] focus:border-[#6B8E7B] focus:outline-none focus:ring-1 focus:ring-[#6B8E7B]"
                 >
                   <option value="csv">CSV</option>
                   <option value="tar">TAR</option>
@@ -495,7 +495,7 @@ export default function AdminDbPage() {
               <button
                 onClick={exportTable}
                 disabled={!selectedTable || loadingExport}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#5A8C7A] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#4a7768] disabled:opacity-50 shadow-sm"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#6B8E7B] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#4a7768] disabled:opacity-50 shadow-sm"
               >
                 <ArrowDownTrayIcon className="h-5 w-5" />
                 {loadingExport ? "Exportando..." : "Exportar tabla"}
@@ -521,7 +521,7 @@ export default function AdminDbPage() {
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Buscar por ID, usuario, email o rol..."
-                className="w-full rounded-xl bg-[#FAF9F7] px-4 py-2 text-sm text-[#2C3E34] border border-[#E6E3DE] placeholder:text-[#6E7C72]/50 focus:border-[#5A8C7A] focus:outline-none focus:ring-1 focus:ring-[#5A8C7A]"
+                className="w-full rounded-xl bg-[#FAF9F7] px-4 py-2 text-sm text-[#2C3E34] border border-[#E6E3DE] placeholder:text-[#6E7C72]/50 focus:border-[#6B8E7B] focus:outline-none focus:ring-1 focus:ring-[#6B8E7B]"
               />
               <div className="text-xs text-[#6E7C72] whitespace-nowrap">
                 Verificados:{" "}
@@ -533,7 +533,7 @@ export default function AdminDbPage() {
 
             <div className="mt-4 overflow-x-auto rounded-xl border border-[#E6E3DE]">
               <table className="min-w-full text-left text-sm">
-                <thead className="bg-[#5A8C7A]/5 text-xs text-[#5A8C7A] border-b border-[#E6E3DE]">
+                <thead className="bg-[#6B8E7B]/5 text-xs text-[#6B8E7B] border-b border-[#E6E3DE]">
                   <tr>
                     <th className="px-4 py-3 font-semibold">ID</th>
                     <th className="px-4 py-3 font-semibold">Usuario</th>
@@ -549,7 +549,7 @@ export default function AdminDbPage() {
                     <tr>
                       <td className="px-4 py-4 text-[#6E7C72]" colSpan={6}>
                         <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 border-2 border-[#5A8C7A] border-t-transparent rounded-full animate-spin"></div>
+                          <div className="w-4 h-4 border-2 border-[#6B8E7B] border-t-transparent rounded-full animate-spin"></div>
                           Cargando usuarios...
                         </div>
                       </td>
@@ -604,7 +604,7 @@ export default function AdminDbPage() {
         >
           <div className="overflow-x-auto rounded-xl border border-[#E6E3DE]">
             <table className="min-w-full text-left text-sm">
-              <thead className="bg-[#5A8C7A]/5 text-xs text-[#5A8C7A] border-b border-[#E6E3DE]">
+              <thead className="bg-[#6B8E7B]/5 text-xs text-[#6B8E7B] border-b border-[#E6E3DE]">
                 <tr>
                   <th className="px-4 py-3 font-semibold">Archivo</th>
                   <th className="px-4 py-3 font-semibold">Fecha</th>
@@ -646,7 +646,7 @@ export default function AdminDbPage() {
                             alert(getErrorMessage(e));
                           }
                         }}
-                        className="inline-flex items-center gap-2 rounded-lg bg-[#5A8C7A]/10 px-3 py-2 text-xs font-semibold text-[#5A8C7A] transition hover:bg-[#5A8C7A]/20"
+                        className="inline-flex items-center gap-2 rounded-lg bg-[#6B8E7B]/10 px-3 py-2 text-xs font-semibold text-[#6B8E7B] transition hover:bg-[#6B8E7B]/20"
                       >
                         <ArrowDownTrayIcon className="h-4 w-4" />
                         Descargar

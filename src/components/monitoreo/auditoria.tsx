@@ -17,7 +17,7 @@ export default function AuditoriaClient({ auditoriaInicial, total }: AuditoriaCl
       case 'INSERT':
         return 'bg-[#A8CF45]/20 text-[#2C3E34] border-l-4 border-[#A8CF45]';
       case 'UPDATE':
-        return 'bg-[#5A8C7A]/10 text-[#2C3E34] border-l-4 border-[#5A8C7A]';
+        return 'bg-[#6B8E7B]/10 text-[#2C3E34] border-l-4 border-[#6B8E7B]';
       case 'DELETE':
         return 'bg-[#F58634]/10 text-[#2C3E34] border-l-4 border-[#F58634]';
       default:
@@ -65,7 +65,7 @@ export default function AuditoriaClient({ auditoriaInicial, total }: AuditoriaCl
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm font-mono text-[#5A8C7A]">
+                  <span className="text-sm font-mono text-[#6B8E7B]">
                     {registro.tabla_afectada}
                   </span>
                 </td>
@@ -77,7 +77,7 @@ export default function AuditoriaClient({ auditoriaInicial, total }: AuditoriaCl
                     <div className="mt-3 space-y-3">
                       {registro.datos_anteriores && (
                         <div className="bg-[#FAF9F7] rounded-lg p-3 border border-[#E6E3DE]">
-                          <strong className="text-xs text-[#5A8C7A] block mb-2">Datos anteriores:</strong>
+                          <strong className="text-xs text-[#6B8E7B] block mb-2">Datos anteriores:</strong>
                           <pre className="text-xs bg-white p-2 rounded border border-[#E6E3DE] overflow-x-auto font-mono text-[#2C3E34]">
                             {JSON.stringify(registro.datos_anteriores, null, 2)}
                           </pre>
@@ -85,7 +85,7 @@ export default function AuditoriaClient({ auditoriaInicial, total }: AuditoriaCl
                       )}
                       {registro.datos_nuevos && (
                         <div className="bg-[#FAF9F7] rounded-lg p-3 border border-[#E6E3DE]">
-                          <strong className="text-xs text-[#5A8C7A] block mb-2">Datos nuevos:</strong>
+                          <strong className="text-xs text-[#6B8E7B] block mb-2">Datos nuevos:</strong>
                           <pre className="text-xs bg-white p-2 rounded border border-[#E6E3DE] overflow-x-auto font-mono text-[#2C3E34]">
                             {JSON.stringify(registro.datos_nuevos, null, 2)}
                           </pre>

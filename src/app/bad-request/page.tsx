@@ -8,10 +8,10 @@ export default function BadRequestPage() {
       <div className="max-w-4xl w-full">
         {/* Encabezado */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-[#5A8C7A]/10 to-[#A8CF45]/5 mb-8 border-2 border-[#5A8C7A]/20">
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-[#6B8E7B]/10 to-[#A8CF45]/5 mb-8 border-2 border-[#6B8E7B]/20">
             <div className="text-4xl">📋</div>
           </div>
-          <h1 className="text-7xl md:text-8xl font-bold font-serif text-[#5A8C7A]">
+          <h1 className="text-7xl md:text-8xl font-bold font-serif text-[#6B8E7B]">
             400
           </h1>
           <p className="text-lg text-[#6E7C72] mt-4 max-w-md mx-auto">
@@ -92,7 +92,7 @@ export default function BadRequestPage() {
 
             {/* Lista de problemas */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold font-serif text-[#5A8C7A]">
+              <h3 className="text-lg font-semibold font-serif text-[#6B8E7B]">
                 Problemas detectados:
               </h3>
               <ul className="space-y-3">
@@ -113,8 +113,8 @@ export default function BadRequestPage() {
             </div>
 
             {/* Solución */}
-            <div className="bg-gradient-to-br from-[#5A8C7A]/5 to-[#A8CF45]/5 rounded-xl p-6 border border-[#5A8C7A]/20">
-              <h3 className="text-lg font-semibold mb-4 font-serif text-[#5A8C7A]">
+            <div className="bg-gradient-to-br from-[#6B8E7B]/5 to-[#A8CF45]/5 rounded-xl p-6 border border-[#6B8E7B]/20">
+              <h3 className="text-lg font-semibold mb-4 font-serif text-[#6B8E7B]">
                 Solución recomendada:
               </h3>
               <ol className="space-y-3">
@@ -125,8 +125,8 @@ export default function BadRequestPage() {
                   'Elimina caracteres especiales no permitidos'
                 ].map((step, index) => (
                   <li key={index} className="flex items-start">
-                    <div className="w-6 h-6 rounded-full bg-white border border-[#5A8C7A] flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
-                      <span className="text-[#5A8C7A] text-sm font-bold">{index + 1}</span>
+                    <div className="w-6 h-6 rounded-full bg-white border border-[#6B8E7B] flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                      <span className="text-[#6B8E7B] text-sm font-bold">{index + 1}</span>
                     </div>
                     <span className="text-[#6E7C72]">{step}</span>
                   </li>
@@ -139,7 +139,7 @@ export default function BadRequestPage() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
                   onClick={() => window.history.back()}
-                  className="flex-1 bg-white border border-[#5A8C7A] text-[#5A8C7A] font-semibold px-6 py-3 rounded-lg hover:bg-[#5A8C7A] hover:text-white transition-all duration-300 flex items-center justify-center"
+                  className="flex-1 bg-white border border-[#6B8E7B] text-[#6B8E7B] font-semibold px-6 py-3 rounded-lg hover:bg-[#6B8E7B] hover:text-white transition-all duration-300 flex items-center justify-center"
                 >
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -149,7 +149,7 @@ export default function BadRequestPage() {
 
                 <Link
                   href="/"
-                  className="flex-1 bg-gradient-to-r from-[#5A8C7A] to-[#4a7768] text-white font-semibold px-6 py-3 rounded-lg hover:shadow-md transition-all duration-300 flex items-center justify-center"
+                  className="flex-1 bg-gradient-to-r from-[#6B8E7B] to-[#4a7768] text-white font-semibold px-6 py-3 rounded-lg hover:shadow-md transition-all duration-300 flex items-center justify-center"
                 >
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -159,7 +159,7 @@ export default function BadRequestPage() {
               </div>
               
               <p className="text-sm text-[#6E7C72] mt-4 text-center">
-                ¿Necesitas ayuda? <a href="mailto:ayuda@consultorio.com" className="text-[#5A8C7A] hover:underline">
+                ¿Necesitas ayuda? <a href="mailto:ayuda@consultorio.com" className="text-[#6B8E7B] hover:underline">
                   Contáctanos
                 </a>
               </p>

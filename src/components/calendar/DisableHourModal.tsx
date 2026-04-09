@@ -52,12 +52,12 @@ export default function DisableHoursModal({ isOpen, onClose, onConfirm, appointm
                   </div>
                   <div className="flex gap-2">
                     {app.phone && (
-                      <a href={`tel:${app.phone}`} className="p-2 bg-[#5A8C7A] text-white rounded-lg hover:bg-[#4A7C6A]">
+                      <a href={`tel:${app.phone}`} className="p-2 bg-[#6B8E7B] text-white rounded-lg hover:bg-[#4A7C6A]">
                         <FaPhone size={14} />
                       </a>
                     )}
                     {app.email && (
-                      <a href={`mailto:${app.email}`} className="p-2 bg-[#5A8C7A] text-white rounded-lg hover:bg-[#4A7C6A]">
+                      <a href={`mailto:${app.email}`} className="p-2 bg-[#6B8E7B] text-white rounded-lg hover:bg-[#4A7C6A]">
                         <FaEnvelope size={14} />
                       </a>
                     )}

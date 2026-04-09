@@ -151,12 +151,12 @@ export default function RecuperacionForm() {
   return (
     <div className="relative w-full max-w-md bg-white rounded-xl shadow-lg overflow-hidden border border-[#E6E3DE]">
       <div className="absolute inset-0 overflow-hidden z-0">
-        <div className="absolute -right-20 -top-20 w-64 h-64 bg-[#5A8C7A]/10 rounded-full"></div>
+        <div className="absolute -right-20 -top-20 w-64 h-64 bg-[#6B8E7B]/10 rounded-full"></div>
         <div className="absolute -left-10 -bottom-10 w-48 h-48 bg-[#BD7D4A]/10 rounded-full"></div>
       </div>
 
       <div className="relative z-10">
-        <div className="bg-[#5A8C7A] p-6 text-white text-center border-b-2 border-[#F58634]">
+        <div className="bg-[#6B8E7B] p-6 text-white text-center border-b-2 border-[#F58634]">
           <div className="flex items-center justify-center space-x-2">
             <Key className="h-6 w-6 text-[#F58634]" />
             <h2 className="text-xl font-bold">Recuperación de Contraseña</h2>
@@ -171,7 +171,7 @@ export default function RecuperacionForm() {
             <>
               <div className="space-y-4">
                 <label htmlFor="usuario" className="text-sm font-medium text-[#2C3E34] mb-1 flex items-center">
-                  <Mail className="h-4 w-4 text-[#5A8C7A] mr-2" />
+                  <Mail className="h-4 w-4 text-[#6B8E7B] mr-2" />
                   Usuario
                 </label>
                 <input
@@ -180,7 +180,7 @@ export default function RecuperacionForm() {
                   value={username}
                   onChange={(e) => setUsuario(e.target.value.trim())}
                   required
-                  className="w-full border border-[#E6E3DE] rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#5A8C7A] focus:border-[#5A8C7A] focus:outline-none transition"
+                  className="w-full border border-[#E6E3DE] rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#6B8E7B] focus:border-[#6B8E7B] focus:outline-none transition"
                   placeholder="Ingresa tu usuario"
                   disabled={loading}
                 />
@@ -217,7 +217,7 @@ export default function RecuperacionForm() {
               <div className="text-center space-y-3">
                 <div className="text-sm text-[#6E7C72]">{mensaje}</div>
                 <div className="flex items-center justify-center text-sm text-[#6E7C72]">
-                  <Clock className="h-4 w-4 mr-2 text-[#5A8C7A]" />
+                  <Clock className="h-4 w-4 mr-2 text-[#6B8E7B]" />
                   <p>
                     Expira en: <b className="text-[#BD7D4A]">
                       {Math.floor(counter / 60)}:{(counter % 60).toString().padStart(2, '0')}
@@ -243,7 +243,7 @@ export default function RecuperacionForm() {
                     onChange={(e) => handleChange(idx, e.target.value)}
                     onPaste={handlePaste}
                     onKeyDown={(e) => handleKeyDown(idx, e)}
-                    className="w-12 h-14 text-2xl font-medium text-center border border-[#E6E3DE] rounded-lg focus:ring-2 focus:ring-[#5A8C7A] focus:border-[#5A8C7A] transition"
+                    className="w-12 h-14 text-2xl font-medium text-center border border-[#E6E3DE] rounded-lg focus:ring-2 focus:ring-[#6B8E7B] focus:border-[#6B8E7B] transition"
                   />
                 ))}
               </div>

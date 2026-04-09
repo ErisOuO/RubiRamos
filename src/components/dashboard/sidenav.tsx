@@ -27,7 +27,7 @@ export default function SideNav({
     <div className={`flex flex-col ${mobile ? 'h-auto' : 'h-full'}`}>
       {/* Logo - solo en desktop */}
       {!mobile && (
-        <div className="flex h-24 items-center justify-center p-4 border-b" style={{ borderColor: '#5A8C7A' }}>
+        <div className="flex h-24 items-center justify-center p-4 border-b" style={{ borderColor: '#6B8E7B' }}>
           <div className="relative w-44 h-14">
             <Image
               src="/logo_rubi.png"
@@ -46,7 +46,7 @@ export default function SideNav({
       </div>
 
       {/* Botón cerrar sesión */}
-      <div className="px-3 py-3 border-t" style={{ borderColor: mobile ? '#5A8C7A' : '#5A8C7A' }}>
+      <div className="px-3 py-3 border-t" style={{ borderColor: mobile ? '#6B8E7B' : '#6B8E7B' }}>
         <button
           onClick={() => signOut({ callbackUrl: '/login' })}
           className={`flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors w-full ${
@@ -62,15 +62,15 @@ export default function SideNav({
       </div>
 
       {/* Perfil - al final */}
-      <div className="px-3 py-4 border-t" style={{ borderColor: mobile ? '#5A8C7A' : '#5A8C7A' }}>
+      <div className="px-3 py-4 border-t" style={{ borderColor: mobile ? '#6B8E7B' : '#6B8E7B' }}>
         <div className="flex items-center gap-3 p-3 rounded-lg" 
           style={{ 
-            backgroundColor: mobile ? 'rgba(90, 140, 122, 0.2)' : '#5A8C7A' 
+            backgroundColor: mobile ? 'rgba(90, 140, 122, 0.2)' : '#6B8E7B' 
           }}
         >
           <div className="h-10 w-10 rounded-full flex items-center justify-center" 
             style={{ 
-              backgroundColor: mobile ? '#5A8C7A' : 'rgba(255, 255, 255, 0.2)'
+              backgroundColor: mobile ? '#6B8E7B' : 'rgba(255, 255, 255, 0.2)'
             }}
           >
             <UserCircleIcon className="h-6 w-6" style={{ color: '#FFFFFF' }} />

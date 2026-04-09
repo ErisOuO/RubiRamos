@@ -33,7 +33,7 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
         {/* Header móvil */}
         <header className="flex items-center justify-between p-4 lg:hidden shadow-sm" 
           style={{ 
-            backgroundColor: '#5A8C7A',
+            backgroundColor: '#6B8E7B',
             color: '#FFFFFF'
           }}
         >
@@ -61,7 +61,7 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
               className="absolute top-16 right-4 z-50 w-64 rounded-lg shadow-xl"
               style={{ 
                 backgroundColor: '#2C3E34',
-                border: '1px solid #5A8C7A'
+                border: '1px solid #6B8E7B'
               }}
             >
               <SideNav mobile onClose={() => setIsMenuOpen(false)}/>

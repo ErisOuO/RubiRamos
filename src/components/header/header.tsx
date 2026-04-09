@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import Image from 'next/image';
-import { 
-  FaHome, 
-  FaUserAlt, 
-  FaShoppingBag, 
-  FaCalendarAlt, 
-  FaShoppingCart, 
+import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import Image from "next/image";
+import {
+  FaHome,
+  FaUserAlt,
+  FaShoppingBag,
+  FaCalendarAlt,
+  FaShoppingCart,
   FaAddressCard,
   FaBars,
-  FaTimes 
-} from 'react-icons/fa';
-import styles from './header.module.css';
+  FaTimes,
+} from "react-icons/fa";
+import styles from "./header.module.css";
 
 const Header = () => {
   const pathname = usePathname();
@@ -30,20 +30,20 @@ const Header = () => {
       }
     }
     if (isMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isMenuOpen]);
 
   const navLinks = [
-    { href: '/', icon: FaHome, label: 'Inicio' },
-    { href: '/catalog', icon: FaShoppingBag, label: 'Catálogo' },
-    { href: '/schedule', icon: FaCalendarAlt, label: 'Agendar Cita' },
-    { href: '/shopping_cart', icon: FaShoppingCart, label: 'Carrito' },
-    { href: '/historial', icon: FaAddressCard, label: 'Historial Médico' },
-    { href: '/login', icon: FaUserAlt, label: 'Iniciar Sesión' },
+    { href: "/", icon: FaHome, label: "Inicio" },
+    { href: "/catalog", icon: FaShoppingBag, label: "Catálogo" },
+    { href: "/schedule", icon: FaCalendarAlt, label: "Agendar Cita" },
+    { href: "/shopping_cart", icon: FaShoppingCart, label: "Carrito" },
+    { href: "/historial", icon: FaAddressCard, label: "Historial Médico" },
+    { href: "/login", icon: FaUserAlt, label: "Iniciar Sesión" },
   ];
 
   return (
@@ -52,11 +52,11 @@ const Header = () => {
         {/* Logo */}
         <div className={styles.logoContainer}>
           <Link href="/">
-            <Image 
-              src="/logo_rubi.png" 
-              alt="RubiRamos Logo" 
-              width={270} 
-              height={50} 
+            <Image
+              src="/logo_rubi.png"
+              alt="RubiRamos Logo"
+              width={270}
+              height={50}
               priority
               className={styles.logo}
             />
@@ -77,13 +77,15 @@ const Header = () => {
           <ul className={styles.navList}>
             {navLinks.map((link) => (
               <li key={link.href} className={styles.navItem}>
-                <Link 
-                  href={link.href} 
-                  className={`${styles.navLink} ${isActive(link.href) ? styles.active : ''}`}
+                <Link
+                  href={link.href}
+                  className={`${styles.navLink} ${isActive(link.href) ? styles.active : ""}`}
                 >
                   <link.icon size={20} className={styles.icon} />
                   <span>{link.label}</span>
-                  {isActive(link.href) && <div className={styles.activeIndicator}></div>}
+                  {isActive(link.href) && (
+                    <div className={styles.activeIndicator}></div>
+                  )}
                 </Link>
               </li>
             ))}
@@ -98,14 +100,16 @@ const Header = () => {
             <ul className={styles.mobileNavList}>
               {navLinks.map((link) => (
                 <li key={link.href} className={styles.mobileNavItem}>
-                  <Link 
+                  <Link
                     href={link.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`${styles.mobileNavLink} ${isActive(link.href) ? styles.mobileActive : ''}`}
+                    className={`${styles.mobileNavLink} ${isActive(link.href) ? styles.mobileActive : ""}`}
                   >
                     <link.icon size={20} className={styles.mobileIcon} />
                     <span>{link.label}</span>
-                    {isActive(link.href) && <div className={styles.mobileActiveIndicator}></div>}
+                    {isActive(link.href) && (
+                      <div className={styles.mobileActiveIndicator}></div>
+                    )}
                   </Link>
                 </li>
               ))}

@@ -46,7 +46,7 @@ export default function DashboardClient({ stats, userName }: DashboardClientProp
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-[#5A8C7A]">
+          <h1 className="text-2xl font-bold text-[#6B8E7B]">
             Bienvenida, {userName}
           </h1>
           <p className="text-sm text-[#6E7C72] mt-1">
@@ -57,14 +57,14 @@ export default function DashboardClient({ stats, userName }: DashboardClientProp
         {/* Tarjetas de estadísticas */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {/* Citas hoy */}
-          <div className="bg-white rounded-xl shadow-sm p-4 border-l-4 border-[#5A8C7A]">
+          <div className="bg-white rounded-xl shadow-sm p-4 border-l-4 border-[#6B8E7B]">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[#6E7C72] text-sm font-medium">Citas Hoy</p>
                 <p className="text-2xl font-bold text-[#2C3E34] mt-1">{stats.todayAppointments}</p>
               </div>
-              <div className="w-10 h-10 bg-[#5A8C7A]/10 rounded-full flex items-center justify-center">
-                <svg className="w-5 h-5 text-[#5A8C7A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-10 h-10 bg-[#6B8E7B]/10 rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-[#6B8E7B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
@@ -127,7 +127,7 @@ export default function DashboardClient({ stats, userName }: DashboardClientProp
             {stats.nextAppointment && (
               <div className="bg-white rounded-xl shadow-sm border border-[#E6E3DE] overflow-hidden">
                 <div className="bg-[#FAF9F7] px-6 py-4 border-b border-[#E6E3DE]">
-                  <h2 className="text-lg font-bold text-[#5A8C7A] flex items-center gap-2">
+                  <h2 className="text-lg font-bold text-[#6B8E7B] flex items-center gap-2">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -149,7 +149,7 @@ export default function DashboardClient({ stats, userName }: DashboardClientProp
                   <div className="flex gap-3 mt-6">
                     <Link
                       href={`/admin/patients?patient=${stats.nextAppointment.id}`}
-                      className="flex-1 py-2 bg-[#5A8C7A] text-white text-center font-semibold rounded-lg hover:bg-[#4A7C6A] transition-colors"
+                      className="flex-1 py-2 bg-[#6B8E7B] text-white text-center font-semibold rounded-lg hover:bg-[#4A7C6A] transition-colors"
                     >
                       Ver Historial
                     </Link>
@@ -164,7 +164,7 @@ export default function DashboardClient({ stats, userName }: DashboardClientProp
             {/* Citas de hoy */}
             <div className="bg-white rounded-xl shadow-sm border border-[#E6E3DE] overflow-hidden">
               <div className="bg-[#FAF9F7] px-6 py-4 border-b border-[#E6E3DE]">
-                <h3 className="text-lg font-bold text-[#5A8C7A] flex items-center gap-2">
+                <h3 className="text-lg font-bold text-[#6B8E7B] flex items-center gap-2">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
@@ -199,7 +199,7 @@ export default function DashboardClient({ stats, userName }: DashboardClientProp
             {/* Gráfica de citas semanales */}
             <div className="bg-white rounded-xl shadow-sm border border-[#E6E3DE] overflow-hidden">
               <div className="bg-[#FAF9F7] px-6 py-4 border-b border-[#E6E3DE]">
-                <h3 className="text-lg font-bold text-[#5A8C7A] flex items-center gap-2">
+                <h3 className="text-lg font-bold text-[#6B8E7B] flex items-center gap-2">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   </svg>
@@ -212,7 +212,7 @@ export default function DashboardClient({ stats, userName }: DashboardClientProp
                     <span className="text-sm text-[#6E7C72] w-8">{day.day}</span>
                     <div className="flex-1 mx-3">
                       <div 
-                        className="bg-[#5A8C7A] rounded-full h-2 transition-all duration-300"
+                        className="bg-[#6B8E7B] rounded-full h-2 transition-all duration-300"
                         style={{ width: `${(day.appointments / maxWeeklyAppointments) * 100}%` }}
                       ></div>
                     </div>
@@ -227,7 +227,7 @@ export default function DashboardClient({ stats, userName }: DashboardClientProp
             {/* Pacientes recientes */}
             <div className="bg-white rounded-xl shadow-sm border border-[#E6E3DE] overflow-hidden">
               <div className="bg-[#FAF9F7] px-6 py-4 border-b border-[#E6E3DE]">
-                <h3 className="text-lg font-bold text-[#5A8C7A] flex items-center gap-2">
+                <h3 className="text-lg font-bold text-[#6B8E7B] flex items-center gap-2">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                   </svg>

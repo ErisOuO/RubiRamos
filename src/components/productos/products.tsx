@@ -160,11 +160,11 @@ export default function ProductosClient({
       );
     }
     return sortOrder === 'asc' ? (
-      <svg className="w-4 h-4 inline-block ml-1 text-[#5A8C7A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg className="w-4 h-4 inline-block ml-1 text-[#6B8E7B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
       </svg>
     ) : (
-      <svg className="w-4 h-4 inline-block ml-1 text-[#5A8C7A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg className="w-4 h-4 inline-block ml-1 text-[#6B8E7B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
       </svg>
     );
@@ -175,7 +175,7 @@ export default function ProductosClient({
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-[#5A8C7A]">Productos</h1>
+        <h1 className="text-2xl font-bold text-[#6B8E7B]">Productos</h1>
         <button
           onClick={handleCrear}
           disabled={cargando}
@@ -199,7 +199,7 @@ export default function ProductosClient({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Buscar por nombre o descripción..."
-                className="w-full pl-10 pr-4 py-2 border border-[#E6E3DE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5A8C7A] focus:border-transparent transition-all text-[#2C3E34]"
+                className="w-full pl-10 pr-4 py-2 border border-[#E6E3DE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B8E7B] focus:border-transparent transition-all text-[#2C3E34]"
               />
               <svg
                 className="absolute left-3 top-2.5 h-5 w-5 text-[#6E7C72]"
@@ -225,7 +225,7 @@ export default function ProductosClient({
             <select
               value={categoriaSeleccionada}
               onChange={(e) => setCategoriaSeleccionada(Number(e.target.value))}
-              className="w-full px-4 py-2 border border-[#E6E3DE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5A8C7A] focus:border-transparent transition-all text-[#2C3E34] bg-white"
+              className="w-full px-4 py-2 border border-[#E6E3DE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B8E7B] focus:border-transparent transition-all text-[#2C3E34] bg-white"
             >
               <option value={0}>Todas las categorías</option>
               {categorias.map((categoria) => (
@@ -282,7 +282,7 @@ export default function ProductosClient({
                   <tr>
                     {/* Columna Producto con ordenamiento */}
                     <th 
-                      className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider cursor-pointer hover:text-[#5A8C7A] transition-colors"
+                      className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider cursor-pointer hover:text-[#6B8E7B] transition-colors"
                       onClick={() => handleSort('name')}
                     >
                       <span className="flex items-center">
@@ -293,7 +293,7 @@ export default function ProductosClient({
                     
                     {/* Columna Precio con ordenamiento */}
                     <th 
-                      className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider cursor-pointer hover:text-[#5A8C7A] transition-colors"
+                      className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider cursor-pointer hover:text-[#6B8E7B] transition-colors"
                       onClick={() => handleSort('price')}
                     >
                       <span className="flex items-center">
@@ -304,7 +304,7 @@ export default function ProductosClient({
                     
                     {/* Columna Stock con ordenamiento */}
                     <th 
-                      className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider cursor-pointer hover:text-[#5A8C7A] transition-colors"
+                      className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider cursor-pointer hover:text-[#6B8E7B] transition-colors"
                       onClick={() => handleSort('stock')}
                     >
                       <span className="flex items-center">
@@ -407,7 +407,7 @@ export default function ProductosClient({
                         onClick={() => setPaginaActual(pageNum)}
                         className={`px-3 py-1 rounded-lg transition-colors ${
                           paginaActual === pageNum
-                            ? 'bg-[#5A8C7A] text-white'
+                            ? 'bg-[#6B8E7B] text-white'
                             : 'border border-[#E6E3DE] text-[#2C3E34] hover:bg-[#FAF9F7]'
                         }`}
                       >

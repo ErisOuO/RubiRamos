@@ -6,10 +6,10 @@ export default function NotFound() {
       <div className="max-w-4xl w-full">
         {/* Encabezado con logo sutil */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-[#5A8C7A]/10 to-[#5A8C7A]/5 mb-6">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-[#6B8E7B]/10 to-[#6B8E7B]/5 mb-6">
             <div className="text-3xl">🥗</div>
           </div>
-          <h1 className="text-7xl md:text-8xl font-bold font-serif text-[#5A8C7A]">
+          <h1 className="text-7xl md:text-8xl font-bold font-serif text-[#6B8E7B]">
             404
           </h1>
           <p className="text-lg text-[#6E7C72] mt-4 max-w-md mx-auto">
@@ -24,7 +24,7 @@ export default function NotFound() {
             {/* Fruta principal */}
             <div className="relative w-64 h-64 mx-auto">
               {/* Fondo orgánico */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#5A8C7A]/5 to-[#BD7D4A]/5 rounded-[40%_60%_60%_40%/60%_40%_60%_40%] animate-[morph_8s_ease-in-out_infinite]"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-[#6B8E7B]/5 to-[#BD7D4A]/5 rounded-[40%_60%_60%_40%/60%_40%_60%_40%] animate-[morph_8s_ease-in-out_infinite]"></div>
               
               {/* Brócoli "perdido" */}
               <div className="relative z-10 w-full h-full flex items-center justify-center">
@@ -45,7 +45,7 @@ export default function NotFound() {
             </div>
             
             {/* Elementos decorativos */}
-            <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-gradient-to-br from-[#A8CF45]/10 to-[#5A8C7A]/10 rounded-full"></div>
+            <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-gradient-to-br from-[#A8CF45]/10 to-[#6B8E7B]/10 rounded-full"></div>
             <div className="absolute -top-6 -right-6 w-20 h-20 bg-gradient-to-br from-[#BD7D4A]/10 to-[#F58634]/10 rounded-full"></div>
           </div>
 
@@ -64,7 +64,7 @@ export default function NotFound() {
 
             {/* Sugerencias */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold font-serif text-[#5A8C7A]">
+              <h3 className="text-lg font-semibold font-serif text-[#6B8E7B]">
                 Te sugerimos:
               </h3>
               <ul className="space-y-3">
@@ -87,7 +87,7 @@ export default function NotFound() {
             <div className="pt-4">
               <Link
                 href="/"
-                className="inline-flex items-center justify-center bg-[#5A8C7A] text-white font-semibold px-8 py-4 rounded-lg hover:bg-[#4a7768] transition-all duration-300 group shadow-sm hover:shadow-md"
+                className="inline-flex items-center justify-center bg-[#6B8E7B] text-white font-semibold px-8 py-4 rounded-lg hover:bg-[#5a7d6a] transition-all duration-300 group shadow-sm hover:shadow-md"
               >
                 <span>Regresar al inicio</span>
                 <svg className="w-5 h-5 ml-3 transform group-hover:translate-x-1 transition-transform" 
@@ -106,7 +106,7 @@ export default function NotFound() {
         <div className="mt-16 pt-8 border-t border-[#E6E3DE] text-center">
           <p className="text-sm text-[#6E7C72]">
             Consultorio Nutricional • {new Date().getFullYear()} • 
-            <a href="mailto:contacto@consultorio.com" className="text-[#5A8C7A] hover:text-[#4a7768] ml-2">
+            <a href="mailto:contacto@consultorio.com" className="text-[#6B8E7B] hover:text-[#5a7d6a] ml-2">
               contacto@consultorio.com
             </a>
           </p>

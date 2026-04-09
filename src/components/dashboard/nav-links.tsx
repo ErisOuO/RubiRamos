@@ -64,7 +64,7 @@ export default function NavLinks({ mobile = false, onLinkClick }: { mobile?: boo
               mobile
                 ? isActive
                   ? { 
-                      backgroundColor: '#5A8C7A',
+                      backgroundColor: '#6B8E7B',
                       color: '#FFFFFF'
                     }
                   : { 
@@ -72,7 +72,7 @@ export default function NavLinks({ mobile = false, onLinkClick }: { mobile?: boo
                     }
                 : isActive
                 ? { 
-                    backgroundColor: '#5A8C7A',
+                    backgroundColor: '#6B8E7B',
                     color: '#FFFFFF'
                   }
                 : { 
@@ -108,7 +108,7 @@ export default function NavLinks({ mobile = false, onLinkClick }: { mobile?: boo
       <div className={`${mobile ? 'my-2' : 'my-4'}`}>
         <div style={{ 
           height: '1px', 
-          backgroundColor: mobile ? '#5A8C7A' : '#5A8C7A',
+          backgroundColor: mobile ? '#6B8E7B' : '#6B8E7B',
           opacity: 0.3 
         }}></div>
       </div>

@@ -18,7 +18,7 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, patientN
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
       <div className="bg-white rounded-xl shadow-xl max-w-md w-full border border-[#E6E3DE]">
         <div className="p-6">
-          <h3 className="text-lg font-bold text-[#5A8C7A] mb-4">Confirmar cita</h3>
+          <h3 className="text-lg font-bold text-[#6B8E7B] mb-4">Confirmar cita</h3>
           <div className="space-y-3 mb-4">
             <p className="text-sm text-[#2C3E34]"><strong>Paciente:</strong> {patientName}</p>
             <p className="text-sm text-[#2C3E34]"><strong>Fecha:</strong> {date}</p>

@@ -108,11 +108,11 @@ export default function PatientsList({ initialPatients, initialTotal, initialSta
       );
     }
     return sortOrder === 'asc' ? (
-      <svg className="w-3 h-3 inline-block ml-1 text-[#5A8C7A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-3 h-3 inline-block ml-1 text-[#6B8E7B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
       </svg>
     ) : (
-      <svg className="w-3 h-3 inline-block ml-1 text-[#5A8C7A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-3 h-3 inline-block ml-1 text-[#6B8E7B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
       </svg>
     );
@@ -124,13 +124,13 @@ export default function PatientsList({ initialPatients, initialTotal, initialSta
     <div className="p-6">
       {/* Título de la página */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[#5A8C7A]">Pacientes</h1>
+        <h1 className="text-2xl font-bold text-[#6B8E7B]">Pacientes</h1>
         <p className="text-sm text-[#6E7C72] mt-1">Gestión de pacientes y seguimiento de citas</p>
       </div>
 
       {/* Tarjetas de estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-xl shadow-sm p-4 border-l-4 border-[#5A8C7A]">
+        <div className="bg-white rounded-xl shadow-sm p-4 border-l-4 border-[#6B8E7B]">
           <p className="text-[#6E7C72] text-sm">Total Pacientes</p>
           <p className="text-2xl font-bold text-[#2C3E34]">{stats.total}</p>
         </div>
@@ -158,7 +158,7 @@ export default function PatientsList({ initialPatients, initialTotal, initialSta
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Nombre, apellido, email o usuario..."
-              className="w-full px-3 py-2 border border-[#E6E3DE] rounded-lg focus:ring-2 focus:ring-[#5A8C7A]"
+              className="w-full px-3 py-2 border border-[#E6E3DE] rounded-lg focus:ring-2 focus:ring-[#6B8E7B]"
             />
           </div>
           <div className="w-48">
@@ -166,7 +166,7 @@ export default function PatientsList({ initialPatients, initialTotal, initialSta
             <select
               value={genderFilter}
               onChange={(e) => setGenderFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-[#E6E3DE] rounded-lg focus:ring-2 focus:ring-[#5A8C7A]"
+              className="w-full px-3 py-2 border border-[#E6E3DE] rounded-lg focus:ring-2 focus:ring-[#6B8E7B]"
             >
               <option value="todos">Todos</option>
               <option value="M">Masculino</option>
@@ -182,13 +182,13 @@ export default function PatientsList({ initialPatients, initialTotal, initialSta
           <table className="min-w-full divide-y divide-[#E6E3DE]">
             <thead className="bg-[#FAF9F7]">
               <tr>
-                <th onClick={() => handleSort('first_name')} className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider cursor-pointer hover:text-[#5A8C7A]">
+                <th onClick={() => handleSort('first_name')} className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider cursor-pointer hover:text-[#6B8E7B]">
                   <span className="flex items-center gap-1">Nombre {getSortIcon('first_name')}</span>
                 </th>
-                <th onClick={() => handleSort('first_lastname')} className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider cursor-pointer hover:text-[#5A8C7A]">
+                <th onClick={() => handleSort('first_lastname')} className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider cursor-pointer hover:text-[#6B8E7B]">
                   <span className="flex items-center gap-1">Apellido {getSortIcon('first_lastname')}</span>
                 </th>
-                <th onClick={() => handleSort('email')} className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider cursor-pointer hover:text-[#5A8C7A]">
+                <th onClick={() => handleSort('email')} className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider cursor-pointer hover:text-[#6B8E7B]">
                   <span className="flex items-center gap-1">Email {getSortIcon('email')}</span>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Usuario</th>
@@ -218,7 +218,7 @@ export default function PatientsList({ initialPatients, initialTotal, initialSta
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[#2C3E34]">{patient.gender === 'M' ? 'Masculino' : patient.gender === 'F' ? 'Femenino' : 'No especificado'}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[#2C3E34]">{patient.phone || '—'}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                      <button onClick={() => handleViewPatient(patient.id)} className="text-[#5A8C7A] hover:text-[#4A7C6A]">Ver</button>
+                      <button onClick={() => handleViewPatient(patient.id)} className="text-[#6B8E7B] hover:text-[#4A7C6A]">Ver</button>
                       <button onClick={() => handleEditPatient(patient.id)} className="text-[#BD7D4A] hover:text-[#F58634]">Editar</button>
                       <button onClick={() => handleDeletePatient(patient.id, patient.first_name)} className="text-[#F58634] hover:text-[#BD7D4A]">Eliminar</button>
                     </td>

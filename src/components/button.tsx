@@ -19,7 +19,7 @@ export function Button({
 }: ButtonProps) {
   const baseClasses = clsx(
     'font-medium rounded-lg transition-colors duration-200 flex items-center justify-center gap-2',
-    'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#5A8C7A]',
+    'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6B8E7B]',
     'disabled:opacity-60 disabled:cursor-not-allowed',
     {
       'px-4 py-2 text-sm': size === 'sm',
@@ -27,9 +27,9 @@ export function Button({
       'px-8 py-4 text-lg': size === 'lg',
       
       'bg-[#BD7D4A] text-white hover:bg-[#F58634] shadow-sm': variant === 'primary',
-      'bg-[#5A8C7A] text-white hover:bg-[#4A7C6A] shadow-sm': variant === 'secondary',
-      'bg-transparent border border-[#5A8C7A] text-[#5A8C7A] hover:bg-[#FAF9F7]': variant === 'outline',
-      'bg-transparent text-[#5A8C7A] hover:bg-[#FAF9F7]': variant === 'ghost',
+      'bg-[#6B8E7B] text-white hover:bg-[#4A7C6A] shadow-sm': variant === 'secondary',
+      'bg-transparent border border-[#6B8E7B] text-[#6B8E7B] hover:bg-[#FAF9F7]': variant === 'outline',
+      'bg-transparent text-[#6B8E7B] hover:bg-[#FAF9F7]': variant === 'ghost',
     },
     className
   );

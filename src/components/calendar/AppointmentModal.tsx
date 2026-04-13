@@ -194,7 +194,7 @@ export default function AppointmentModal({ isOpen, onClose, selectedDate, onSucc
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-[#E6E3DE]">
           <div className="sticky top-0 bg-white border-b border-[#E6E3DE] px-6 py-4 bg-[#FAF9F7] flex justify-between items-center">
-            <h2 className="text-xl font-bold text-[#5A8C7A]">Nueva Cita</h2>
+            <h2 className="text-xl font-bold text-[#6B8E7B]">Nueva Cita</h2>
             <button onClick={onClose} className="text-[#6E7C72] hover:text-[#2C3E34]">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -208,13 +208,13 @@ export default function AppointmentModal({ isOpen, onClose, selectedDate, onSucc
                 <div className="flex gap-4 border-b border-[#E6E3DE] pb-2">
                   <button
                     onClick={() => setStep('select-patient')}
-                    className={`pb-2 font-semibold ${step === 'select-patient' ? 'text-[#5A8C7A] border-b-2 border-[#5A8C7A]' : 'text-[#6E7C72]'}`}
+                    className={`pb-2 font-semibold ${step === 'select-patient' ? 'text-[#6B8E7B] border-b-2 border-[#6B8E7B]' : 'text-[#6E7C72]'}`}
                   >
                     Paciente existente
                   </button>
                   <button
                     onClick={() => setStep('new-patient')}
-                    className={`pb-2 font-semibold ${step === 'new-patient' ? 'text-[#5A8C7A] border-b-2 border-[#5A8C7A]' : 'text-[#6E7C72]'}`}
+                    className={`pb-2 font-semibold ${step === 'new-patient' ? 'text-[#6B8E7B] border-b-2 border-[#6B8E7B]' : 'text-[#6E7C72]'}`}
                   >
                     Nuevo paciente
                   </button>
@@ -228,9 +228,9 @@ export default function AppointmentModal({ isOpen, onClose, selectedDate, onSucc
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         placeholder="Buscar por nombre, apellido o email..."
-                        className="flex-1 px-3 py-2 border border-[#E6E3DE] rounded-lg focus:ring-2 focus:ring-[#5A8C7A]"
+                        className="flex-1 px-3 py-2 border border-[#E6E3DE] rounded-lg focus:ring-2 focus:ring-[#6B8E7B]"
                       />
-                      <button onClick={handleSearchPatients} className="px-4 py-2 bg-[#5A8C7A] text-white rounded-lg hover:bg-[#4A7C6A]">Buscar</button>
+                      <button onClick={handleSearchPatients} className="px-4 py-2 bg-[#6B8E7B] text-white rounded-lg hover:bg-[#4A7C6A]">Buscar</button>
                     </div>
                     <div className="max-h-64 overflow-y-auto space-y-2 border border-[#E6E3DE] rounded-lg p-2">
                       {patients.map((patient) => (
@@ -296,7 +296,7 @@ export default function AppointmentModal({ isOpen, onClose, selectedDate, onSucc
                         key={slot}
                         type="button"
                         onClick={() => setSelectedTime(slot)}
-                        className={`py-1 px-2 text-sm rounded-lg border ${selectedTime === slot ? 'bg-[#5A8C7A] text-white border-[#5A8C7A]' : 'border-[#E6E3DE] hover:bg-[#FAF9F7]'}`}
+                        className={`py-1 px-2 text-sm rounded-lg border ${selectedTime === slot ? 'bg-[#6B8E7B] text-white border-[#6B8E7B]' : 'border-[#E6E3DE] hover:bg-[#FAF9F7]'}`}
                       >
                         {slot.slice(0,5)}
                       </button>
@@ -306,7 +306,7 @@ export default function AppointmentModal({ isOpen, onClose, selectedDate, onSucc
 
                 <div className="flex items-center gap-4">
                   <label className="flex items-center gap-2">
-                    <input type="checkbox" checked={depositPaid} onChange={(e) => setDepositPaid(e.target.checked)} className="rounded text-[#5A8C7A]" />
+                    <input type="checkbox" checked={depositPaid} onChange={(e) => setDepositPaid(e.target.checked)} className="rounded text-[#6B8E7B]" />
                     <span className="text-sm text-[#2C3E34]">Pagó anticipo</span>
                   </label>
                   <div className="flex items-center gap-2">

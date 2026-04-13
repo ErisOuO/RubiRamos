@@ -18,7 +18,7 @@ export default function Breadcrumbs() {
           <li>
             <Link
               href="/"
-              className="text-[#5A8C7A] hover:text-[#BD7D4A] font-medium flex items-center gap-1 group"
+              className="text-[#6B8E7B] hover:text-[#BD7D4A] font-medium flex items-center gap-1 group"
             >
               <span className="group-hover:underline">Inicio</span>
             </Link>

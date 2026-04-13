@@ -44,7 +44,7 @@ export default function InternalServerError({
                 {[
                   { label: 'Procesamiento', value: 35, color: '#F58634' },
                   { label: 'Memoria', value: 65, color: '#BD7D4A' },
-                  { label: 'Conexión', value: 85, color: '#5A8C7A' },
+                  { label: 'Conexión', value: 85, color: '#6B8E7B' },
                   { label: 'Respuesta', value: 25, color: '#F58634' },
                 ].map((metric, index) => (
                   <div key={index} className="space-y-2">
@@ -74,7 +74,7 @@ export default function InternalServerError({
             </div>
 
             {/* Elementos decorativos */}
-            <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-gradient-to-br from-[#A8CF45]/20 to-[#5A8C7A]/20 rounded-lg rotate-12"></div>
+            <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-gradient-to-br from-[#A8CF45]/20 to-[#6B8E7B]/20 rounded-lg rotate-12"></div>
             <div className="absolute -top-4 -right-4 w-10 h-10 bg-gradient-to-br from-[#F58634]/10 to-[#BD7D4A]/10 rounded-full"></div>
           </div>
 
@@ -95,7 +95,7 @@ export default function InternalServerError({
             <div className="bg-white rounded-xl border border-[#E6E3DE] overflow-hidden">
               <details className="group">
                 <summary className="flex items-center justify-between p-4 cursor-pointer hover:bg-[#FAF9F7] transition-colors">
-                  <span className="text-[#5A8C7A] font-semibold">Detalles técnicos</span>
+                  <span className="text-[#6B8E7B] font-semibold">Detalles técnicos</span>
                   <svg className="w-5 h-5 text-[#6E7C72] transform group-open:rotate-180 transition-transform" 
                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
@@ -126,7 +126,7 @@ export default function InternalServerError({
 
               <Link
                 href="/"
-                className="w-full bg-white border border-[#5A8C7A] text-[#5A8C7A] font-semibold px-6 py-4 rounded-lg hover:bg-[#5A8C7A] hover:text-white transition-all duration-300 flex items-center justify-center group shadow-sm"
+                className="w-full bg-white border border-[#6B8E7B] text-[#6B8E7B] font-semibold px-6 py-4 rounded-lg hover:bg-[#6B8E7B] hover:text-white transition-all duration-300 flex items-center justify-center group shadow-sm"
               >
                 <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />

@@ -51,12 +51,12 @@ export default function DayAppointmentsList({ date, onRefresh, variant = 'sideba
               key={app.id}
               className={`p-4 rounded-lg border transition-all ${
                 isCurrentAppointment(app.start_time) 
-                  ? 'bg-[#5A8C7A]/10 border-[#5A8C7A] shadow-md' 
+                  ? 'bg-[#6B8E7B]/10 border-[#6B8E7B] shadow-md' 
                   : 'bg-white border-[#E6E3DE]'
               }`}
             >
               <div className="flex items-baseline gap-2 mb-2">
-                <span className="text-lg font-bold text-[#5A8C7A]">{app.start_time.slice(0,5)}</span>
+                <span className="text-lg font-bold text-[#6B8E7B]">{app.start_time.slice(0,5)}</span>
                 <span className="text-sm text-[#6E7C72]">-</span>
                 <span className="text-sm text-[#6E7C72]">{app.end_time.slice(0,5)}</span>
                 {isCurrentAppointment(app.start_time) && (
@@ -101,14 +101,14 @@ export default function DayAppointmentsList({ date, onRefresh, variant = 'sideba
             key={app.id}
             className={`p-4 rounded-lg border transition-all ${
               isCurrentAppointment(app.start_time) 
-                ? 'bg-[#5A8C7A]/10 border-[#5A8C7A] shadow-md' 
+                ? 'bg-[#6B8E7B]/10 border-[#6B8E7B] shadow-md' 
                 : 'bg-white border-[#E6E3DE] hover:shadow-md'
             }`}
           >
             {/* Cabecera con horario */}
             <div className="flex items-center justify-between mb-3 pb-2 border-b border-[#E6E3DE]">
               <div className="flex items-baseline gap-2">
-                <span className="text-xl font-bold text-[#5A8C7A]">{app.start_time.slice(0,5)}</span>
+                <span className="text-xl font-bold text-[#6B8E7B]">{app.start_time.slice(0,5)}</span>
                 <span className="text-sm text-[#6E7C72]">-</span>
                 <span className="text-sm text-[#6E7C72]">{app.end_time.slice(0,5)}</span>
               </div>

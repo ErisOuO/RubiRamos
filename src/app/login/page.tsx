@@ -15,7 +15,7 @@ export default function LoginPage() {
         {/* Sección informativa */}
         <div className="w-full lg:w-1/2 max-w-md space-y-6 text-center lg:text-left">
           <div>
-            <h1 className="text-3xl font-bold text-[#5A8C7A]">Rubí Ramos</h1>
+            <h1 className="text-3xl font-bold text-[#6B8E7B]">Rubí Ramos</h1>
             <p className="text-sm text-[#6E7C72] mt-1">Consultorio Nutricional</p>
           </div>
           
@@ -31,7 +31,7 @@ export default function LoginPage() {
           <div className="hidden lg:block pt-8">
             <div className="bg-white p-6 rounded-lg shadow-sm border border-[#E6E3DE]">
               <h3 className="font-medium text-[#2C3E34] mb-3 flex items-center">
-                <HelpCircle className="h-5 w-5 text-[#5A8C7A] mr-2" />
+                <HelpCircle className="h-5 w-5 text-[#6B8E7B] mr-2" />
                 ¿Necesitas ayuda?
               </h3>
               <p className="text-sm text-[#6E7C72]">

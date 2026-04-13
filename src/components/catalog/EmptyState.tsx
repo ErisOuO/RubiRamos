@@ -30,9 +30,9 @@ export default function EmptyState({ search, categoria }: EmptyStateProps) {
         
         <p className="text-lg mb-6" style={{ color: '#6E7C72' }}>
           {search ? (
-            <>No hay resultados para "<span className="font-semibold" style={{ color: '#5A8C7A' }}>{search}</span>"</>
+            <>No hay resultados para "<span className="font-semibold" style={{ color: '#6B8E7B' }}>{search}</span>"</>
           ) : categoria !== 'Todos' ? (
-            <>No hay productos disponibles en la categoría "<span className="font-semibold" style={{ color: '#5A8C7A' }}>{categoria}</span>"</>
+            <>No hay productos disponibles en la categoría "<span className="font-semibold" style={{ color: '#6B8E7B' }}>{categoria}</span>"</>
           ) : (
             <>No hay productos disponibles en este momento</>
           )}
@@ -48,7 +48,7 @@ export default function EmptyState({ search, categoria }: EmptyStateProps) {
                 onClick={handleClearFilters}
                 className="px-4 py-2 rounded-lg font-medium transition-colors"
                 style={{ 
-                  backgroundColor: '#5A8C7A',
+                  backgroundColor: '#6B8E7B',
                   color: '#FFFFFF'
                 }}
               >
@@ -59,8 +59,8 @@ export default function EmptyState({ search, categoria }: EmptyStateProps) {
               onClick={() => router.push('/schedule')}
               className="px-4 py-2 rounded-lg font-medium border transition-colors"
               style={{ 
-                borderColor: '#5A8C7A',
-                color: '#5A8C7A',
+                borderColor: '#6B8E7B',
+                color: '#6B8E7B',
                 backgroundColor: 'transparent'
               }}
             >

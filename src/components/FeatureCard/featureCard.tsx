@@ -13,7 +13,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon: Icon, title, descriptio
     >
       <div className="mb-6 flex justify-center">
         <div className="h-20 w-20 rounded-full flex items-center justify-center" style={{ backgroundColor: '#FAF9F7' }}>
-          <Icon className="h-10 w-10" style={{ color: '#5A8C7A' }} /> 
+          <Icon className="h-10 w-10" style={{ color: '#6B8E7B' }} /> 
         </div>
       </div>
       <h3 className="text-xl font-bold mb-4 font-serif" style={{ color: '#2C3E34' }}>{title}</h3>

@@ -157,8 +157,8 @@ export default function VerificarForm() {
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <div className="flex items-center justify-center space-x-3 mb-3">
-              <ShieldCheck className="h-8 w-8 text-[#5A8C7A]" />
-              <h1 className="text-2xl font-bold text-[#5A8C7A]">Rubí Ramos</h1>
+              <ShieldCheck className="h-8 w-8 text-[#6B8E7B]" />
+              <h1 className="text-2xl font-bold text-[#6B8E7B]">Rubí Ramos</h1>
             </div>
             <h2 className="text-xl font-semibold text-[#2C3E34]">Verificación de Seguridad</h2>
             <p className="text-sm text-[#6E7C72] mt-2">
@@ -169,14 +169,14 @@ export default function VerificarForm() {
           <form onSubmit={verificarCodigo} className="space-y-6">
             <div className="text-center space-y-3">
               <div className="flex items-center justify-center text-sm text-[#6E7C72]">
-                <Mail className="h-5 w-5 mr-2 text-[#5A8C7A]" />
+                <Mail className="h-5 w-5 mr-2 text-[#6B8E7B]" />
                 <p>
                   Código enviado a: <b className="text-[#2C3E34]">{email}</b>
                 </p>
               </div>
               
               <div className="flex items-center justify-center text-sm text-[#6E7C72]">
-                <Clock className="h-5 w-5 mr-2 text-[#5A8C7A]" />
+                <Clock className="h-5 w-5 mr-2 text-[#6B8E7B]" />
                 <p>
                   Expira en: <b className="text-[#BD7D4A]">
                     {Math.floor(counter / 60)}:{(counter % 60).toString().padStart(2, '0')}
@@ -207,7 +207,7 @@ export default function VerificarForm() {
                   onChange={(e) => handleDigitChange(idx, e.target.value)}
                   onPaste={handlePaste}
                   onKeyDown={(e) => handleKeyDown(idx, e)}
-                  className="w-12 h-14 text-2xl font-medium text-center border border-[#E6E3DE] rounded-lg focus:ring-2 focus:ring-[#5A8C7A] focus:border-[#5A8C7A] transition"
+                  className="w-12 h-14 text-2xl font-medium text-center border border-[#E6E3DE] rounded-lg focus:ring-2 focus:ring-[#6B8E7B] focus:border-[#6B8E7B] transition"
                   autoFocus={idx === 0}
                 />
               ))}
@@ -217,7 +217,7 @@ export default function VerificarForm() {
               <div className={`p-3 rounded-lg text-center text-sm font-medium ${
                 mensaje.includes('incorrecto') || mensaje.includes('Error') 
                   ? 'bg-red-50 text-red-600 border-l-4 border-[#F58634]' 
-                  : 'bg-blue-50 text-blue-600 border-l-4 border-[#5A8C7A]'
+                  : 'bg-blue-50 text-blue-600 border-l-4 border-[#6B8E7B]'
               }`}>
                 {mensaje}
               </div>
@@ -281,13 +281,13 @@ export default function VerificarForm() {
       {/* Sección informativa */}
       <div className="w-full lg:w-1/2 p-8 lg:p-12 flex items-center justify-center bg-white">
         <div className="w-full max-w-md">
-          <h3 className="text-2xl font-bold text-[#5A8C7A] mb-6">
+          <h3 className="text-2xl font-bold text-[#6B8E7B] mb-6">
             Sobre nuestro consultorio
           </h3>
           
           <div className="space-y-6">
             <div className="flex items-start gap-4">
-              <div className="bg-[#5A8C7A] p-2 rounded-lg text-white flex-shrink-0">
+              <div className="bg-[#6B8E7B] p-2 rounded-lg text-white flex-shrink-0">
                 <Lock className="h-5 w-5" />
               </div>
               <div>
@@ -299,7 +299,7 @@ export default function VerificarForm() {
             </div>
             
             <div className="flex items-start gap-4">
-              <div className="bg-[#5A8C7A] p-2 rounded-lg text-white flex-shrink-0">
+              <div className="bg-[#6B8E7B] p-2 rounded-lg text-white flex-shrink-0">
                 <AlertCircle className="h-5 w-5" />
               </div>
               <div>
@@ -311,7 +311,7 @@ export default function VerificarForm() {
             </div>
             
             <div className="flex items-start gap-4">
-              <div className="bg-[#5A8C7A] p-2 rounded-lg text-white flex-shrink-0">
+              <div className="bg-[#6B8E7B] p-2 rounded-lg text-white flex-shrink-0">
                 <CheckCircle className="h-5 w-5" />
               </div>
               <div>
@@ -332,7 +332,7 @@ export default function VerificarForm() {
               <p className="text-sm text-[#6E7C72]">
                 ¿Tienes dudas sobre el sistema o tu expediente médico?
               </p>
-              <p className="text-sm text-[#5A8C7A] font-medium mt-1">
+              <p className="text-sm text-[#6B8E7B] font-medium mt-1">
                 contacto@rubiramos.com | +52 55 1234 5678
               </p>
             </div>

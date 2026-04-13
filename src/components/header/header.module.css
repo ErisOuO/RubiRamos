@@ -1,12 +1,11 @@
 /* Estilos base del header */
 .header {
   width: 100%;
-  background-color: #5A8C7A; /* Color Primario de Marca - Verde salvia apagado */
-  border-bottom: 1px solid #E6E3DE; /* Líneas y bordes - Gris cálido muy claro */
-  box-shadow: 0 2px 8px rgba(44, 62, 52, 0.08); /* Sombra sutil con matiz verde */
+  background-color: #6B8E7B; /* Verde salvia - profesional y calmado */
+  border-bottom: 1px solid rgba(230, 227, 222, 0.3);
+  box-shadow: 0 2px 8px rgba(107, 142, 123, 0.15);
   position: relative;
 }
-
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -36,7 +35,7 @@
 /* Botón menú móvil */
 .mobileMenuButton {
   display: none;
-  background: none;
+  background: rgba(255, 255, 255, 0.1);
   border: none;
   color: #FFFFFF;
   cursor: pointer;
@@ -47,7 +46,7 @@
 }
 
 .mobileMenuButton:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Navegación escritorio */
@@ -87,13 +86,13 @@
 
 .navLink:hover {
   color: #FFFFFF;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.15);
   transform: translateY(-2px);
 }
 
 .navLink.active {
   color: #FFFFFF;
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .icon {
@@ -113,19 +112,19 @@
 .activeIndicator {
   width: 70%;
   height: 3px;
-  background-color: #F58634; /* Acento de Máximo Impacto - Naranja Logo */
+  background-color: #F58634;
   border-radius: 2px;
   margin-top: 4px;
 }
 
 /* Estilo especial para el botón de login */
 .navItem:last-child .navLink {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .navItem:last-child .navLink:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.25);
 }
 
 /* Menú móvil */
@@ -139,10 +138,11 @@
 }
 
 .mobileMenuContent {
-  background-color: #FFFFFF; /* Fondo blanco para el menú desplegable */
+  background-color: rgba(255, 255, 255, 0.98); /* Fondo blanco con alta opacidad */
+  backdrop-filter: blur(10px);
   border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(44, 62, 52, 0.15);
-  border: 1px solid #E6E3DE;
+  box-shadow: 0 4px 20px rgba(124, 179, 140, 0.15);
+  border: 1px solid rgba(230, 227, 222, 0.5);
   overflow: hidden;
 }
 
@@ -153,7 +153,7 @@
 }
 
 .mobileNavItem {
-  border-bottom: 1px solid #FAF9F7; /* Separadores con el color de fondo */
+  border-bottom: 1px solid rgba(250, 249, 247, 0.8);
 }
 
 .mobileNavItem:last-child {
@@ -166,7 +166,7 @@
   gap: 1rem;
   padding: 1rem 1.5rem;
   text-decoration: none;
-  color: #2C3E34; /* Texto Principal - Verde grisáceo muy oscuro */
+  color: #2C3E34;
   font-family: 'Open Sans', sans-serif;
   font-weight: 500;
   transition: all 0.3s ease;
@@ -174,24 +174,24 @@
 }
 
 .mobileNavLink:hover {
-  background-color: #FAF9F7; /* Fondo marfil en hover */
-  color: #5A8C7A; /* Color primario en hover */
+  background-color: rgba(250, 249, 247, 0.9);
+  color: #7CB38C;
 }
 
 .mobileNavLink.mobileActive {
-  background-color: #FAF9F7;
-  color: #5A8C7A;
+  background-color: rgba(250, 249, 247, 0.9);
+  color: #7CB38C;
   font-weight: 600;
 }
 
 .mobileIcon {
-  color: #6E7C72; /* Texto Secundario - Gris verdoso medio */
+  color: #6E7C72;
   min-width: 24px;
 }
 
 .mobileNavLink:hover .mobileIcon,
 .mobileNavLink.mobileActive .mobileIcon {
-  color: #5A8C7A;
+  color: #7CB38C;
 }
 
 .mobileActiveIndicator {
@@ -200,23 +200,23 @@
   top: 0;
   bottom: 0;
   width: 4px;
-  background-color: #F58634; /* Naranja del logo */
+  background-color: #F58634;
   border-radius: 0 2px 2px 0;
 }
 
 /* Estilo especial para login en móvil */
 .mobileNavItem:last-child .mobileNavLink {
-  background-color: #FAF9F7;
-  color: #5A8C7A;
+  background-color: rgba(250, 249, 247, 0.9);
+  color: #7CB38C;
   font-weight: 600;
 }
 
 .mobileNavItem:last-child .mobileNavLink:hover {
-  background-color: #E6E3DE;
+  background-color: rgba(230, 227, 222, 0.8);
 }
 
 .mobileNavItem:last-child .mobileIcon {
-  color: #5A8C7A;
+  color: #7CB38C;
 }
 
 /* Menú de usuario desplegable */

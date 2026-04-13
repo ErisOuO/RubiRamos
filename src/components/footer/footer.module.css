@@ -1,9 +1,9 @@
 .footer {
-  background-color: #2C3E34; /* Texto Principal - Verde grisáceo muy oscuro (como fondo) */
+  background-color: #6B8E7B;
   padding: 3rem 1.5rem 1.5rem;
-  color: #FAF9F7; /* Base Neutra - Para texto principal */
+  color: #FAF9F7;
   font-size: 0.95rem;
-  border-top: 1px solid #5A8C7A; /* Línea sutil con el verde primario */
+  border-top: 1px solid #7CB38C;
 }
 
 .container {
@@ -36,7 +36,7 @@
   bottom: 0;
   width: 50px;
   height: 2px;
-  background-color: #BD7D4A; /* Color Secundario - Terracota suave */
+  background-color: #BD7D4A;
 }
 
 .navList {
@@ -50,7 +50,7 @@
 
 .navLink {
   text-decoration: none;
-  color: #E6E3DE; /* Líneas y bordes - Gris cálido muy claro (como texto) */
+  color: #E6E3DE;
   transition: all 0.3s ease;
   display: inline-block;
   font-family: 'Open Sans', sans-serif;
@@ -58,7 +58,7 @@
 }
 
 .navLink:hover {
-  color: #BD7D4A; /* Color Secundario - Terracota suave */
+  color: #BD7D4A;
   transform: translateX(5px);
 }
 
@@ -80,7 +80,7 @@
 }
 
 .contactIcon {
-  color: #BD7D4A; /* Color Secundario - Terracota suave */
+  color: #BD7D4A;
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -100,35 +100,26 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: rgba(90, 140, 122, 0.3); /* Color Primario con transparencia */
-  border: 1px solid rgba(90, 140, 122, 0.5);
+  background-color: rgba(124, 179, 140, 0.3);
+  border: 1px solid rgba(124, 179, 140, 0.5);
 }
 
 .socialLink:hover {
   color: #FFFFFF;
-  background-color: #5A8C7A; /* Color Primario - Verde salvia apagado */
+  background-color: #7CB38C;
   transform: translateY(-3px);
-  border-color: #5A8C7A;
-  box-shadow: 0 4px 12px rgba(90, 140, 122, 0.3);
+  border-color: #7CB38C;
+  box-shadow: 0 4px 12px rgba(124, 179, 140, 0.3);
 }
 
 .copyright {
   text-align: center;
   margin-top: 3rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(90, 140, 122, 0.3); /* Color Primario con transparencia */
+  border-top: 1px solid rgba(124, 179, 140, 0.3);
   color: rgba(250, 249, 247, 0.8);
   font-size: 0.85rem;
   font-family: 'Open Sans', sans-serif;
-}
-
-/* Estilo para el acento de confirmación en elementos especiales */
-.navList li:first-child .navLink {
-  font-weight: 600;
-}
-
-.contactList li:first-child .contactIcon {
-  color: #A8CF45; /* Acento de Confirmación - Verde Logo (uso estratégico) */
 }
 
 @media (max-width: 768px) {
@@ -187,47 +178,4 @@
     padding-top: 1.2rem;
     font-size: 0.8rem;
   }
-}
-
-/* Versión alternativa con fondo más claro */
-.footer.lightVersion {
-  background-color: #5A8C7A; /* Color Primario - Verde salvia apagado */
-  border-top: 1px solid #BD7D4A; /* Línea con terracota */
-}
-
-.footer.lightVersion .sectionTitle {
-  color: #FFFFFF;
-}
-
-.footer.lightVersion .navLink,
-.footer.lightVersion .contactList li {
-  color: #FAF9F7;
-}
-
-.footer.lightVersion .copyright {
-  border-top: 1px solid rgba(189, 125, 74, 0.3); /* Terracota con transparencia */
-}
-
-/* Efectos de hover mejorados */
-.navLink {
-  position: relative;
-  padding-left: 8px;
-}
-
-.navLink::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 4px;
-  height: 4px;
-  background-color: #BD7D4A;
-  border-radius: 50%;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.navLink:hover::before {
-  opacity: 1;
 }

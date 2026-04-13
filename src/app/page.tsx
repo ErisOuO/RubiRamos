@@ -23,8 +23,8 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <main className="min-h-screen">
-      {/* HERO SECTION - CON FONDO */}
-      <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
+      {/* HERO SECTION - CON FONDO Y FOTO DE LA DOCTORA */}
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
         {/* Imagen de fondo */}
         <div className="absolute inset-0 z-0">
           <Image
@@ -41,82 +41,120 @@ export default function Home() {
 
         {/* Contenido sobre la imagen */}
         <div className="container mx-auto px-4 relative z-10 py-16">
-          <div className="max-w-5xl mx-auto">
-            {/* Información principal de la empresa */}
-            <div className="text-center mb-12">
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 font-serif" style={{ color: '#FFFFFF' }}>
-                Consultorio Nutricional
-              </h1>
-              <h2 className="text-2xl md:text-4xl font-semibold mb-10" style={{ color: '#BD7D4A' }}>
-                Nutrióloga Rubí Ramos Álvarez
-              </h2>
-              <div className="inline-flex items-center justify-center gap-3 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full mb-2 border border-white/30">
-                <MapPinIcon className="h-5 w-5" style={{ color: '#FFFFFF' }} />
-                <span className="text-lg font-medium" style={{ color: '#FFFFFF' }}>
-                  C. Juan Mogica Ugalde #10, Huejutla de Reyes, c.p. 43000<br />
-                  Clinica Huejutla, Segundo Piso, Consultorio 13
-                </span>
-              </div>
-            </div>
-
-            {/* CTA principal */}
-            <div className="text-center mb-16">
-              <div className="max-w-2xl mx-auto mb-10">
-                <p className="text-xl mb-6 leading-relaxed" style={{ color: '#FFFFFF' }}>
-                  <strong className="font-bold" style={{ color: '#BD7D4A' }}>Misión:</strong> Brindar atención nutricional integral a personas de distintas edades mediante evaluaciones personalizadas, planes alimenticios adecuados y asesoría profesional.
-                </p>
-              </div>
+          <div className="max-w-6xl mx-auto">
+            
+            {/* Contenido principal - Foto y texto lado a lado */}
+            <div className="flex flex-col md:flex-row items-center gap-10 mb-12">
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button 
-                  className="px-10 py-5 rounded-xl font-bold text-lg shadow-2xl transition-all duration-300 hover:shadow-3xl transform hover:-translate-y-1 hover:scale-105"
-                  style={{ 
-                    backgroundColor: '#F58634',
-                    color: '#FFFFFF'
-                  }}
-                >
-                  Agenda tu Primera Consulta
-                </button>
-                <button 
-                  className="px-10 py-5 border-2 rounded-xl font-bold text-lg transition-all duration-300 hover:bg-white/10 transform hover:-translate-y-1 hover:scale-105"
-                  style={{ 
-                    borderColor: '#FFFFFF',
-                    color: '#FFFFFF'
-                  }}
-                >
-                  Conoce Nuestros Servicios
-                </button>
+              {/* Foto de la doctora - Izquierda */}
+              <div className="md:w-2/5 flex justify-center">
+                <div className="relative">
+                  {/* Marco decorativo detrás de la foto */}
+                  <div className="absolute -top-4 -left-4 w-full h-full rounded-3xl bg-gradient-to-br from-[#BD7D4A] to-[#F58634] opacity-50"></div>
+                  <div className="absolute -bottom-4 -right-4 w-full h-full rounded-3xl bg-gradient-to-br from-[#7CB38C] to-[#A8CF45] opacity-50"></div>
+                  
+                  {/* Contenedor de la foto - Tamaño fijo para que no se corte */}
+                  <div className="relative w-72 h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-2xl overflow-hidden shadow-2xl border-4 border-white/90 bg-white/10">
+                    <Image
+                      src="/rubiramos.png"
+                      alt="Lic. Rubí Ramos Álvarez - Nutrióloga"
+                      fill
+                      className="object-contain"
+                      priority
+                      sizes="(max-width: 768px) 288px, (max-width: 1024px) 320px, 384px"
+                    />
+                  </div>
+                  
+                  {/* Badge flotante */}
+                  <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-full px-5 py-2 shadow-lg whitespace-nowrap">
+                    <span className="text-xs font-bold flex items-center gap-1" style={{ color: '#2C3E34' }}>
+                      <span>🥗</span> Nutrióloga Certificada
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Texto - Derecha */}
+              <div className="md:w-3/5 text-center md:text-left">
+                <h1 className="text-3xl md:text-5xl font-bold mb-3 font-serif" style={{ color: '#FFFFFF' }}>
+                  Consultorio Nutricional
+                </h1>
+                <h2 className="text-xl md:text-3xl font-semibold mb-5" style={{ color: '#BD7D4A' }}>
+                  Nutrióloga Rubí Ramos Álvarez
+                </h2>
+                
+                {/* Dirección */}
+                <div className="inline-flex items-center justify-center md:justify-start gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-white/30">
+                  <MapPinIcon className="h-4 w-4" style={{ color: '#FFFFFF' }} />
+                  <span className="text-xs md:text-sm" style={{ color: '#FFFFFF' }}>
+                    C. Juan Mogica Ugalde #10, Huejutla de Reyes <p>
+                      Clinica Huejutla, Piso 2, Consultorio 14
+                    </p>
+                  </span>
+                </div>
+
+                {/* Misión */}
+                <div className="mb-8">
+                  <p className="text-sm md:text-lg leading-relaxed" style={{ color: '#FFFFFF' }}>
+                    <strong className="font-bold" style={{ color: '#BD7D4A' }}>Misión:</strong> Brindar atención nutricional integral a personas de distintas edades mediante evaluaciones personalizadas, planes alimenticios adecuados y asesoría profesional.
+                  </p>
+                </div>
+                
+                {/* Botones */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                  <button 
+                    className="px-6 py-3 rounded-xl font-bold text-sm md:text-base shadow-2xl transition-all duration-300 hover:shadow-3xl transform hover:-translate-y-1 hover:scale-105 flex items-center justify-center gap-2"
+                    style={{ 
+                      backgroundColor: '#F58634',
+                      color: '#FFFFFF'
+                    }}
+                  >
+                    <CalendarIcon className="h-4 w-4 md:h-5 md:w-5" />
+                    Agenda tu Primera Consulta
+                  </button>
+                  <button 
+                    className="px-6 py-3 border-2 rounded-xl font-bold text-sm md:text-base transition-all duration-300 hover:bg-white/10 transform hover:-translate-y-1 hover:scale-105 flex items-center justify-center gap-2"
+                    style={{ 
+                      borderColor: '#FFFFFF',
+                      color: '#FFFFFF'
+                    }}
+                  >
+                    <UserCircleIcon className="h-4 w-4 md:h-5 md:w-5" />
+                    Conoce Nuestros Servicios
+                  </button>
+                </div>
               </div>
             </div>
 
             {/* Información de contacto inmediata */}
-            <div className="max-w-3xl mx-auto bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8 border border-[#E6E3DE]">
-              <h3 className="text-2xl font-bold text-center mb-8 font-serif" style={{ color: '#2C3E34' }}>
-                📞 Contacto Directo
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="flex flex-col items-center text-center p-4 rounded-xl hover:bg-[#FAF9F7] transition-colors">
-                  <div className="h-14 w-14 rounded-full flex items-center justify-center mb-3" style={{ backgroundColor: '#5A8C7A' }}>
-                    <PhoneIcon className="h-7 w-7 text-white" />
+            <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-6 border border-[#E6E3DE]">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="flex items-center justify-center gap-3 p-3 rounded-xl hover:bg-[#FAF9F7] transition-colors">
+                  <div className="h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#7CB38C' }}>
+                    <PhoneIcon className="h-5 w-5 text-white" />
                   </div>
-                  <span className="font-bold text-lg mb-1" style={{ color: '#2C3E34' }}>Teléfono</span>
-                  <span className="text-lg font-medium" style={{ color: '#5A8C7A' }}>+52 77 1720 6956</span>
+                  <div>
+                    <p className="text-xs font-semibold" style={{ color: '#6E7C72' }}>TELÉFONO</p>
+                    <p className="font-bold text-sm md:text-base" style={{ color: '#2C3E34' }}>+52 77 1720 6956</p>
+                  </div>
                 </div>
-                <div className="flex flex-col items-center text-center p-4 rounded-xl hover:bg-[#FAF9F7] transition-colors">
-                  <div className="h-14 w-14 rounded-full flex items-center justify-center mb-3" style={{ backgroundColor: '#5A8C7A' }}>
-                    <EnvelopeIcon className="h-7 w-7 text-white" />
+                <div className="flex items-center justify-center gap-3 p-3 rounded-xl hover:bg-[#FAF9F7] transition-colors">
+                  <div className="h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#7CB38C' }}>
+                    <EnvelopeIcon className="h-5 w-5 text-white" />
                   </div>
-                  <span className="font-bold text-lg mb-1" style={{ color: '#2C3E34' }}>Email</span>
-                  <span className="text-lg font-medium" style={{ color: '#5A8C7A' }}>contacto@rubinutricion.com</span>
+                  <div>
+                    <p className="text-xs font-semibold" style={{ color: '#6E7C72' }}>EMAIL</p>
+                    <p className="font-bold text-sm md:text-base" style={{ color: '#2C3E34' }}>contacto@rubinutricion.com</p>
+                  </div>
                 </div>
-                <div className="flex flex-col items-center text-center p-4 rounded-xl hover:bg-[#FAF9F7] transition-colors">
-                  <div className="h-14 w-14 rounded-full flex items-center justify-center mb-3" style={{ backgroundColor: '#5A8C7A' }}>
-                    <CalendarIcon className="h-7 w-7 text-white" />
+                <div className="flex items-center justify-center gap-3 p-3 rounded-xl hover:bg-[#FAF9F7] transition-colors">
+                  <div className="h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#7CB38C' }}>
+                    <CalendarIcon className="h-5 w-5 text-white" />
                   </div>
-                  <span className="font-bold text-lg mb-1" style={{ color: '#2C3E34' }}>Horario</span>
-                  <span className="text-lg font-medium" style={{ color: '#5A8C7A' }}>
-                    Lun-Vie: 8am - 6pm
-                  </span>
+                  <div>
+                    <p className="text-xs font-semibold" style={{ color: '#6E7C72' }}>HORARIO</p>
+                    <p className="font-bold text-sm md:text-base" style={{ color: '#2C3E34' }}>Lun-Vie: 8am - 6pm</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -165,23 +203,18 @@ export default function Home() {
       <section className="py-20" style={{ backgroundColor: '#FAF9F7' }}>
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {/* Misión */}
             <div 
               className="p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
               style={{ backgroundColor: '#FFFFFF' }}
             >
-              <div className="h-14 w-14 rounded-full flex items-center justify-center mb-6" style={{ backgroundColor: '#5A8C7A' }}>
+              <div className="h-14 w-14 rounded-full flex items-center justify-center mb-6" style={{ backgroundColor: '#7CB38C' }}>
                 <StarIcon className="h-7 w-7 text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-4 font-serif" style={{ color: '#2C3E34' }}>
-                Misión
-              </h3>
+              <h3 className="text-xl font-bold mb-4 font-serif" style={{ color: '#2C3E34' }}>Misión</h3>
               <p className="leading-relaxed" style={{ color: '#6E7C72' }}>
                 Brindar atención nutricional integral a personas de distintas edades mediante evaluaciones personalizadas, planes alimenticios adecuados y asesoría profesional, contribuyendo a la mejora de la salud, el bienestar y la calidad de vida.
               </p>
             </div>
-
-            {/* Visión */}
             <div 
               className="p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
               style={{ backgroundColor: '#FFFFFF' }}
@@ -189,15 +222,11 @@ export default function Home() {
               <div className="h-14 w-14 rounded-full flex items-center justify-center mb-6" style={{ backgroundColor: '#BD7D4A' }}>
                 <ChartBarIcon className="h-7 w-7 text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-4 font-serif" style={{ color: '#2C3E34' }}>
-                Visión
-              </h3>
+              <h3 className="text-xl font-bold mb-4 font-serif" style={{ color: '#2C3E34' }}>Visión</h3>
               <p className="leading-relaxed" style={{ color: '#6E7C72' }}>
                 Consolidarnos como un consultorio nutricional de referencia a nivel regional, reconocido por la calidad de su atención, el profesionalismo en sus servicios y el impacto positivo en los hábitos alimenticios y la salud de nuestros pacientes.
               </p>
             </div>
-
-            {/* Valores */}
             <div 
               className="p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
               style={{ backgroundColor: '#FFFFFF' }}
@@ -205,9 +234,7 @@ export default function Home() {
               <div className="h-14 w-14 rounded-full flex items-center justify-center mb-6" style={{ backgroundColor: '#F58634' }}>
                 <ShieldCheckIcon className="h-7 w-7 text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-4 font-serif" style={{ color: '#2C3E34' }}>
-                Valores
-              </h3>
+              <h3 className="text-xl font-bold mb-4 font-serif" style={{ color: '#2C3E34' }}>Valores</h3>
               <ul className="space-y-2">
                 {['Profesionalismo', 'Responsabilidad', 'Confidencialidad', 'Empatía', 'Compromiso', 'Calidad'].map((valor) => (
                   <li key={valor} className="flex items-center">
@@ -225,11 +252,8 @@ export default function Home() {
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
-            {/* Objetivos y Metas */}
             <div>
-              <h2 className="text-3xl font-bold mb-8 font-serif text-center" style={{ color: '#2C3E34' }}>
-                Nuestros Objetivos
-              </h2>
+              <h2 className="text-3xl font-bold mb-8 font-serif text-center" style={{ color: '#2C3E34' }}>Nuestros Objetivos</h2>
               <div className="space-y-6">
                 {[
                   'Proporcionar servicios de nutrición personalizados y de calidad',
@@ -239,7 +263,7 @@ export default function Home() {
                   'Fortalecer la confianza y fidelidad de los pacientes'
                 ].map((objetivo, index) => (
                   <div key={index} className="flex items-start p-4 rounded-xl hover:bg-[#FAF9F7] transition-colors">
-                    <div className="h-10 w-10 rounded-full flex items-center justify-center mr-4 flex-shrink-0" style={{ backgroundColor: '#5A8C7A' }}>
+                    <div className="h-10 w-10 rounded-full flex items-center justify-center mr-4 flex-shrink-0" style={{ backgroundColor: '#7CB38C' }}>
                       <span className="text-white font-bold">{index + 1}</span>
                     </div>
                     <p className="text-lg" style={{ color: '#2C3E34' }}>{objetivo}</p>
@@ -247,12 +271,8 @@ export default function Home() {
                 ))}
               </div>
             </div>
-
-            {/* Estrategias */}
             <div>
-              <h2 className="text-3xl font-bold mb-8 font-serif text-center" style={{ color: '#2C3E34' }}>
-                Nuestras Estrategias
-              </h2>
+              <h2 className="text-3xl font-bold mb-8 font-serif text-center" style={{ color: '#2C3E34' }}>Nuestras Estrategias</h2>
               <div className="space-y-6">
                 {[
                   'Realizar evaluaciones nutricionales completas y personalizadas',
@@ -275,7 +295,7 @@ export default function Home() {
       </section>
 
       {/* CTA FINAL */}
-      <section className="py-16" style={{ backgroundColor: '#5A8C7A' }}>
+      <section className="py-16" style={{ backgroundColor: '#7CB38C' }}>
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6 font-serif" style={{ color: '#FFFFFF' }}>
             ¿Listo para transformar tu salud?

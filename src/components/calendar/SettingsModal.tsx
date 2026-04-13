@@ -181,7 +181,7 @@ export default function SettingsModal({ isOpen, onClose, onSave, type, selectedD
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-[#E6E3DE]">
           <div className="sticky top-0 bg-white border-b border-[#E6E3DE] px-6 py-4 bg-[#FAF9F7] flex justify-between items-center">
-            <h2 className="text-xl font-bold text-[#5A8C7A]">
+            <h2 className="text-xl font-bold text-[#6B8E7B]">
               {type === 'general' ? 'Configuración General' : `Configuración del día ${selectedDate?.toLocaleDateString('es-ES')}`}
             </h2>
             <button onClick={onClose} className="text-[#6E7C72] hover:text-[#2C3E34]">
@@ -194,7 +194,7 @@ export default function SettingsModal({ isOpen, onClose, onSave, type, selectedD
           <div className="p-6 space-y-4">
             {type === 'day' && (
               <label className="flex items-center gap-2">
-                <input type="checkbox" checked={isWorkingDay} onChange={(e) => setIsWorkingDay(e.target.checked)} className="rounded text-[#5A8C7A]" />
+                <input type="checkbox" checked={isWorkingDay} onChange={(e) => setIsWorkingDay(e.target.checked)} className="rounded text-[#6B8E7B]" />
                 <span className="text-sm text-[#2C3E34]">Día laborable</span>
               </label>
             )}
@@ -265,7 +265,7 @@ export default function SettingsModal({ isOpen, onClose, onSave, type, selectedD
                               ? 'bg-red-500 text-white' 
                               : hasApp 
                                 ? 'bg-[#F58634]/30 text-[#2C3E34] border border-[#F58634]'
-                                : 'bg-[#E6E3DE] text-[#2C3E34] hover:bg-[#5A8C7A]/20'
+                                : 'bg-[#E6E3DE] text-[#2C3E34] hover:bg-[#6B8E7B]/20'
                         }`}
                         title={isLunch ? 'Horario de comida' : (hasApp ? `Cita: ${appointment?.nombre_completo}` : '')}
                       >

@@ -62,12 +62,12 @@ export default function LoginForm() {
     <div className="relative w-full max-w-md bg-white rounded-xl shadow-lg overflow-hidden border border-[#E6E3DE]">
       {/* Fondos decorativos */}
       <div className="absolute inset-0 overflow-hidden z-0">
-        <div className="absolute -right-20 -top-20 w-64 h-64 bg-[#5A8C7A]/10 rounded-full"></div>
+        <div className="absolute -right-20 -top-20 w-64 h-64 bg-[#6B8E7B]/10 rounded-full"></div>
         <div className="absolute -left-10 -bottom-10 w-48 h-48 bg-[#BD7D4A]/10 rounded-full"></div>
       </div>
 
       <div className="relative z-10">
-        <div className="bg-[#5A8C7A] p-6 text-white border-b-2 border-[#F58634]">
+        <div className="bg-[#6B8E7B] p-6 text-white border-b-2 border-[#F58634]">
           <div className="flex items-center justify-center space-x-3">
             <BriefcaseMedical className="h-8 w-8 text-[#F58634]" />
             <h2 className="text-2xl font-bold">Rubí Ramos</h2>
@@ -88,7 +88,7 @@ export default function LoginForm() {
           <div className="space-y-5">
             <div className="flex flex-col relative">
               <label htmlFor="usuario" className="text-sm font-medium text-[#2C3E34] mb-1 flex items-center">
-                <User className="h-4 w-4 text-[#5A8C7A] mr-2" />
+                <User className="h-4 w-4 text-[#6B8E7B] mr-2" />
                 Usuario
               </label>
               <input
@@ -97,7 +97,7 @@ export default function LoginForm() {
                 value={username}
                 onChange={e => setUsuario(e.target.value)}
                 required
-                className="w-full border border-[#E6E3DE] rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#5A8C7A] focus:border-[#5A8C7A] focus:outline-none transition"
+                className="w-full border border-[#E6E3DE] rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#6B8E7B] focus:border-[#6B8E7B] focus:outline-none transition"
                 placeholder="Ingresa tu usuario"
                 disabled={loading}
               />
@@ -105,7 +105,7 @@ export default function LoginForm() {
 
             <div className="flex flex-col relative">
               <label htmlFor="contrasena" className="text-sm font-medium text-[#2C3E34] mb-1 flex items-center">
-                <Lock className="h-4 w-4 text-[#5A8C7A] mr-2" />
+                <Lock className="h-4 w-4 text-[#6B8E7B] mr-2" />
                 Contraseña
               </label>
               <div className="relative">
@@ -115,7 +115,7 @@ export default function LoginForm() {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   required
-                  className="w-full border border-[#E6E3DE] rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#5A8C7A] focus:border-[#5A8C7A] focus:outline-none transition pr-10"
+                  className="w-full border border-[#E6E3DE] rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#6B8E7B] focus:border-[#6B8E7B] focus:outline-none transition pr-10"
                   placeholder="Ingresa tu contraseña"
                   disabled={loading}
                 />
@@ -141,7 +141,7 @@ export default function LoginForm() {
           <div className="flex justify-between items-center pt-1">
             <Link
               href="/login/recuperacion"
-              className="text-sm text-[#5A8C7A] hover:text-[#F58634] transition flex items-center"
+              className="text-sm text-[#6B8E7B] hover:text-[#F58634] transition flex items-center"
             >
               <HelpCircle className="h-4 w-4 mr-1" />
               ¿Olvidaste tu contraseña?

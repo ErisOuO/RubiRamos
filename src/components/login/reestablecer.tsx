@@ -93,7 +93,7 @@ export default function ReestablecerForm() {
     return (
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 text-center border border-[#E6E3DE]">
         <div className="flex justify-center">
-          <svg className="animate-spin h-8 w-8 text-[#5A8C7A]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <svg className="animate-spin h-8 w-8 text-[#6B8E7B]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
@@ -106,7 +106,7 @@ export default function ReestablecerForm() {
   if (!tokenValido) {
     return (
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg overflow-hidden border border-[#E6E3DE]">
-        <div className="bg-[#5A8C7A] p-6 text-white text-center border-b-2 border-[#F58634]">
+        <div className="bg-[#6B8E7B] p-6 text-white text-center border-b-2 border-[#F58634]">
           <div className="flex items-center justify-center space-x-2">
             <Lock className="h-6 w-6 text-[#F58634]" />
             <h2 className="text-xl font-bold">Token Inválido</h2>
@@ -132,12 +132,12 @@ export default function ReestablecerForm() {
   return (
     <div className="relative w-full max-w-md bg-white rounded-xl shadow-lg overflow-hidden border border-[#E6E3DE]">
       <div className="absolute inset-0 overflow-hidden z-0">
-        <div className="absolute -right-20 -top-20 w-64 h-64 bg-[#5A8C7A]/10 rounded-full"></div>
+        <div className="absolute -right-20 -top-20 w-64 h-64 bg-[#6B8E7B]/10 rounded-full"></div>
         <div className="absolute -left-10 -bottom-10 w-48 h-48 bg-[#BD7D4A]/10 rounded-full"></div>
       </div>
 
       <div className="relative z-10">
-        <div className="bg-[#5A8C7A] p-6 text-white text-center border-b-2 border-[#F58634]">
+        <div className="bg-[#6B8E7B] p-6 text-white text-center border-b-2 border-[#F58634]">
           <div className="flex items-center justify-center space-x-2">
             <Key className="h-6 w-6 text-[#F58634]" />
             <h2 className="text-xl font-bold">Nueva Contraseña</h2>
@@ -151,7 +151,7 @@ export default function ReestablecerForm() {
           <div className="space-y-5">
             <div className="flex flex-col">
               <label htmlFor="nueva-contrasena" className="text-sm font-medium text-[#2C3E34] mb-1 flex items-center">
-                <Lock className="h-4 w-4 text-[#5A8C7A] mr-2" />
+                <Lock className="h-4 w-4 text-[#6B8E7B] mr-2" />
                 Nueva contraseña
               </label>
               <div className="relative">
@@ -160,7 +160,7 @@ export default function ReestablecerForm() {
                   type={showPwd ? 'text' : 'password'}
                   value={pwd}
                   onChange={(e) => setPwd(e.target.value)}
-                  className="w-full border border-[#E6E3DE] rounded-lg px-4 py-3 pr-10 text-sm focus:ring-2 focus:ring-[#5A8C7A] focus:border-[#5A8C7A] focus:outline-none transition"
+                  className="w-full border border-[#E6E3DE] rounded-lg px-4 py-3 pr-10 text-sm focus:ring-2 focus:ring-[#6B8E7B] focus:border-[#6B8E7B] focus:outline-none transition"
                   placeholder="Ingresa tu nueva contraseña"
                   autoComplete="new-password"
                   required
@@ -177,7 +177,7 @@ export default function ReestablecerForm() {
 
             <div className="flex flex-col">
               <label htmlFor="confirmar-contrasena" className="text-sm font-medium text-[#2C3E34] mb-1 flex items-center">
-                <Lock className="h-4 w-4 text-[#5A8C7A] mr-2" />
+                <Lock className="h-4 w-4 text-[#6B8E7B] mr-2" />
                 Confirmar contraseña
               </label>
               <div className="relative">
@@ -186,7 +186,7 @@ export default function ReestablecerForm() {
                   type={showConfirm ? 'text' : 'password'}
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
-                  className="w-full border border-[#E6E3DE] rounded-lg px-4 py-3 pr-10 text-sm focus:ring-2 focus:ring-[#5A8C7A] focus:border-[#5A8C7A] focus:outline-none transition"
+                  className="w-full border border-[#E6E3DE] rounded-lg px-4 py-3 pr-10 text-sm focus:ring-2 focus:ring-[#6B8E7B] focus:border-[#6B8E7B] focus:outline-none transition"
                   placeholder="Repite tu nueva contraseña"
                   autoComplete="new-password"
                   required
@@ -202,7 +202,7 @@ export default function ReestablecerForm() {
             </div>
           </div>
 
-          <div className="bg-[#FAF9F7] border-l-4 border-[#5A8C7A] p-3 rounded">
+          <div className="bg-[#FAF9F7] border-l-4 border-[#6B8E7B] p-3 rounded">
             <p className="text-xs text-[#6E7C72]">
               <strong>Requisitos:</strong> Mínimo 8 caracteres, incluir mayúscula, minúscula, número y carácter especial.
             </p>

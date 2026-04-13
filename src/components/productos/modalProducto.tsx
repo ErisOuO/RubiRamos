@@ -202,7 +202,7 @@ export default function ModalProducto({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-[#E6E3DE]">
         <div className="sticky top-0 bg-white border-b border-[#E6E3DE] px-6 py-4 bg-[#FAF9F7]">
-          <h2 className="text-xl font-bold text-[#5A8C7A]">
+          <h2 className="text-xl font-bold text-[#6B8E7B]">
             {producto ? 'Editar Producto' : 'Nuevo Producto'}
           </h2>
           <button
@@ -227,7 +227,7 @@ export default function ModalProducto({
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5A8C7A] focus:border-transparent transition-all text-[#2C3E34] ${
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B8E7B] focus:border-transparent transition-all text-[#2C3E34] ${
                   nombreExiste && formData.name.trim()
                     ? 'border-[#F58634] bg-[#F58634]/5'
                     : 'border-[#E6E3DE]'
@@ -236,7 +236,7 @@ export default function ModalProducto({
               />
               {verificandoNombre && (
                 <div className="absolute right-3 top-2.5">
-                  <svg className="animate-spin h-5 w-5 text-[#5A8C7A]" fill="none" viewBox="0 0 24 24">
+                  <svg className="animate-spin h-5 w-5 text-[#6B8E7B]" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
@@ -260,7 +260,7 @@ export default function ModalProducto({
               rows={3}
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-3 py-2 border border-[#E6E3DE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5A8C7A] focus:border-transparent transition-all text-[#2C3E34]"
+              className="w-full px-3 py-2 border border-[#E6E3DE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B8E7B] focus:border-transparent transition-all text-[#2C3E34]"
               placeholder="Describe el producto, sus beneficios y características..."
             />
           </div>
@@ -278,7 +278,7 @@ export default function ModalProducto({
                 min="0"
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                className="w-full px-3 py-2 border border-[#E6E3DE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5A8C7A] focus:border-transparent transition-all text-[#2C3E34]"
+                className="w-full px-3 py-2 border border-[#E6E3DE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B8E7B] focus:border-transparent transition-all text-[#2C3E34]"
                 placeholder="0.00"
               />
             </div>
@@ -292,7 +292,7 @@ export default function ModalProducto({
                 min="0"
                 value={formData.stock}
                 onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                className="w-full px-3 py-2 border border-[#E6E3DE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5A8C7A] focus:border-transparent transition-all text-[#2C3E34]"
+                className="w-full px-3 py-2 border border-[#E6E3DE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B8E7B] focus:border-transparent transition-all text-[#2C3E34]"
                 placeholder="0"
               />
             </div>
@@ -307,7 +307,7 @@ export default function ModalProducto({
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className="w-full px-3 py-2 border border-[#E6E3DE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5A8C7A] focus:border-transparent transition-all text-[#2C3E34] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#5A8C7A] file:text-white hover:file:bg-[#4A7C6A]"
+              className="w-full px-3 py-2 border border-[#E6E3DE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B8E7B] focus:border-transparent transition-all text-[#2C3E34] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#6B8E7B] file:text-white hover:file:bg-[#4A7C6A]"
             />
             {imagePreview && (
               <div className="mt-3">
@@ -338,7 +338,7 @@ export default function ModalProducto({
                       type="checkbox"
                       checked={categoriasSeleccionadas.includes(categoria.id)}
                       onChange={() => toggleCategoria(categoria.id)}
-                      className="rounded border-[#E6E3DE] text-[#5A8C7A] focus:ring-[#5A8C7A]"
+                      className="rounded border-[#E6E3DE] text-[#6B8E7B] focus:ring-[#6B8E7B]"
                     />
                     <span className="text-sm text-[#2C3E34]">{categoria.name}</span>
                   </label>

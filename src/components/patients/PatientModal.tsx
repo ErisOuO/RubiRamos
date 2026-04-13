@@ -103,7 +103,7 @@ export default function PatientModal({ isOpen, onClose, patient, mode, onSuccess
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-[#E6E3DE]">
         <div className="sticky top-0 bg-white border-b border-[#E6E3DE] px-6 py-4 bg-[#FAF9F7] flex justify-between items-center">
-          <h2 className="text-xl font-bold text-[#5A8C7A]">
+          <h2 className="text-xl font-bold text-[#6B8E7B]">
             {isViewMode ? 'Detalles del Paciente' : 'Editar Paciente'}
           </h2>
           <button onClick={onClose} className="text-[#6E7C72] hover:text-[#2C3E34]">
@@ -119,7 +119,7 @@ export default function PatientModal({ isOpen, onClose, patient, mode, onSuccess
             <div className="space-y-6">
               {/* Información personal */}
               <div>
-                <h3 className="text-lg font-semibold text-[#5A8C7A] mb-3">Información Personal</h3>
+                <h3 className="text-lg font-semibold text-[#6B8E7B] mb-3">Información Personal</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div><span className="font-semibold text-[#2C3E34]">Nombre:</span> <span className="text-[#6E7C72]">{patient.first_name} {patient.second_name}</span></div>
                   <div><span className="font-semibold text-[#2C3E34]">Apellidos:</span> <span className="text-[#6E7C72]">{patient.first_lastname} {patient.second_lastname}</span></div>
@@ -137,17 +137,17 @@ export default function PatientModal({ isOpen, onClose, patient, mode, onSuccess
               {/* Notas */}
               {patient.notes && (
                 <div>
-                  <h3 className="text-lg font-semibold text-[#5A8C7A] mb-3">Notas</h3>
+                  <h3 className="text-lg font-semibold text-[#6B8E7B] mb-3">Notas</h3>
                   <p className="text-[#6E7C72] bg-[#FAF9F7] p-3 rounded-lg">{patient.notes}</p>
                 </div>
               )}
 
               {/* Estadísticas de citas */}
               <div>
-                <h3 className="text-lg font-semibold text-[#5A8C7A] mb-3">Estadísticas de Citas</h3>
+                <h3 className="text-lg font-semibold text-[#6B8E7B] mb-3">Estadísticas de Citas</h3>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="bg-[#FAF9F7] p-3 rounded-lg text-center">
-                    <div className="text-2xl font-bold text-[#5A8C7A]">{patient.estadisticas?.total_citas || 0}</div>
+                    <div className="text-2xl font-bold text-[#6B8E7B]">{patient.estadisticas?.total_citas || 0}</div>
                     <div className="text-xs text-[#6E7C72]">Total Citas</div>
                   </div>
                   <div className="bg-[#FAF9F7] p-3 rounded-lg text-center">
@@ -164,7 +164,7 @@ export default function PatientModal({ isOpen, onClose, patient, mode, onSuccess
               {/* Próxima cita */}
               {patient.proxima_cita && (
                 <div>
-                  <h3 className="text-lg font-semibold text-[#5A8C7A] mb-3">Próxima Cita</h3>
+                  <h3 className="text-lg font-semibold text-[#6B8E7B] mb-3">Próxima Cita</h3>
                   <div className="bg-[#FAF9F7] p-3 rounded-lg">
                     <div><span className="font-semibold">Fecha:</span> {new Date(patient.proxima_cita.appointment_date).toLocaleDateString('es-ES')}</div>
                     <div><span className="font-semibold">Hora:</span> {patient.proxima_cita.start_time.slice(0,5)} - {patient.proxima_cita.end_time.slice(0,5)}</div>
@@ -176,7 +176,7 @@ export default function PatientModal({ isOpen, onClose, patient, mode, onSuccess
               {/* Historial de citas */}
               {patient.historial_citas && patient.historial_citas.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-semibold text-[#5A8C7A] mb-3">Historial de Citas</h3>
+                  <h3 className="text-lg font-semibold text-[#6B8E7B] mb-3">Historial de Citas</h3>
                   <div className="space-y-2 max-h-60 overflow-y-auto">
                     {patient.historial_citas.map((cita: any) => (
                       <div key={cita.id} className="bg-[#FAF9F7] p-3 rounded-lg border border-[#E6E3DE]">

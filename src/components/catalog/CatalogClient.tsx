@@ -70,7 +70,7 @@ export default function CatalogClient({
             <div className="bg-white rounded-lg border border-[#E6E3DE] p-5 sticky top-24">
               <div className="flex items-center justify-between mb-5 pb-3 border-b border-[#E6E3DE]">
                 <h2 className="text-base font-semibold text-[#2C3E34] flex items-center gap-2">
-                  <FaFilter className="w-4 h-4 text-[#5A8C7A]" />
+                  <FaFilter className="w-4 h-4 text-[#6B8E7B]" />
                   Filtros
                 </h2>
                 <button
@@ -90,7 +90,7 @@ export default function CatalogClient({
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Nombre o descripción..."
-                    className="w-full px-3 py-2 pl-9 border border-[#E6E3DE] rounded-md focus:outline-none focus:ring-1 focus:ring-[#5A8C7A] text-sm"
+                    className="w-full px-3 py-2 pl-9 border border-[#E6E3DE] rounded-md focus:outline-none focus:ring-1 focus:ring-[#6B8E7B] text-sm"
                   />
                   <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#6E7C72]" />
                 </div>
@@ -106,7 +106,7 @@ export default function CatalogClient({
                       onClick={() => setSelectedCategory(cat.name)}
                       className={`w-full text-left px-2 py-1.5 rounded-md text-sm transition-colors ${
                         selectedCategory === cat.name
-                          ? 'bg-[#5A8C7A] text-white'
+                          ? 'bg-[#6B8E7B] text-white'
                           : 'text-[#2C3E34] hover:bg-[#FAF9F7]'
                       }`}
                     >
@@ -126,7 +126,7 @@ export default function CatalogClient({
                       value={priceMin}
                       onChange={(e) => setPriceMin(e.target.value)}
                       placeholder="Mínimo"
-                      className="w-full px-2 py-1.5 border border-[#E6E3DE] rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#5A8C7A]"
+                      className="w-full px-2 py-1.5 border border-[#E6E3DE] rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#6B8E7B]"
                     />
                   </div>
                   <span className="text-[#6E7C72] self-center">-</span>
@@ -136,7 +136,7 @@ export default function CatalogClient({
                       value={priceMax}
                       onChange={(e) => setPriceMax(e.target.value)}
                       placeholder="Máximo"
-                      className="w-full px-2 py-1.5 border border-[#E6E3DE] rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#5A8C7A]"
+                      className="w-full px-2 py-1.5 border border-[#E6E3DE] rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#6B8E7B]"
                     />
                   </div>
                 </div>
@@ -157,7 +157,7 @@ export default function CatalogClient({
                 <p className="text-[#6E7C72] mb-3">No se encontraron productos</p>
                 <button
                   onClick={clearFilters}
-                  className="text-sm text-[#5A8C7A] hover:text-[#F58634] transition-colors"
+                  className="text-sm text-[#6B8E7B] hover:text-[#F58634] transition-colors"
                 >
                   Limpiar filtros
                 </button>

@@ -246,7 +246,7 @@ export default function PostsList({ initialPosts = [], userId, userRole = 1 }: P
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="block text-[#5A8C7A] hover:text-[#F58634] transition-colors"
+                          className="block text-[#27ADF5] hover:text-[#F58634] transition-colors"
                         >
                           {link.title || link.url}
                         </a>

@@ -190,22 +190,8 @@ export default function NavLinks({ mobile = false, onLinkClick }: { mobile?: boo
       {/* Enlaces principales */}
       {renderLinks(mainLinks, mobile ? undefined : 'Principal')}
       
-<<<<<<< HEAD
       {/* Sección de Configuración desplegable */}
       {renderConfigSection()}
-=======
-      {/* Separador para configuración */}
-      <div className={`${mobile ? 'my-2' : 'my-4'}`}>
-        <div style={{ 
-          height: '1px', 
-          backgroundColor: mobile ? '#6B8E7B' : '#6B8E7B',
-          opacity: 0.3 
-        }}></div>
-      </div>
-      
-      {/* Enlaces de configuración - MISMO COLOR DE LETRA */}
-      {renderLinks(configLinks, mobile ? undefined : 'Configuración')}
->>>>>>> b8960a366dfbfa8ddb086344c5266edeb722d249
     </nav>
   );
 }

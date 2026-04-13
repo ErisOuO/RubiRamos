@@ -204,13 +204,7 @@ export default function PatientsList({ initialPatients, initialTotal, initialSta
                 <th onClick={() => handleSort('first_lastname')} className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider cursor-pointer hover:text-[#6B8E7B]">
                   <span className="flex items-center gap-1">Apellido {getSortIcon('first_lastname')}</span>
                 </th>
-<<<<<<< HEAD
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Email</th>
-=======
-                <th onClick={() => handleSort('email')} className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider cursor-pointer hover:text-[#6B8E7B]">
-                  <span className="flex items-center gap-1">Email {getSortIcon('email')}</span>
-                </th>
->>>>>>> b8960a366dfbfa8ddb086344c5266edeb722d249
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Usuario</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Teléfono</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Acciones</th>
@@ -233,7 +227,6 @@ export default function PatientsList({ initialPatients, initialTotal, initialSta
                     <td className="px-6 py-4 text-sm text-[#2C3E34]">{patient.email}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[#2C3E34]">{patient.username}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[#2C3E34]">{patient.phone || '—'}</td>
-<<<<<<< HEAD
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
                       <button
                         onClick={() => handleViewPatient(patient.id)}
@@ -269,12 +262,6 @@ export default function PatientsList({ initialPatients, initialTotal, initialSta
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
                       </button>
-=======
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                      <button onClick={() => handleViewPatient(patient.id)} className="text-[#6B8E7B] hover:text-[#4A7C6A]">Ver</button>
-                      <button onClick={() => handleEditPatient(patient.id)} className="text-[#BD7D4A] hover:text-[#F58634]">Editar</button>
-                      <button onClick={() => handleDeletePatient(patient.id, patient.first_name)} className="text-[#F58634] hover:text-[#BD7D4A]">Eliminar</button>
->>>>>>> b8960a366dfbfa8ddb086344c5266edeb722d249
                     </td>
                   </tr>
                 ))

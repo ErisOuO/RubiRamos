@@ -1,6 +1,5 @@
 "use client";
 
-<<<<<<< HEAD
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -19,23 +18,6 @@ import {
   FaSignOutAlt
 } from 'react-icons/fa';
 import styles from './header.module.css';
-=======
-import { useState, useRef, useEffect } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import Image from "next/image";
-import {
-  FaHome,
-  FaUserAlt,
-  FaShoppingBag,
-  FaCalendarAlt,
-  FaShoppingCart,
-  FaAddressCard,
-  FaBars,
-  FaTimes,
-} from "react-icons/fa";
-import styles from "./header.module.css";
->>>>>>> b8960a366dfbfa8ddb086344c5266edeb722d249
 
 const Header = () => {
   const pathname = usePathname();
@@ -85,18 +67,9 @@ const Header = () => {
   }, [isUserMenuOpen]);
 
   const navLinks = [
-<<<<<<< HEAD
     { href: '/', icon: FaHome, label: 'Inicio' },
     { href: '/catalog', icon: FaShoppingBag, label: 'Catálogo' },
     { href: '/calendar', icon: FaCalendarAlt, label: 'Agendar Cita' },
-=======
-    { href: "/", icon: FaHome, label: "Inicio" },
-    { href: "/catalog", icon: FaShoppingBag, label: "Catálogo" },
-    { href: "/schedule", icon: FaCalendarAlt, label: "Agendar Cita" },
-    { href: "/shopping_cart", icon: FaShoppingCart, label: "Carrito" },
-    { href: "/historial", icon: FaAddressCard, label: "Historial Médico" },
-    { href: "/login", icon: FaUserAlt, label: "Iniciar Sesión" },
->>>>>>> b8960a366dfbfa8ddb086344c5266edeb722d249
   ];
 
   // Enlace de perfil/sesión (se muestra al final)

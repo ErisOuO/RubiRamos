@@ -176,11 +176,11 @@ export default function ProductosClient({
       );
     }
     return sortOrder === 'asc' ? (
-      <svg className="w-4 h-4 inline-block ml-1 text-[#5A8C7A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg className="w-4 h-4 inline-block ml-1 text-[#6B8E7B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
       </svg>
     ) : (
-      <svg className="w-4 h-4 inline-block ml-1 text-[#5A8C7A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg className="w-4 h-4 inline-block ml-1 text-[#6B8E7B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
       </svg>
     );

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { getPatients, getPatientsStats, deletePatient } from '@/lib/patients-actions';
 import PatientModal from './PatientModal';
 import { toast } from 'react-hot-toast';
@@ -12,6 +13,7 @@ interface PatientsListProps {
 }
 
 export default function PatientsList({ initialPatients, initialTotal, initialStats }: PatientsListProps) {
+  const router = useRouter();
   const [patients, setPatients] = useState(initialPatients);
   const [total, setTotal] = useState(initialTotal);
   const [stats, setStats] = useState(initialStats);
@@ -80,6 +82,20 @@ export default function PatientsList({ initialPatients, initialTotal, initialSta
     setSelectedPatient(patient);
     setModalMode('edit');
     setModalOpen(true);
+  };
+
+  const handleMedicalHistory = (patient: any) => {
+    // Construir la URL con los parámetros del paciente
+    const params = new URLSearchParams({
+      patientId: patient.id.toString(),
+      patientName: patient.nombre_completo || `${patient.first_name} ${patient.first_lastname}`,
+      patientEmail: patient.email || '',
+      patientAge: patient.age?.toString() || '',
+      patientGender: patient.gender || '',
+      patientPhone: patient.phone || ''
+    });
+    
+    router.push(`/admin/historial?${params.toString()}`);
   };
 
   const handleDeletePatient = async (id: number, name: string) => {
@@ -190,8 +206,6 @@ export default function PatientsList({ initialPatients, initialTotal, initialSta
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Email</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Usuario</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Edad</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Género</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Teléfono</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Acciones</th>
               </tr>
@@ -199,11 +213,11 @@ export default function PatientsList({ initialPatients, initialTotal, initialSta
             <tbody className="bg-white divide-y divide-[#E6E3DE]">
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-8 text-center text-[#6E7C72]">Cargando...</td>
+                  <td colSpan={6} className="px-6 py-8 text-center text-[#6E7C72]">Cargando...</td>
                 </tr>
               ) : patients.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-8 text-center text-[#6E7C72]">No hay pacientes registrados</td>
+                  <td colSpan={6} className="px-6 py-8 text-center text-[#6E7C72]">No hay pacientes registrados</td>
                 </tr>
               ) : (
                 patients.map(patient => (
@@ -212,13 +226,42 @@ export default function PatientsList({ initialPatients, initialTotal, initialSta
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[#2C3E34]">{patient.first_lastname} {patient.second_lastname || ''}</td>
                     <td className="px-6 py-4 text-sm text-[#2C3E34]">{patient.email}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[#2C3E34]">{patient.username}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#2C3E34]">{patient.age}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#2C3E34]">{patient.gender === 'M' ? 'Masculino' : patient.gender === 'F' ? 'Femenino' : 'No especificado'}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[#2C3E34]">{patient.phone || '—'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                      <button onClick={() => handleViewPatient(patient.id)} className="text-[#5A8C7A] hover:text-[#4A7C6A]">Ver</button>
-                      <button onClick={() => handleEditPatient(patient.id)} className="text-[#BD7D4A] hover:text-[#F58634]">Editar</button>
-                      <button onClick={() => handleDeletePatient(patient.id, patient.first_name)} className="text-[#F58634] hover:text-[#BD7D4A]">Eliminar</button>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
+                      <button
+                        onClick={() => handleViewPatient(patient.id)}
+                        className="text-[#5A8C7A] hover:text-[#4A7C6A] transition-colors"
+                        title="Ver detalles"
+                      >
+                        Ver detalles
+                      </button>
+                      <button
+                        onClick={() => handleEditPatient(patient.id)}
+                        className="text-[#BD7D4A] hover:text-[#F58634] transition-colors"
+                        title="Editar"
+                      >
+                        <svg className="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => handleMedicalHistory(patient)}
+                        className="text-[#5A8C7A] hover:text-[#4A7C6A] transition-colors"
+                        title="Historial médico"
+                      >
+                        <svg className="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => handleDeletePatient(patient.id, patient.first_name)}
+                        className="text-[#F58634] hover:text-[#BD7D4A] transition-colors"
+                        title="Eliminar"
+                      >
+                        <svg className="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
                     </td>
                   </tr>
                 ))

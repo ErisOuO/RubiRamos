@@ -1,21 +1,61 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { searchPatientsForHistory, getPatientInitialEvaluation, getPatientFollowUpEvaluations } from '@/lib/medical-history-actions';
+import NutritionPlan from './NutritionPlan';
+import RecommendationsModal from '@/components/recommendations/RecommendationsModal';
+import ClinicalEvaluationModal from '@/components/citas/ClinicalEvaluationModal';
 import { toast } from 'react-hot-toast';
 
 interface MedicalHistoryClientProps {
   initialPatients?: any[];
+  preselectedPatient?: any;
 }
 
-export default function MedicalHistoryClient({ initialPatients = [] }: MedicalHistoryClientProps) {
+export default function MedicalHistoryClient({ initialPatients = [], preselectedPatient = null }: MedicalHistoryClientProps) {
+  const searchParams = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [patients, setPatients] = useState(initialPatients);
-  const [selectedPatient, setSelectedPatient] = useState<any>(null);
+  const [selectedPatient, setSelectedPatient] = useState<any>(preselectedPatient);
   const [initialEvaluation, setInitialEvaluation] = useState<any>(null);
   const [followUpEvaluations, setFollowUpEvaluations] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [showInitialEvaluation, setShowInitialEvaluation] = useState(false);
+  const [showNutritionPlan, setShowNutritionPlan] = useState(false);
+  const [showRecommendations, setShowRecommendations] = useState(false);
+  
+  // Estados para modales de edición
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingAppointment, setEditingAppointment] = useState<any>(null);
+  const [editingEvaluationType, setEditingEvaluationType] = useState<'initial' | 'followup'>('followup');
+  const [editingInitialEvaluation, setEditingInitialEvaluation] = useState(false);
+
+  // Cargar datos del paciente preseleccionado
+  useEffect(() => {
+    if (preselectedPatient) {
+      loadPatientData(preselectedPatient);
+    }
+  }, [preselectedPatient]);
+
+  const loadPatientData = async (patient: any) => {
+    setSelectedPatient(patient);
+    setLoading(true);
+    try {
+      const [initial, followUps] = await Promise.all([
+        getPatientInitialEvaluation(patient.id),
+        getPatientFollowUpEvaluations(patient.id)
+      ]);
+      setInitialEvaluation(initial);
+      setFollowUpEvaluations(followUps);
+      setShowInitialEvaluation(true);
+      setShowNutritionPlan(false);
+    } catch (error) {
+      toast.error('Error al cargar el historial del paciente');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSearch = async () => {
     if (searchTerm.length < 2) {
@@ -38,21 +78,76 @@ export default function MedicalHistoryClient({ initialPatients = [] }: MedicalHi
   };
 
   const handleSelectPatient = async (patient: any) => {
-    setSelectedPatient(patient);
-    setLoading(true);
-    try {
-      const [initial, followUps] = await Promise.all([
-        getPatientInitialEvaluation(patient.id),
-        getPatientFollowUpEvaluations(patient.id)
-      ]);
-      setInitialEvaluation(initial);
-      setFollowUpEvaluations(followUps);
-      setShowInitialEvaluation(true);
-    } catch (error) {
-      toast.error('Error al cargar el historial del paciente');
-    } finally {
-      setLoading(false);
+    await loadPatientData(patient);
+  };
+
+  const handleEditFollowUp = (evaluation: any) => {
+    // Crear un objeto appointment con la estructura que espera ClinicalEvaluationModal
+    const appointmentForModal = {
+      id: evaluation.appointment_id,
+      patient: {
+        id: selectedPatient?.id,
+        nombre_completo: selectedPatient?.nombre_completo,
+        email: selectedPatient?.email,
+        age: selectedPatient?.age,
+        gender: selectedPatient?.gender,
+        phone: selectedPatient?.phone,
+        fecha_nacimiento: selectedPatient?.fecha_nacimiento,
+        estado_civil: selectedPatient?.estado_civil,
+        ocupacion: selectedPatient?.ocupacion
+      },
+      has_evaluation: true,
+      evaluation_type: 'followup'
+    };
+    
+    setEditingAppointment(appointmentForModal);
+    setEditingEvaluationType('followup');
+    setEditModalOpen(true);
+  };
+
+  const handleEditInitialEvaluation = () => {
+    const appointmentForModal = {
+      id: null,
+      patient: {
+        id: selectedPatient?.id,
+        nombre_completo: selectedPatient?.nombre_completo,
+        email: selectedPatient?.email,
+        age: selectedPatient?.age,
+        gender: selectedPatient?.gender,
+        phone: selectedPatient?.phone,
+        fecha_nacimiento: selectedPatient?.fecha_nacimiento,
+        estado_civil: selectedPatient?.estado_civil,
+        ocupacion: selectedPatient?.ocupacion
+      },
+      has_evaluation: !!initialEvaluation,
+      evaluation_type: 'initial'
+    };
+    
+    setEditingAppointment(appointmentForModal);
+    setEditingInitialEvaluation(true);
+  };
+
+  const handleEditModalSuccess = async () => {
+    // Recargar datos después de editar
+    if (selectedPatient) {
+      setLoading(true);
+      try {
+        const [initial, followUps] = await Promise.all([
+          getPatientInitialEvaluation(selectedPatient.id),
+          getPatientFollowUpEvaluations(selectedPatient.id)
+        ]);
+        setInitialEvaluation(initial);
+        setFollowUpEvaluations(followUps);
+        toast.success('Datos actualizados correctamente');
+      } catch (error) {
+        toast.error('Error al recargar los datos');
+      } finally {
+        setLoading(false);
+      }
     }
+    setEditModalOpen(false);
+    setEditingInitialEvaluation(false);
+    setEditingAppointment(null);
   };
 
   const formatDate = (date: string | Date) => {
@@ -80,59 +175,72 @@ export default function MedicalHistoryClient({ initialPatients = [] }: MedicalHi
   return (
     <div className="min-h-screen bg-[#FAF9F7] p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Título */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-[#5A8C7A]">Historial Médico</h1>
-          <p className="text-sm text-[#6E7C72] mt-1">Consulta el historial completo de evaluaciones de los pacientes</p>
-        </div>
-
-        {/* Buscador de pacientes */}
-        <div className="bg-white rounded-xl shadow-sm border border-[#E6E3DE] p-4 mb-6">
-          <div className="flex gap-4 items-end">
-            <div className="flex-1">
-              <label className="block text-sm font-semibold text-[#2C3E34] mb-2">Buscar paciente</label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  placeholder="Nombre, apellido, email o usuario..."
-                  className="w-full pl-10 pr-4 py-2 border border-[#E6E3DE] rounded-lg focus:ring-2 focus:ring-[#5A8C7A] focus:border-transparent"
-                />
-                <svg className="absolute left-3 top-2.5 h-5 w-5 text-[#6E7C72]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-            </div>
-            <button
-              onClick={handleSearch}
-              disabled={loading}
-              className="px-6 py-2 bg-[#BD7D4A] text-white rounded-lg hover:bg-[#F58634] transition-colors font-semibold disabled:opacity-50"
-            >
-              {loading ? 'Buscando...' : 'Buscar'}
-            </button>
+        {/* Título y botón de recomendaciones */}
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-[#5A8C7A]">Historial Médico</h1>
+            <p className="text-sm text-[#6E7C72] mt-1">Consulta el historial completo de evaluaciones de los pacientes</p>
           </div>
-
-          {/* Lista de resultados */}
-          {patients.length > 0 && !selectedPatient && (
-            <div className="mt-4 border-t border-[#E6E3DE] pt-4">
-              <label className="block text-sm font-semibold text-[#2C3E34] mb-2">Resultados encontrados:</label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-64 overflow-y-auto">
-                {patients.map(patient => (
-                  <div
-                    key={patient.id}
-                    onClick={() => handleSelectPatient(patient)}
-                    className="p-3 border border-[#E6E3DE] rounded-lg cursor-pointer hover:bg-[#FAF9F7] transition-colors"
-                  >
-                    <div className="font-medium text-[#2C3E34]">{patient.nombre_completo}</div>
-                    <div className="text-sm text-[#6E7C72]">{patient.email}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <button
+            onClick={() => setShowRecommendations(true)}
+            className="px-4 py-2 bg-[#5A8C7A] text-white rounded-lg hover:bg-[#4A7C6A] transition-colors text-sm font-semibold flex items-center gap-2"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Recomendaciones
+          </button>
         </div>
+
+        {/* Buscador de pacientes - solo mostrar si no hay paciente preseleccionado */}
+        {!selectedPatient && (
+          <div className="bg-white rounded-xl shadow-sm border border-[#E6E3DE] p-4 mb-6">
+            <div className="flex gap-4 items-end">
+              <div className="flex-1">
+                <label className="block text-sm font-semibold text-[#2C3E34] mb-2">Buscar paciente</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                    placeholder="Nombre, apellido, email o usuario..."
+                    className="w-full pl-10 pr-4 py-2 border border-[#E6E3DE] rounded-lg focus:ring-2 focus:ring-[#5A8C7A] focus:border-transparent"
+                  />
+                  <svg className="absolute left-3 top-2.5 h-5 w-5 text-[#6E7C72]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+              </div>
+              <button
+                onClick={handleSearch}
+                disabled={loading}
+                className="px-6 py-2 bg-[#BD7D4A] text-white rounded-lg hover:bg-[#F58634] transition-colors font-semibold disabled:opacity-50"
+              >
+                {loading ? 'Buscando...' : 'Buscar'}
+              </button>
+            </div>
+
+            {/* Lista de resultados */}
+            {patients.length > 0 && (
+              <div className="mt-4 border-t border-[#E6E3DE] pt-4">
+                <label className="block text-sm font-semibold text-[#2C3E34] mb-2">Resultados encontrados:</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+                  {patients.map(patient => (
+                    <div
+                      key={patient.id}
+                      onClick={() => handleSelectPatient(patient)}
+                      className="p-3 border border-[#E6E3DE] rounded-lg cursor-pointer hover:bg-[#FAF9F7] transition-colors"
+                    >
+                      <div className="font-medium text-[#2C3E34]">{patient.nombre_completo}</div>
+                      <div className="text-sm text-[#6E7C72]">{patient.email}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Información del paciente seleccionado */}
         {selectedPatient && (
@@ -175,19 +283,34 @@ export default function MedicalHistoryClient({ initialPatients = [] }: MedicalHi
               </div>
             </div>
 
-            {/* Tabs para navegar entre Evaluación Inicial y Progreso */}
+            {/* Tabs para navegar entre Evaluación Inicial, Progreso y Plan Alimenticio */}
             <div className="flex gap-2 mb-6 border-b border-[#E6E3DE]">
               <button
-                onClick={() => setShowInitialEvaluation(true)}
-                className={`px-6 py-2 font-semibold transition-colors ${showInitialEvaluation ? 'text-[#5A8C7A] border-b-2 border-[#5A8C7A]' : 'text-[#6E7C72] hover:text-[#2C3E34]'}`}
+                onClick={() => {
+                  setShowInitialEvaluation(true);
+                  setShowNutritionPlan(false);
+                }}
+                className={`px-6 py-2 font-semibold transition-colors ${showInitialEvaluation && !showNutritionPlan ? 'text-[#5A8C7A] border-b-2 border-[#5A8C7A]' : 'text-[#6E7C72] hover:text-[#2C3E34]'}`}
               >
                 Evaluación Inicial
               </button>
               <button
-                onClick={() => setShowInitialEvaluation(false)}
-                className={`px-6 py-2 font-semibold transition-colors ${!showInitialEvaluation ? 'text-[#5A8C7A] border-b-2 border-[#5A8C7A]' : 'text-[#6E7C72] hover:text-[#2C3E34]'}`}
+                onClick={() => {
+                  setShowInitialEvaluation(false);
+                  setShowNutritionPlan(false);
+                }}
+                className={`px-6 py-2 font-semibold transition-colors ${!showInitialEvaluation && !showNutritionPlan ? 'text-[#5A8C7A] border-b-2 border-[#5A8C7A]' : 'text-[#6E7C72] hover:text-[#2C3E34]'}`}
               >
                 Progreso ({followUpEvaluations.length} registros)
+              </button>
+              <button
+                onClick={() => {
+                  setShowInitialEvaluation(false);
+                  setShowNutritionPlan(true);
+                }}
+                className={`px-6 py-2 font-semibold transition-colors ${showNutritionPlan ? 'text-[#5A8C7A] border-b-2 border-[#5A8C7A]' : 'text-[#6E7C72] hover:text-[#2C3E34]'}`}
+              >
+                Plan Alimenticio
               </button>
             </div>
 
@@ -197,8 +320,9 @@ export default function MedicalHistoryClient({ initialPatients = [] }: MedicalHi
                 <p className="text-[#6E7C72]">Cargando información...</p>
               </div>
             ) : showInitialEvaluation ? (
-              // Evaluación Inicial
+              // Evaluación Inicial - resto del código igual...
               initialEvaluation ? (
+                // ... (todo el contenido de evaluación inicial)
                 <div className="space-y-6">
                   {/* Motivo de consulta */}
                   <div className="bg-white rounded-xl shadow-sm border border-[#E6E3DE] p-6">
@@ -303,12 +427,36 @@ export default function MedicalHistoryClient({ initialPatients = [] }: MedicalHi
                       <div><span className="font-semibold">Comer fuera de casa:</span> <span className="text-[#6E7C72]">{initialEvaluation.feeding_habits?.eating_out || '—'}</span></div>
                     </div>
                   </div>
+
+                  {/* Botón para editar evaluación inicial */}
+                  <div className="flex justify-end">
+                    <button
+                      onClick={handleEditInitialEvaluation}
+                      className="px-4 py-2 bg-[#BD7D4A] text-white rounded-lg hover:bg-[#F58634] transition-colors text-sm font-semibold"
+                    >
+                      Editar Evaluación Inicial
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div className="bg-white rounded-xl shadow-sm border border-[#E6E3DE] p-8 text-center">
                   <p className="text-[#6E7C72]">No hay evaluación inicial registrada para este paciente</p>
+                  <button
+                    onClick={handleEditInitialEvaluation}
+                    className="mt-4 px-4 py-2 bg-[#BD7D4A] text-white rounded-lg hover:bg-[#F58634] transition-colors text-sm font-semibold"
+                  >
+                    Crear Evaluación Inicial
+                  </button>
                 </div>
               )
+            ) : showNutritionPlan ? (
+              // Plan Alimenticio
+              <NutritionPlan 
+                patientId={selectedPatient.id} 
+                onRefresh={() => {
+                  // Recargar datos si es necesario
+                }}
+              />
             ) : (
               // Progreso - Tabla de Resultados
               followUpEvaluations.length > 0 ? (
@@ -409,25 +557,28 @@ export default function MedicalHistoryClient({ initialPatients = [] }: MedicalHi
                               <td className="px-3 py-2 text-center text-xs text-[#2C3E34]">{formatNumber(evalution.anthropometric?.torso_muscle)}</td>
                             </tr>
                           ))}
-                          {followUpEvaluations.length === 0 && (
-                            <tr>
-                              <td colSpan={11} className="px-6 py-8 text-center text-[#6E7C72]">No hay datos de medidas registrados</td>
-                            </tr>
-                          )}
                         </tbody>
                       </table>
                     </div>
                   </div>
 
-                  {/* Detalle de cada evaluación */}
+                  {/* Detalle de cada evaluación con botón de editar */}
                   <div className="space-y-6">
                     {followUpEvaluations.map((evaluation) => (
                       <div key={evaluation.id} className="bg-white rounded-xl shadow-sm border border-[#E6E3DE] overflow-hidden">
-                        <div className="bg-[#FAF9F7] px-6 py-4 border-b border-[#E6E3DE]">
-                          <h3 className="text-lg font-bold text-[#5A8C7A]">Evaluación del {formatDate(evaluation.evaluation_date)} {evaluation.start_time ? `- ${evaluation.start_time.slice(0,5)}` : ''}</h3>
-                          {evaluation.status && (
-                            <p className="text-xs text-[#6E7C72] mt-1">Estado: {evaluation.status === 'completed' ? 'Completada' : 'Programada'}</p>
-                          )}
+                        <div className="bg-[#FAF9F7] px-6 py-4 border-b border-[#E6E3DE] flex justify-between items-center">
+                          <div>
+                            <h3 className="text-lg font-bold text-[#5A8C7A]">Evaluación del {formatDate(evaluation.evaluation_date)} {evaluation.start_time ? `- ${evaluation.start_time.slice(0,5)}` : ''}</h3>
+                            {evaluation.status && (
+                              <p className="text-xs text-[#6E7C72] mt-1">Estado: {evaluation.status === 'completed' ? 'Completada' : 'Programada'}</p>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => handleEditFollowUp(evaluation)}
+                            className="px-3 py-1 bg-[#BD7D4A] text-white rounded-lg hover:bg-[#F58634] transition-colors text-xs font-semibold"
+                          >
+                            Editar cita
+                          </button>
                         </div>
                         <div className="p-6 space-y-4">
                           {/* Parámetros Bioquímicos */}
@@ -488,8 +639,8 @@ export default function MedicalHistoryClient({ initialPatients = [] }: MedicalHi
 
                           {/* Si no hay datos adicionales */}
                           {!evaluation.nutritional_diagnosis?.diagnosis && 
-                           !(evaluation.intervention_plan && (evaluation.intervention_plan.nutritional_goals || evaluation.intervention_plan.dietary_strategy)) && 
-                           !(evaluation.follow_up && (evaluation.follow_up.next_appointment_date || evaluation.follow_up.observations)) && (
+                          !(evaluation.intervention_plan && (evaluation.intervention_plan.nutritional_goals || evaluation.intervention_plan.dietary_strategy)) && 
+                          !(evaluation.follow_up && (evaluation.follow_up.next_appointment_date || evaluation.follow_up.observations)) && (
                             <p className="text-sm text-[#6E7C72] text-center py-4">No hay información adicional registrada para esta evaluación</p>
                           )}
                         </div>
@@ -506,6 +657,39 @@ export default function MedicalHistoryClient({ initialPatients = [] }: MedicalHi
           </>
         )}
       </div>
+
+      {/* Modal de Recomendaciones */}
+      <RecommendationsModal
+        isOpen={showRecommendations}
+        onClose={() => setShowRecommendations(false)}
+        onSave={() => {
+          // Recargar datos si es necesario
+        }}
+      />
+
+      {/* Modal para editar cita de progreso */}
+      <ClinicalEvaluationModal
+        isOpen={editModalOpen}
+        onClose={() => {
+          setEditModalOpen(false);
+          setEditingAppointment(null);
+        }}
+        appointment={editingAppointment}
+        evaluationType={editingEvaluationType}
+        onSuccess={handleEditModalSuccess}
+      />
+
+      {/* Modal para editar evaluación inicial */}
+      <ClinicalEvaluationModal
+        isOpen={editingInitialEvaluation}
+        onClose={() => {
+          setEditingInitialEvaluation(false);
+          setEditingAppointment(null);
+        }}
+        appointment={editingAppointment}
+        evaluationType="initial"
+        onSuccess={handleEditModalSuccess}
+      />
     </div>
   );
 }

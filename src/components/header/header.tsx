@@ -32,7 +32,7 @@ const Header = () => {
   const userName = session?.user?.username || session?.user?.email || 'Usuario';
 
   // Determinar la ruta del perfil según el rol
-  const profilePath = userRole === 1 ? '/admin' : userRole === 2 ? '/patient' : '/';
+  const profilePath = userRole === 1 ? '/admin' : userRole === 2 ? '/admin/patient' : '/';
 
   const isActive = (path: string) => pathname === path;
 
@@ -69,7 +69,7 @@ const Header = () => {
   const navLinks = [
     { href: '/', icon: FaHome, label: 'Inicio' },
     { href: '/catalog', icon: FaShoppingBag, label: 'Catálogo' },
-    { href: '/calendar', icon: FaCalendarAlt, label: 'Agendar Cita' },
+    //{ href: '/calendar', icon: FaCalendarAlt, label: 'Agendar Cita' },
   ];
 
   // Enlace de perfil/sesión (se muestra al final)

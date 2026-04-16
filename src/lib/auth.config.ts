@@ -26,8 +26,14 @@ async function jwtCallback({
 }): Promise<JWT> {
   if (user && "username" in user) {
     token.user = user as Usuario;
-    (token.user as Usuario).verified = (user).verified ?? false;
-    (token.user as Usuario).rol_id = (user).rol_id ?? null;
+    token.user.verified = user.verified ?? false;
+    token.user.rol_id = user.rol_id ?? null;
+    
+    // También agregar rol_id directamente al token para facilitar acceso
+    token.rol_id = user.rol_id ?? null;
+    token.id = user.id;
+    token.username = user.username;
+    token.email = user.email;
   }
   return token;
 }

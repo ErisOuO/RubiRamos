@@ -1,12 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { PDFDownloadLink } from '@react-pdf/renderer';
 import { useSearchParams } from 'next/navigation';
 import { searchPatientsForHistory, getPatientInitialEvaluation, getPatientFollowUpEvaluations } from '@/lib/medical-history-actions';
+import { getGeneralRecommendations } from '@/lib/recomendation-pdf-actions';
 import NutritionPlan from './NutritionPlan';
 import PredictiveModule from './PredictiveModule';
 import RecommendationsModal from '@/components/recommendations/RecommendationsModal';
 import ClinicalEvaluationModal from '@/components/citas/ClinicalEvaluationModal';
+import AdminMedicalHistoryPDF from './AdminMedicalHistoryPDF';
 import { toast } from 'react-hot-toast';
 
 interface MedicalHistoryClientProps {
@@ -21,11 +24,14 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
   const [selectedPatient, setSelectedPatient] = useState<any>(preselectedPatient);
   const [initialEvaluation, setInitialEvaluation] = useState<any>(null);
   const [followUpEvaluations, setFollowUpEvaluations] = useState<any[]>([]);
+  const [nutritionPlan, setNutritionPlan] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [showInitialEvaluation, setShowInitialEvaluation] = useState(false);
   const [showNutritionPlan, setShowNutritionPlan] = useState(false);
   const [showPredictiveModule, setShowPredictiveModule] = useState(false);
   const [showRecommendations, setShowRecommendations] = useState(false);
+  const [generalRecommendations, setGeneralRecommendations] = useState<any[]>([]);
+  const [generatingPDF, setGeneratingPDF] = useState(false);
   
   // Estados para modales de edición
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -44,12 +50,16 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
     setSelectedPatient(patient);
     setLoading(true);
     try {
-      const [initial, followUps] = await Promise.all([
+      const [initial, followUps, plan, recommendations] = await Promise.all([
         getPatientInitialEvaluation(patient.id),
-        getPatientFollowUpEvaluations(patient.id)
+        getPatientFollowUpEvaluations(patient.id),
+        import('@/lib/nutrition-plans-actions').then(m => m.getActiveNutritionPlan(patient.id)),
+        getGeneralRecommendations()
       ]);
       setInitialEvaluation(initial);
       setFollowUpEvaluations(followUps);
+      setNutritionPlan(plan);
+      setGeneralRecommendations(recommendations);
       setShowInitialEvaluation(true);
       setShowNutritionPlan(false);
       setShowPredictiveModule(false);
@@ -85,7 +95,6 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
   };
 
   const handleEditFollowUp = (evaluation: any) => {
-    // Crear un objeto appointment con la estructura que espera ClinicalEvaluationModal
     const appointmentForModal = {
       id: evaluation.appointment_id,
       patient: {
@@ -131,16 +140,17 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
   };
 
   const handleEditModalSuccess = async () => {
-    // Recargar datos después de editar
     if (selectedPatient) {
       setLoading(true);
       try {
-        const [initial, followUps] = await Promise.all([
+        const [initial, followUps, plan] = await Promise.all([
           getPatientInitialEvaluation(selectedPatient.id),
-          getPatientFollowUpEvaluations(selectedPatient.id)
+          getPatientFollowUpEvaluations(selectedPatient.id),
+          import('@/lib/nutrition-plans-actions').then(m => m.getActiveNutritionPlan(selectedPatient.id))
         ]);
         setInitialEvaluation(initial);
         setFollowUpEvaluations(followUps);
+        setNutritionPlan(plan);
         toast.success('Datos actualizados correctamente');
       } catch (error) {
         toast.error('Error al recargar los datos');
@@ -151,6 +161,22 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
     setEditModalOpen(false);
     setEditingInitialEvaluation(false);
     setEditingAppointment(null);
+  };
+
+  const handleGeneratePDF = async () => {
+    setGeneratingPDF(true);
+    try {
+      const recommendations = await getGeneralRecommendations();
+      setGeneralRecommendations(recommendations);
+      setTimeout(() => setGeneratingPDF(false), 500);
+    } catch (error) {
+      toast.error('Error al cargar recomendaciones');
+      setGeneratingPDF(false);
+    }
+  };
+
+  const sanitizeFileName = (name: string) => {
+    return name.replace(/\s+/g, '_').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   };
 
   const formatDate = (date: string | Date) => {
@@ -175,27 +201,59 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
     return 'No especificado';
   };
 
+  const fileName = selectedPatient ? `${sanitizeFileName(selectedPatient.nombre_completo)}_Historial_Medico.pdf` : 'historial_medico.pdf';
+
   return (
     <div className="min-h-screen bg-[#FAF9F7] p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Título y botón de recomendaciones */}
-        <div className="flex justify-between items-center mb-6">
+        {/* Título y botones */}
+        <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
           <div>
             <h1 className="text-2xl font-bold text-[#5A8C7A]">Historial Médico</h1>
             <p className="text-sm text-[#6E7C72] mt-1">Consulta el historial completo de evaluaciones de los pacientes</p>
           </div>
-          <button
-            onClick={() => setShowRecommendations(true)}
-            className="px-4 py-2 bg-[#5A8C7A] text-white rounded-lg hover:bg-[#4A7C6A] transition-colors text-sm font-semibold flex items-center gap-2"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            Recomendaciones
-          </button>
+          <div className="flex gap-3">
+            {selectedPatient && (
+              <PDFDownloadLink
+                document={
+                  <AdminMedicalHistoryPDF
+                    patient={selectedPatient}
+                    initialEvaluation={initialEvaluation}
+                    followUpEvaluations={followUpEvaluations}
+                    nutritionPlan={nutritionPlan}
+                    generalRecommendations={generalRecommendations}
+                  />
+                }
+                fileName={fileName}
+                onClick={handleGeneratePDF}
+              >
+                {({ loading, error }) => (
+                  <button
+                    disabled={loading || generatingPDF}
+                    className="px-4 py-2 bg-[#5A8C7A] text-white rounded-lg hover:bg-[#4A7C6A] transition-colors text-sm font-semibold flex items-center gap-2 disabled:opacity-50"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    {loading || generatingPDF ? 'Preparando PDF...' : 'Descargar PDF'}
+                  </button>
+                )}
+              </PDFDownloadLink>
+            )}
+            <button
+              onClick={() => setShowRecommendations(true)}
+              className="px-4 py-2 bg-[#BD7D4A] text-white rounded-lg hover:bg-[#F58634] transition-colors text-sm font-semibold flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Recomendaciones
+            </button>
+          </div>
         </div>
 
-        {/* Buscador de pacientes - solo mostrar si no hay paciente preseleccionado */}
+        {/* Resto del código igual... */}
+        {/* Buscador de pacientes */}
         {!selectedPatient && (
           <div className="bg-white rounded-xl shadow-sm border border-[#E6E3DE] p-4 mb-6">
             <div className="flex gap-4 items-end">
@@ -224,7 +282,6 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
               </button>
             </div>
 
-            {/* Lista de resultados */}
             {patients.length > 0 && (
               <div className="mt-4 border-t border-[#E6E3DE] pt-4">
                 <label className="block text-sm font-semibold text-[#2C3E34] mb-2">Resultados encontrados:</label>
@@ -274,6 +331,7 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
                     setSelectedPatient(null);
                     setInitialEvaluation(null);
                     setFollowUpEvaluations([]);
+                    setNutritionPlan(null);
                     setPatients([]);
                     setSearchTerm('');
                   }}
@@ -286,15 +344,15 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
               </div>
             </div>
 
-            {/* Tabs para navegar entre Evaluación Inicial, Progreso, Plan Alimenticio y Módulo Predictivo */}
-            <div className="flex gap-2 mb-6 border-b border-[#E6E3DE]">
+            {/* Tabs */}
+            <div className="flex gap-2 mb-6 border-b border-[#E6E3DE] overflow-x-auto">
               <button
                 onClick={() => {
                   setShowInitialEvaluation(true);
                   setShowNutritionPlan(false);
                   setShowPredictiveModule(false);
                 }}
-                className={`px-6 py-2 font-semibold transition-colors ${showInitialEvaluation && !showNutritionPlan && !showPredictiveModule ? 'text-[#5A8C7A] border-b-2 border-[#5A8C7A]' : 'text-[#6E7C72] hover:text-[#2C3E34]'}`}
+                className={`px-6 py-2 font-semibold transition-colors whitespace-nowrap ${showInitialEvaluation && !showNutritionPlan && !showPredictiveModule ? 'text-[#5A8C7A] border-b-2 border-[#5A8C7A]' : 'text-[#6E7C72] hover:text-[#2C3E34]'}`}
               >
                 Evaluación Inicial
               </button>
@@ -304,7 +362,7 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
                   setShowNutritionPlan(false);
                   setShowPredictiveModule(false);
                 }}
-                className={`px-6 py-2 font-semibold transition-colors ${!showInitialEvaluation && !showNutritionPlan && !showPredictiveModule ? 'text-[#5A8C7A] border-b-2 border-[#5A8C7A]' : 'text-[#6E7C72] hover:text-[#2C3E34]'}`}
+                className={`px-6 py-2 font-semibold transition-colors whitespace-nowrap ${!showInitialEvaluation && !showNutritionPlan && !showPredictiveModule ? 'text-[#5A8C7A] border-b-2 border-[#5A8C7A]' : 'text-[#6E7C72] hover:text-[#2C3E34]'}`}
               >
                 Progreso ({followUpEvaluations.length} registros)
               </button>
@@ -314,7 +372,7 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
                   setShowNutritionPlan(true);
                   setShowPredictiveModule(false);
                 }}
-                className={`px-6 py-2 font-semibold transition-colors ${showNutritionPlan ? 'text-[#5A8C7A] border-b-2 border-[#5A8C7A]' : 'text-[#6E7C72] hover:text-[#2C3E34]'}`}
+                className={`px-6 py-2 font-semibold transition-colors whitespace-nowrap ${showNutritionPlan ? 'text-[#5A8C7A] border-b-2 border-[#5A8C7A]' : 'text-[#6E7C72] hover:text-[#2C3E34]'}`}
               >
                 Plan Alimenticio
               </button>
@@ -324,7 +382,7 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
                   setShowNutritionPlan(false);
                   setShowPredictiveModule(true);
                 }}
-                className={`px-6 py-2 font-semibold transition-colors ${showPredictiveModule ? 'text-[#5A8C7A] border-b-2 border-[#5A8C7A]' : 'text-[#6E7C72] hover:text-[#2C3E34]'}`}
+                className={`px-6 py-2 font-semibold transition-colors whitespace-nowrap ${showPredictiveModule ? 'text-[#5A8C7A] border-b-2 border-[#5A8C7A]' : 'text-[#6E7C72] hover:text-[#2C3E34]'}`}
               >
                 Módulo Predictivo
               </button>
@@ -336,7 +394,6 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
                 <p className="text-[#6E7C72]">Cargando información...</p>
               </div>
             ) : showInitialEvaluation ? (
-              // Evaluación Inicial
               initialEvaluation ? (
                 <div className="space-y-6">
                   {/* Motivo de consulta */}
@@ -443,7 +500,6 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
                     </div>
                   </div>
 
-                  {/* Botón para editar evaluación inicial */}
                   <div className="flex justify-end">
                     <button
                       onClick={handleEditInitialEvaluation}
@@ -465,18 +521,13 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
                 </div>
               )
             ) : showNutritionPlan ? (
-              // Plan Alimenticio
               <NutritionPlan 
                 patientId={selectedPatient.id} 
-                onRefresh={() => {
-                  // Recargar datos si es necesario
-                }}
+                onRefresh={() => {}}
               />
             ) : showPredictiveModule ? (
-              // Módulo Predictivo
               <PredictiveModule patientId={selectedPatient.id} />
             ) : (
-              // Progreso - Tabla de Resultados
               followUpEvaluations.length > 0 ? (
                 <div className="space-y-8">
                   {/* Tabla de Resultados */}
@@ -580,7 +631,7 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
                     </div>
                   </div>
 
-                  {/* Detalle de cada evaluación con botón de editar */}
+                  {/* Detalle de cada evaluación */}
                   <div className="space-y-6">
                     {followUpEvaluations.map((evaluation) => (
                       <div key={evaluation.id} className="bg-white rounded-xl shadow-sm border border-[#E6E3DE] overflow-hidden">
@@ -599,7 +650,6 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
                           </button>
                         </div>
                         <div className="p-6 space-y-4">
-                          {/* Parámetros Bioquímicos */}
                           {evaluation.biochemical_params && (evaluation.biochemical_params.glucose !== null || evaluation.biochemical_params.insulin !== null || 
                             evaluation.biochemical_params.total_cholesterol !== null || evaluation.biochemical_params.triglycerides !== null) && (
                             <div>
@@ -621,7 +671,6 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
                             </div>
                           )}
 
-                          {/* Diagnóstico Nutricional */}
                           {evaluation.nutritional_diagnosis?.diagnosis && (
                             <div>
                               <h4 className="font-semibold text-[#2C3E34] mb-2">Diagnóstico Nutricional</h4>
@@ -629,7 +678,6 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
                             </div>
                           )}
 
-                          {/* Plan de Intervención */}
                           {evaluation.intervention_plan && (evaluation.intervention_plan.nutritional_goals || evaluation.intervention_plan.dietary_strategy || 
                             evaluation.intervention_plan.specific_recommendations || evaluation.intervention_plan.supplementation) && (
                             <div>
@@ -643,7 +691,6 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
                             </div>
                           )}
 
-                          {/* Seguimiento */}
                           {evaluation.follow_up && (evaluation.follow_up.next_appointment_date || evaluation.follow_up.indicators_to_evaluate || evaluation.follow_up.observations) && (
                             <div>
                               <h4 className="font-semibold text-[#2C3E34] mb-2">Seguimiento</h4>
@@ -655,7 +702,6 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
                             </div>
                           )}
 
-                          {/* Si no hay datos adicionales */}
                           {!evaluation.nutritional_diagnosis?.diagnosis && 
                           !(evaluation.intervention_plan && (evaluation.intervention_plan.nutritional_goals || evaluation.intervention_plan.dietary_strategy)) && 
                           !(evaluation.follow_up && (evaluation.follow_up.next_appointment_date || evaluation.follow_up.observations)) && (
@@ -680,9 +726,7 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
       <RecommendationsModal
         isOpen={showRecommendations}
         onClose={() => setShowRecommendations(false)}
-        onSave={() => {
-          // Recargar datos si es necesario
-        }}
+        onSave={() => {}}
       />
 
       {/* Modal para editar cita de progreso */}

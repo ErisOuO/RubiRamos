@@ -35,60 +35,80 @@ export async function POST(req: Request) {
       to: email,
       subject: 'Código de verificación - Consultorio Nutricional',
       html: `
-        <div style="max-width: 600px; margin: 0 auto; font-family: 'Segoe UI', sans-serif; border: 1px solid #dcdcdc; border-radius: 14px; overflow: hidden;">
-          
-          <!-- ENCABEZADO -->
-          <div style="
-            background: linear-gradient(180deg, #A8FF6B 0%, #8EEF5A 40%, #64C23A 100%);
-            border-bottom: 3px solid #FF7C00;
-            text-align: center;
-            padding: 1.5rem;
-            color: #1e1e1e;
-          ">
-            <h1 style="margin: 0; font-size: 1.8rem; font-weight: 700;">Consultorio Nutricional</h1>
-            <p style="margin: 0; font-size: 1rem; color: #2f4f2f;">Tu salud es nuestra prioridad</p>
-          </div>
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Código de verificación</title>
+          </head>
+          <body style="margin: 0; padding: 0; background-color: #f4f7f9; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;">
+            <div style="max-width: 560px; margin: 40px auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+              
+              <!-- Encabezado -->
+              <div style="background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); padding: 32px 24px; text-align: center;">
+                <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px;">Consultorio Nutricional</h1>
+                <p style="margin: 8px 0 0 0; font-size: 14px; color: #e8f5e9;">Tu bienestar, nuestra prioridad</p>
+              </div>
 
-          <!-- CUERPO -->
-          <div style="background-color: #fdfdfd; padding: 2rem 2.5rem;">
-            <h2 style="text-align: center; color: #3a7f2f; font-size: 1.5rem; margin-top: 0;">Verificación de acceso</h2>
-            <p style="font-size: 1rem; color: #333; text-align: center; line-height: 1.6;">
-              Has iniciado sesión correctamente en el sistema del <strong>Consultorio Nutricional</strong>.<br>
-              Ingresa el siguiente código en la página de verificación para continuar:
-            </p>
+              <!-- Cuerpo principal -->
+              <div style="padding: 32px 28px;">
+                <div style="text-align: center; margin-bottom: 24px;">
+                  <div style="width: 60px; height: 60px; background-color: #e8f5e9; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">
+                    <span style="font-size: 28px; font-weight: bold; color: #27ae60;">✓</span>
+                  </div>
+                </div>
 
-            <div style="
-              text-align: center;
-              font-size: 2.2rem;
-              font-weight: bold;
-              margin: 1.8rem 0;
-              color: #2d6a25;
-              background-color: #ecffe4;
-              display: inline-block;
-              padding: 0.8rem 1.8rem;
-              border-radius: 10px;
-              border: 2px solid #64C23A;
-            ">
-              ${code}
+                <h2 style="text-align: center; color: #2c3e50; font-size: 22px; font-weight: 600; margin: 0 0 12px 0;">Verificación de acceso</h2>
+                
+                <p style="color: #5d6d7e; text-align: center; font-size: 15px; line-height: 1.6; margin: 0 0 8px 0;">
+                  Hola <strong style="color: #27ae60;">${username}</strong>,
+                </p>
+                
+                <p style="color: #5d6d7e; text-align: center; font-size: 15px; line-height: 1.6; margin: 0 0 28px 0;">
+                  Hemos detectado un intento de inicio de sesión en su cuenta. Utilice el siguiente código para completar la verificación:
+                </p>
+
+                <!-- Código destacado -->
+                <div style="text-align: center; margin: 28px 0;">
+                  <div style="background: linear-gradient(135deg, #fef9e7 0%, #fff8e1 100%); border: 2px solid #f39c12; border-radius: 16px; padding: 20px 16px; display: inline-block; min-width: 240px;">
+                    <span style="font-family: 'Courier New', monospace; font-size: 40px; font-weight: 800; letter-spacing: 8px; color: #e67e22;">${code}</span>
+                  </div>
+                </div>
+
+                <!-- Información de expiración -->
+                <div style="background-color: #f8f9fa; border-radius: 12px; padding: 16px; margin: 24px 0 0 0;">
+                  <table width="100%" style="text-align: center; border-collapse: collapse;">
+                    <tr>
+                      <td style="padding: 0 12px; width: 50%;">
+                        <div style="font-size: 20px; font-weight: 600; color: #e67e22;">03:00</div>
+                        <p style="margin: 8px 0 0 0; font-size: 13px; color: #7f8c8d;">Tiempo de expiración</p>
+                      </td>
+                      <td style="padding: 0 12px; width: 50%; border-left: 1px solid #e9ecef;">
+                        <div style="font-size: 20px; font-weight: 600; color: #27ae60;">1 vez</div>
+                        <p style="margin: 8px 0 0 0; font-size: 13px; color: #7f8c8d;">Uso único</p>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+
+                <p style="color: #95a5a6; text-align: center; font-size: 12px; line-height: 1.5; margin: 24px 0 0 0;">
+                  Este código es confidencial y caduca en 3 minutos. Si no solicitó este código, ignore este mensaje.
+                </p>
+              </div>
+
+              <!-- Pie de página -->
+              <div style="background-color: #f8f9fa; border-top: 1px solid #e9ecef; padding: 20px 28px; text-align: center;">
+                <p style="margin: 0 0 8px 0; font-size: 12px; color: #95a5a6;">
+                  © ${new Date().getFullYear()} Consultorio Nutricional — Todos los derechos reservados
+                </p>
+                <p style="margin: 0; font-size: 11px; color: #bdc3c7;">
+                  Este es un mensaje automático, por favor no responder a este correo.
+                </p>
+              </div>
             </div>
-
-            <p style="font-size: 0.95rem; color: #444; text-align: center;">
-              Este código expirará en <strong>3 minutos</strong> y solo puede usarse una vez.
-            </p>
-          </div>
-
-          <!-- PIE -->
-          <div style="
-            background: linear-gradient(180deg, #64C23A 0%, #579B30 70%, #FF7C00 100%);
-            color: #ffffff;
-            text-align: center;
-            font-size: 0.85rem;
-            padding: 1rem;
-          ">
-            Si no solicitaste este código, puedes ignorar este mensaje.<br />
-            © ${new Date().getFullYear()} Consultorio Nutricional — Todos los derechos reservados
-          </div>
-        </div>
+          </body>
+        </html>
       `,
     });
 

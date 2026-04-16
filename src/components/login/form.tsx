@@ -45,7 +45,7 @@ export default function LoginForm() {
         if (session?.user?.rol_id === 1) {
           router.push('/admin');
         } else if (session?.user?.rol_id === 2) {
-          router.push('/patient');
+          router.push('/admin/patient');
         } else {
           setError('Rol de usuario no válido');
           setLoading(false);

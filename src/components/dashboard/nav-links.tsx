@@ -13,14 +13,15 @@ import {
   CircleStackIcon,
   Cog6ToothIcon,
   ChevronDownIcon,
-  ChevronUpIcon
+  ChevronUpIcon,
+  UserCircleIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 
-// Enlaces principales - ORDEN ESPECÍFICO
-const mainLinks = [
+// Enlaces para ADMIN (rol_id = 1)
+const adminMainLinks = [
   { name: 'Dashboard', href: '/admin', icon: HomeIcon },
   { name: 'Muro', href: '/admin/muro', icon: ClipboardDocumentCheckIcon },
   { name: 'Pacientes', href: '/admin/pacientes', icon: UserGroupIcon },
@@ -30,18 +31,42 @@ const mainLinks = [
   { name: 'Productos', href: '/admin/productos', icon: ShoppingBagIcon },
 ];
 
-// Enlaces de configuración (dentro del desplegable)
-const configLinks = [
+// Enlaces para PACIENTE (rol_id = 2)
+const patientMainLinks = [
+  { name: 'Dashboard', href: '/admin/patient', icon: HomeIcon },
+  { name: 'Muro', href: '/admin/patient/muro', icon: ClipboardDocumentCheckIcon },
+  { name: 'Calendario', href: '/admin/patient/calendar', icon: CalendarIcon },
+  { name: 'Historial Médico', href: '/admin/patient/historial', icon: IdentificationIcon },
+];
+
+// Enlaces de configuración para ADMIN
+const adminConfigLinks = [
   { name: 'Monitoreo', href: '/admin/monitoreo', icon: ChartBarIcon },
   { name: 'Respaldos', href: '/admin/db', icon: CircleStackIcon },
 ];
 
-export default function NavLinks({ mobile = false, onLinkClick }: { mobile?: boolean, onLinkClick?: () => void }) {
+// Enlaces de configuración para PACIENTE
+const patientConfigLinks = [
+  { name: 'Perfil', href: '/admin/patient/perfil', icon: UserCircleIcon },
+];
+
+interface NavLinksProps {
+  mobile?: boolean;
+  onLinkClick?: () => void;
+  userRole?: number;
+}
+
+export default function NavLinks({ mobile = false, onLinkClick, userRole = 1 }: NavLinksProps) {
   const pathname = usePathname();
   const [isConfigOpen, setIsConfigOpen] = useState(false);
 
+  // Seleccionar enlaces según el rol
+  const mainLinks = userRole === 1 ? adminMainLinks : patientMainLinks;
+  const configLinks = userRole === 1 ? adminConfigLinks : patientConfigLinks;
+  const isAdmin = userRole === 1;
+
   // Función para renderizar enlaces
-  const renderLinks = (links: typeof mainLinks, sectionTitle?: string) => (
+  const renderLinks = (links: typeof adminMainLinks, sectionTitle?: string) => (
     <>
       {sectionTitle && !mobile && (
         <div className="px-1 pt-4 pb-2">
@@ -53,7 +78,7 @@ export default function NavLinks({ mobile = false, onLinkClick }: { mobile?: boo
       {links.map((link) => {
         const LinkIcon = link.icon;
         const isActive = pathname === link.href || 
-                        (link.href !== '/admin' && pathname.startsWith(link.href));
+                        (link.href !== '/admin' && link.href !== '/admin/patient' && pathname.startsWith(link.href));
 
         return (
           <Link
@@ -68,7 +93,7 @@ export default function NavLinks({ mobile = false, onLinkClick }: { mobile?: boo
               mobile
                 ? isActive
                   ? { 
-                      backgroundColor: '#6B8E7B',
+                      backgroundColor: '#5A8C7A',
                       color: '#FFFFFF'
                     }
                   : { 
@@ -76,7 +101,7 @@ export default function NavLinks({ mobile = false, onLinkClick }: { mobile?: boo
                     }
                 : isActive
                 ? { 
-                    backgroundColor: '#6B8E7B',
+                    backgroundColor: '#5A8C7A',
                     color: '#FFFFFF'
                   }
                 : { 
@@ -84,7 +109,6 @@ export default function NavLinks({ mobile = false, onLinkClick }: { mobile?: boo
                   }
             }
           >
-            {/* Indicador de activo en desktop */}
             {isActive && !mobile && (
               <div 
                 className="absolute left-0 top-1/2 transform -translate-y-1/2 h-6 w-1 rounded-r"
@@ -92,7 +116,6 @@ export default function NavLinks({ mobile = false, onLinkClick }: { mobile?: boo
               ></div>
             )}
             
-            {/* Icono */}
             <LinkIcon className="h-4 w-4" />
             <span>{link.name}</span>
           </Link>

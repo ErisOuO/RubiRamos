@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { Suspense, JSX } from 'react';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import { getPosts } from '@/lib/posts-actions';

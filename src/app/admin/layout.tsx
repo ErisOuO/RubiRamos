@@ -5,15 +5,15 @@ import { Toaster } from 'react-hot-toast';
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Admin",
-    default: "Admin",
+    template: "%s | Panel de Control",
+    default: "Panel de Control",
   },
-  description: "Panel administrativo de Rubi Ramos - Consultorio Nutricional",
+  description: "Panel de control - Consultorio Nutricional Rubí Ramos",
 };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ProtectedRoute allowedRoles={[1]}>
+    <ProtectedRoute allowedRoles={[1, 2]}>
       <AdminLayoutClient>{children}</AdminLayoutClient>
       <Toaster position="top-right"/>
     </ProtectedRoute>

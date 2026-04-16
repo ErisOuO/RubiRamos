@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { searchPatientsForHistory, getPatientInitialEvaluation, getPatientFollowUpEvaluations } from '@/lib/medical-history-actions';
 import NutritionPlan from './NutritionPlan';
+import PredictiveModule from './PredictiveModule';
 import RecommendationsModal from '@/components/recommendations/RecommendationsModal';
 import ClinicalEvaluationModal from '@/components/citas/ClinicalEvaluationModal';
 import { toast } from 'react-hot-toast';
@@ -23,6 +24,7 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
   const [loading, setLoading] = useState(false);
   const [showInitialEvaluation, setShowInitialEvaluation] = useState(false);
   const [showNutritionPlan, setShowNutritionPlan] = useState(false);
+  const [showPredictiveModule, setShowPredictiveModule] = useState(false);
   const [showRecommendations, setShowRecommendations] = useState(false);
   
   // Estados para modales de edición
@@ -50,6 +52,7 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
       setFollowUpEvaluations(followUps);
       setShowInitialEvaluation(true);
       setShowNutritionPlan(false);
+      setShowPredictiveModule(false);
     } catch (error) {
       toast.error('Error al cargar el historial del paciente');
     } finally {
@@ -283,14 +286,15 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
               </div>
             </div>
 
-            {/* Tabs para navegar entre Evaluación Inicial, Progreso y Plan Alimenticio */}
+            {/* Tabs para navegar entre Evaluación Inicial, Progreso, Plan Alimenticio y Módulo Predictivo */}
             <div className="flex gap-2 mb-6 border-b border-[#E6E3DE]">
               <button
                 onClick={() => {
                   setShowInitialEvaluation(true);
                   setShowNutritionPlan(false);
+                  setShowPredictiveModule(false);
                 }}
-                className={`px-6 py-2 font-semibold transition-colors ${showInitialEvaluation && !showNutritionPlan ? 'text-[#5A8C7A] border-b-2 border-[#5A8C7A]' : 'text-[#6E7C72] hover:text-[#2C3E34]'}`}
+                className={`px-6 py-2 font-semibold transition-colors ${showInitialEvaluation && !showNutritionPlan && !showPredictiveModule ? 'text-[#5A8C7A] border-b-2 border-[#5A8C7A]' : 'text-[#6E7C72] hover:text-[#2C3E34]'}`}
               >
                 Evaluación Inicial
               </button>
@@ -298,8 +302,9 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
                 onClick={() => {
                   setShowInitialEvaluation(false);
                   setShowNutritionPlan(false);
+                  setShowPredictiveModule(false);
                 }}
-                className={`px-6 py-2 font-semibold transition-colors ${!showInitialEvaluation && !showNutritionPlan ? 'text-[#5A8C7A] border-b-2 border-[#5A8C7A]' : 'text-[#6E7C72] hover:text-[#2C3E34]'}`}
+                className={`px-6 py-2 font-semibold transition-colors ${!showInitialEvaluation && !showNutritionPlan && !showPredictiveModule ? 'text-[#5A8C7A] border-b-2 border-[#5A8C7A]' : 'text-[#6E7C72] hover:text-[#2C3E34]'}`}
               >
                 Progreso ({followUpEvaluations.length} registros)
               </button>
@@ -307,10 +312,21 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
                 onClick={() => {
                   setShowInitialEvaluation(false);
                   setShowNutritionPlan(true);
+                  setShowPredictiveModule(false);
                 }}
                 className={`px-6 py-2 font-semibold transition-colors ${showNutritionPlan ? 'text-[#5A8C7A] border-b-2 border-[#5A8C7A]' : 'text-[#6E7C72] hover:text-[#2C3E34]'}`}
               >
                 Plan Alimenticio
+              </button>
+              <button
+                onClick={() => {
+                  setShowInitialEvaluation(false);
+                  setShowNutritionPlan(false);
+                  setShowPredictiveModule(true);
+                }}
+                className={`px-6 py-2 font-semibold transition-colors ${showPredictiveModule ? 'text-[#5A8C7A] border-b-2 border-[#5A8C7A]' : 'text-[#6E7C72] hover:text-[#2C3E34]'}`}
+              >
+                Módulo Predictivo
               </button>
             </div>
 
@@ -320,9 +336,8 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
                 <p className="text-[#6E7C72]">Cargando información...</p>
               </div>
             ) : showInitialEvaluation ? (
-              // Evaluación Inicial - resto del código igual...
+              // Evaluación Inicial
               initialEvaluation ? (
-                // ... (todo el contenido de evaluación inicial)
                 <div className="space-y-6">
                   {/* Motivo de consulta */}
                   <div className="bg-white rounded-xl shadow-sm border border-[#E6E3DE] p-6">
@@ -457,6 +472,9 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
                   // Recargar datos si es necesario
                 }}
               />
+            ) : showPredictiveModule ? (
+              // Módulo Predictivo
+              <PredictiveModule patientId={selectedPatient.id} />
             ) : (
               // Progreso - Tabla de Resultados
               followUpEvaluations.length > 0 ? (

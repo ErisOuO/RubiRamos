@@ -342,7 +342,7 @@ export default function NutritionPlan({ patientId, onRefresh }: NutritionPlanPro
                   />
                 </div>
                 <div className="w-24 text-xs text-[#5A8C7A] font-medium">
-                  {mealTimes[meal]?.label || (meal === 'COLACION' ? 'A libre demanda' : '')}
+                  {mealTimes[meal]?.label || (meal === 'COLACION' ? '' : '')}
                 </div>
               </div>
             ))}
@@ -375,7 +375,7 @@ export default function NutritionPlan({ patientId, onRefresh }: NutritionPlanPro
                       <span className="block text-xs font-normal text-[#6E7C72]">{mealTimes[meal]?.label}</span>
                     )}
                     {meal === 'COLACION' && !mealTimes[meal]?.label && (
-                      <span className="block text-xs font-normal text-[#6E7C72]">A libre demanda</span>
+                      <span className="block text-xs font-normal text-[#6E7C72]"></span>
                     )}
                   </td>
                   {MENUS.map(menu => {

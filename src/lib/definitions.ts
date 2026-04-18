@@ -8,6 +8,15 @@ export type Usuario = {
     rol_id: number;
 };
 
+export type UsuarioAuth = {
+  id: string;
+  username: string;
+  email: string;
+  verified: boolean;
+  active: boolean;
+  rol_id: number;
+};
+
 export type Paciente = {
     id: number;
     first_name: string;

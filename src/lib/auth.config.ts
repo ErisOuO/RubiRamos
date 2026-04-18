@@ -1,19 +1,23 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import type { AuthOptions, User, Session } from "next-auth";
 import type { JWT } from "next-auth/jwt";
-import { Usuario } from "./definitions";
+import { Usuario, UsuarioAuth } from "./definitions";
 import { query } from "@/lib/db";
 import bcrypt from "bcrypt";
 
 declare module "next-auth" {
   interface Session {
-    user: Usuario;
+    user: UsuarioAuth;
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
-    user?: Usuario;
+    user?: UsuarioAuth;
+    rol_id?: number;
+    id?: string;
+    username?: string;
+    email?: string;
   }
 }
 
@@ -22,18 +26,16 @@ async function jwtCallback({
   user,
 }: {
   token: JWT;
-  user?: Usuario | User;
+  user?: UsuarioAuth | User;
 }): Promise<JWT> {
   if (user && "username" in user) {
-    token.user = user as Usuario;
-    token.user.verified = user.verified ?? false;
-    token.user.rol_id = user.rol_id ?? null;
-    
-    // También agregar rol_id directamente al token para facilitar acceso
-    token.rol_id = user.rol_id ?? null;
-    token.id = user.id;
-    token.username = user.username;
-    token.email = user.email;
+    const u = user as UsuarioAuth;
+
+    token.user = u;
+    token.rol_id = u.rol_id;
+    token.id = u.id;
+    token.username = u.username;
+    token.email = u.email;
   }
   return token;
 }
@@ -43,16 +45,10 @@ async function sessionCallback({
   token,
 }: {
   session: Session;
-  token: JWT & { user?: Usuario };
+  token: JWT;
 }): Promise<Session> {
   if (token.user) {
     session.user = token.user;
-    session.user.username = token.user.username;
-    session.user.id = token.user.id;
-    session.user.rol_id = token.user.rol_id;
-    session.user.email = token.user.email;
-    session.user.verified = token.user.verified;
-    session.user.active = token.user.active;
   }
   return session;
 }
@@ -61,7 +57,7 @@ export const authConfig: AuthOptions = {
   pages: {
     signIn: "/login",
     signOut: "/login",
-    error: "/login", // Página de error personalizada
+    error: "/login",
   },
   providers: [
     CredentialsProvider({
@@ -72,38 +68,35 @@ export const authConfig: AuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) {
-          throw new Error("Faltan credenciales");
+          return null;
         }
 
         const res = await query(
-          "SELECT id, username, email, password_hash, rol_id, verified, active FROM tblusers WHERE username = $1 AND active = true",
+          `SELECT id, username, email, password_hash, rol_id, verified, active 
+           FROM tblusers 
+           WHERE username = $1 AND active = true`,
           [credentials.username]
         );
 
         const user = res.rows[0] as Usuario | undefined;
 
-        if (!user) {
-          throw new Error("Usuario no encontrado o inactivo");
-        }
+        if (!user) return null;
 
         const isValid = await bcrypt.compare(
           credentials.password,
           user.password_hash
         );
 
-        if (!isValid) {
-          throw new Error("Contraseña incorrecta");
-        }
+        if (!isValid) return null;
 
         return {
           id: user.id.toString(),
           username: user.username,
           email: user.email,
-          password_hash: user.password_hash,
           verified: user.verified,
           active: user.active,
           rol_id: user.rol_id,
-        } satisfies Usuario;
+        } satisfies UsuarioAuth;
       },
     }),
   ],
@@ -113,8 +106,8 @@ export const authConfig: AuthOptions = {
   },
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 días
+    maxAge: 30 * 24 * 60 * 60,
   },
   secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === "development", // Agregar para debugging
+  debug: process.env.NODE_ENV === "development",
 };

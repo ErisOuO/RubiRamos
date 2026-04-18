@@ -5,6 +5,8 @@ import { getPosts } from '@/lib/posts-actions';
 import { authConfig } from '@/lib/auth.config';
 import PostsList from '@/components/muro/PostsList';
 
+export const dynamic = 'force-dynamic';
+
 export default async function MuroPage() {
   const session = await getServerSession(authConfig);
   

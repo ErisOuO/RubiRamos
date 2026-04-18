@@ -5,6 +5,8 @@ import { authConfig } from '@/lib/auth.config';
 import { getPatientByUserId, getPatientInitialEvaluation, getPatientFollowUpEvaluations, getPatientActiveNutritionPlan, getPatientPredictiveData } from '@/lib/patient-medical-history-actions';
 import PatientMedicalHistoryClient from '@/components/patient-medical-history/PatientMedicalHistoryClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function PatientMedicalHistoryPage() {
   const session = await getServerSession(authConfig);
   

@@ -4,6 +4,8 @@ import { authConfig } from '@/lib/auth.config';
 import { getDashboardStats } from '@/lib/dashboard-actions';
 import DashboardClient from '@/components/dashboard/DashboardClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardPage() {
   const session = await getServerSession(authConfig);
   

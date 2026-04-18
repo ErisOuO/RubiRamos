@@ -2,6 +2,8 @@ import { Suspense } from 'react';
 import { getPatients, getPatientsStats } from '@/lib/patients-actions';
 import PatientsList from '@/components/patients/PatientList';
 
+export const dynamic = 'force-dynamic';
+
 export default async function PatientsPage() {
   const [patientsResult, stats] = await Promise.all([
     getPatients({ page: 1, pageSize: 10 }),

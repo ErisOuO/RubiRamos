@@ -8,6 +8,8 @@ import PatientAppointmentModal from '@/components/patient/PatientAppointmentModa
 import PatientAppointmentActionsModal from '@/components/patient/PatientAppointmentActionsModal';
 import { toast } from 'react-hot-toast';
 
+export const dynamic = 'force-dynamic';
+
 interface DayInfo {
   date: Date;
   dayOfMonth: number;

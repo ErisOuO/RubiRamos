@@ -7,6 +7,8 @@ import SettingsModal from '@/components/calendar/SettingsModal';
 import DayAppointmentsList from '@/components/calendar/DayAppointmentsList';
 import { toast } from 'react-hot-toast';
 
+export const dynamic = 'force-dynamic';
+
 interface DayInfo {
   date: Date;
   dayOfMonth: number;

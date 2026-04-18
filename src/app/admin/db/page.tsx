@@ -10,6 +10,8 @@ import {
   TableCellsIcon,
 } from "@heroicons/react/24/outline";
 
+export const dynamic = 'force-dynamic';
+
 type UserRow = {
   id: string;
   username: string | null;

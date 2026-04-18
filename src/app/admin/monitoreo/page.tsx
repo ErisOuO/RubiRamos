@@ -6,6 +6,8 @@ import { authConfig } from '@/lib/auth.config';
 import AuditoriaClient from '@/components/monitoreo/auditoria';
 import MetricasCards from '@/components/monitoreo/metricasCards';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AuditoriaPage() {
   const session = await getServerSession(authConfig);
   

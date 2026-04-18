@@ -2,6 +2,8 @@ import { Suspense } from 'react';
 import { getProductos, getCategoriasActivas } from '@/lib/productos-data';
 import ProductosClient from '@/components/productos/products';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProductosPage() {
   // Cargar datos iniciales sin filtros
   const [productosResult, categorias] = await Promise.all([

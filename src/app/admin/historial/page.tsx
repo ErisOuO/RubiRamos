@@ -12,6 +12,8 @@ interface PageProps {
   };
 }
 
+export const dynamic = 'force-dynamic';
+
 export default async function MedicalHistoryPage({ searchParams }: PageProps) {
   const params = await searchParams;
   let preselectedPatient = null;

@@ -5,6 +5,8 @@ import { getPosts } from '@/lib/posts-actions';
 import { authConfig } from '@/lib/auth.config';
 import PatientPostsList from '@/components/patient-muro/PatientPostsList';
 
+export const dynamic = 'force-dynamic';
+
 export default async function PatientMuroPage() {
   const session = await getServerSession(authConfig);
   

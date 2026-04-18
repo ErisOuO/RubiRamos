@@ -5,6 +5,8 @@ import { authConfig } from '@/lib/auth.config';
 import { getPatientProfile } from '@/lib/patient-profile-actions';
 import PatientProfileForm from '@/components/patient-profile/PatientProfileForm';
 
+export const dynamic = 'force-dynamic';
+
 export default async function PatientProfilePage() {
   const session = await getServerSession(authConfig);
   

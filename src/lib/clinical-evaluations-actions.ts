@@ -191,11 +191,35 @@ export async function getAppointmentWithPatient(appointmentId: number) {
 // Obtener citas de hoy con información del paciente y evaluación inicial
 export async function getTodayAppointmentsWithPatients() {
   try {
-    const today = new Date();
-    const todayStr = today.toISOString().split('T')[0];
-    
+    /*
+     * Antes de consultar las citas, cambia a "completed"
+     * aquellas cuya fecha u hora de finalización ya pasó.
+     *
+     * Se utiliza la zona horaria del consultorio para evitar
+     * problemas con la hora UTC del servidor.
+     */
+    await sql`
+      UPDATE tblappointments
+      SET
+        status = 'completed',
+        updated_at = NOW()
+      WHERE status IN ('scheduled', 'confirmed')
+        AND (
+          appointment_date <
+            (NOW() AT TIME ZONE 'America/Mexico_City')::date
+
+          OR (
+            appointment_date =
+              (NOW() AT TIME ZONE 'America/Mexico_City')::date
+
+            AND end_time <=
+              (NOW() AT TIME ZONE 'America/Mexico_City')::time
+          )
+        )
+    `;
+
     const appointments = await sql`
-      SELECT 
+      SELECT
         a.id,
         a.appointment_date,
         a.start_time,
@@ -204,7 +228,8 @@ export async function getTodayAppointmentsWithPatients() {
         a.deposit_paid,
         a.deposit_amount,
         a.notes,
-        p.id as patient_id,
+
+        p.id AS patient_id,
         p.first_name,
         p.second_name,
         p.first_lastname,
@@ -216,17 +241,30 @@ export async function getTodayAppointmentsWithPatients() {
         p.fecha_nacimiento,
         p.estado_civil,
         p.ocupacion,
-        ce.id as initial_evaluation_id
+
+        ce.id AS initial_evaluation_id
+
       FROM tblappointments a
-      JOIN tblpatients p ON a.patient_id = p.id
-      JOIN tblusers u ON p.user_id = u.id
-      LEFT JOIN tblclinical_evaluations ce ON p.id = ce.patient_id AND ce.evaluation_type = 'initial'
-      WHERE a.appointment_date = ${todayStr}
+
+      JOIN tblpatients p
+        ON a.patient_id = p.id
+
+      JOIN tblusers u
+        ON p.user_id = u.id
+
+      LEFT JOIN tblclinical_evaluations ce
+        ON p.id = ce.patient_id
+        AND ce.evaluation_type = 'initial'
+
+      WHERE a.appointment_date =
+        (NOW() AT TIME ZONE 'America/Mexico_City')::date
+
         AND a.status NOT IN ('cancelled', 'no_show')
+
       ORDER BY a.start_time
     `;
-    
-    return appointments.map(app => ({
+
+    return appointments.map((app) => ({
       id: app.id,
       appointment_date: app.appointment_date,
       start_time: app.start_time,
@@ -235,26 +273,45 @@ export async function getTodayAppointmentsWithPatients() {
       deposit_paid: app.deposit_paid,
       deposit_amount: app.deposit_amount,
       notes: app.notes,
+
       patient: {
         id: app.patient_id,
         first_name: app.first_name,
         second_name: app.second_name,
         first_lastname: app.first_lastname,
         second_lastname: app.second_lastname,
-        nombre_completo: `${app.first_name} ${app.second_name || ''} ${app.first_lastname} ${app.second_lastname || ''}`.trim().replace(/\s+/g, ' '),
+
+        nombre_completo: `
+          ${app.first_name}
+          ${app.second_name || ''}
+          ${app.first_lastname}
+          ${app.second_lastname || ''}
+        `
+          .trim()
+          .replace(/\s+/g, ' '),
+
         age: app.age,
         gender: app.gender,
         phone: app.phone,
         email: app.email,
         fecha_nacimiento: app.fecha_nacimiento,
         estado_civil: app.estado_civil,
-        ocupacion: app.ocupacion
+        ocupacion: app.ocupacion,
       },
-      has_initial_evaluation: !!app.initial_evaluation_id
+
+      has_initial_evaluation: Boolean(
+        app.initial_evaluation_id
+      ),
     }));
   } catch (error) {
-    console.error('Error al obtener citas de hoy:', error);
-    throw new Error('No se pudieron obtener las citas de hoy');
+    console.error(
+      'Error al obtener citas de hoy:',
+      error
+    );
+
+    throw new Error(
+      'No se pudieron obtener las citas de hoy'
+    );
   }
 }
 

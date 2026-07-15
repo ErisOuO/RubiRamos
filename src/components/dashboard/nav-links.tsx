@@ -14,7 +14,8 @@ import {
   Cog6ToothIcon,
   ChevronDownIcon,
   ChevronUpIcon,
-  UserCircleIcon
+  UserCircleIcon,
+  SpeakerWaveIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -41,6 +42,7 @@ const patientMainLinks = [
 
 // Enlaces de configuración para ADMIN
 const adminConfigLinks = [
+  {name: 'Alexa NutriControl',href: '/admin/alexa',icon: SpeakerWaveIcon},
   { name: 'Monitoreo', href: '/admin/monitoreo', icon: ChartBarIcon },
   { name: 'Respaldos', href: '/admin/db', icon: CircleStackIcon },
 ];

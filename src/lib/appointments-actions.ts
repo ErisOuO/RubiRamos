@@ -22,7 +22,7 @@ function revalidateCalendar() {
  *
  * Contempla dos casos comunes:
  * 1. Fecha creada con new Date(año, mes, día) en la zona del usuario.
- * 2. Fecha creada con new Date('YYYY-MM-DD'), que queda a medianoche UTC.
+ * 2. Fecha creada con new Date("YYYY-MM-DD"), que queda a medianoche UTC.
  */
 function toCalendarDateString(date: Date): string {
   if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
@@ -37,7 +37,7 @@ function toCalendarDateString(date: Date): string {
     date.getUTCSeconds() === 0 &&
     date.getUTCMilliseconds() === 0;
 
-  // new Date('YYYY-MM-DD') representa exactamente las 00:00 UTC.
+  // new Date("YYYY-MM-DD") representa exactamente las 00:00 UTC.
   // En ese caso se conserva el día escrito originalmente.
   if (isUtcMidnight) {
     return isoDate;
@@ -90,7 +90,10 @@ function getConsultorioNow(date: Date = new Date()) {
 
   return {
     dateStr: `${values.year}-${values.month}-${values.day}`,
-    currentTime: `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:${String(second).padStart(2, "0")}`,
+    currentTime: `${String(hour).padStart(2, "0")}:${String(minute).padStart(
+      2,
+      "0",
+    )}:${String(second).padStart(2, "0")}`,
     currentMinutes: hour * 60 + minute,
     currentSeconds: hour * 3600 + minute * 60 + second,
   };
@@ -126,14 +129,20 @@ function normalizeTime(time: string): string {
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
 
-  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:00`;
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+    2,
+    "0",
+  )}:00`;
 }
 
 function minutesToTime(totalMinutes: number): string {
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
 
-  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:00`;
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+    2,
+    "0",
+  )}:00`;
 }
 
 function isKnownAppointmentError(message: string): boolean {
@@ -146,54 +155,19 @@ function isKnownAppointmentError(message: string): boolean {
   );
 }
 
-/**
- * Cambia automáticamente a "completed" las citas cuya hora de finalización
- * ya pasó, usando la zona horaria del consultorio.
- *
- * Solo modifica citas que continúan en estado "scheduled" o "confirmed".
- * Las citas canceladas o marcadas como inasistencia se conservan sin cambios.
- */
-export async function completeExpiredAppointments(): Promise<number> {
-  try {
-    const now = getConsultorioNow();
-
-    const updatedAppointments = await sql`
-      UPDATE tblappointments
-      SET status = 'completed'
-      WHERE status IN ('scheduled', 'confirmed')
-        AND (
-          appointment_date < ${now.dateStr}
-          OR (
-            appointment_date = ${now.dateStr}
-            AND end_time <= ${now.currentTime}
-          )
-        )
-      RETURNING id
-    `;
-
-    if (updatedAppointments.length > 0) {
-      revalidateCalendar();
-    }
-
-    return updatedAppointments.length;
-  } catch (error) {
-    console.error("Error al completar citas vencidas:", error);
-    return 0;
-  }
-}
-
-// Obtener configuración del calendario (global)
+// Obtener configuración del calendario global.
 export async function getCalendarSettings() {
   try {
     const [settings] = await sql`
-      SELECT * FROM tblcalendar_settings LIMIT 1
+      SELECT *
+      FROM tblcalendar_settings
+      LIMIT 1
     `;
 
     return settings;
   } catch (error) {
     console.error("Error al obtener configuración:", error);
 
-    // Valores por defecto
     return {
       start_time: "08:00:00",
       end_time: "18:00:00",
@@ -205,7 +179,7 @@ export async function getCalendarSettings() {
   }
 }
 
-// Obtener excepciones para un rango de fechas
+// Obtener excepciones para un rango de fechas.
 export async function getExceptions(startDate: Date, endDate: Date) {
   try {
     const startDateStr = toCalendarDateString(startDate);
@@ -224,18 +198,19 @@ export async function getExceptions(startDate: Date, endDate: Date) {
   }
 }
 
-// Obtener citas para un rango de fechas (para contar por día)
+// Obtener citas para un rango de fechas.
 export async function getAppointmentsByDateRange(
   startDate: Date,
   endDate: Date,
 ) {
   try {
-    await completeExpiredAppointments();
     const startDateStr = toCalendarDateString(startDate);
     const endDateStr = toCalendarDateString(endDate);
 
     const appointments = await sql`
-      SELECT appointment_date, COUNT(*) AS total
+      SELECT
+        appointment_date,
+        COUNT(*) AS total
       FROM tblappointments
       WHERE appointment_date BETWEEN ${startDateStr} AND ${endDateStr}
         AND status NOT IN ('cancelled', 'no_show')
@@ -249,11 +224,11 @@ export async function getAppointmentsByDateRange(
   }
 }
 
-// Obtener citas de un día específico con datos del paciente
+// Obtener citas de un día específico con datos del paciente.
 export async function getAppointmentsByDay(date: Date) {
   try {
-    await completeExpiredAppointments();
     const dateStr = toCalendarDateString(date);
+
     console.log("Buscando citas para:", dateStr);
 
     const appointments = await sql`
@@ -270,8 +245,10 @@ export async function getAppointmentsByDay(date: Date) {
         p.gender,
         u.email
       FROM tblappointments a
-      JOIN tblpatients p ON a.patient_id = p.id
-      JOIN tblusers u ON p.user_id = u.id
+      JOIN tblpatients p
+        ON a.patient_id = p.id
+      JOIN tblusers u
+        ON p.user_id = u.id
       WHERE a.appointment_date = ${dateStr}
         AND a.status NOT IN ('cancelled', 'no_show')
       ORDER BY a.start_time
@@ -279,24 +256,26 @@ export async function getAppointmentsByDay(date: Date) {
 
     console.log("Citas encontradas:", appointments.length);
 
-    return appointments.map((app) => ({
-      id: app.appointment_id,
-      patient_id: app.patient_id,
-      appointment_date: app.appointment_date,
-      start_time: app.start_time,
-      end_time: app.end_time,
-      status: app.status,
-      deposit_paid: app.deposit_paid,
-      deposit_amount: app.deposit_amount,
-      notes: app.notes,
-      first_name: app.first_name,
-      second_name: app.second_name,
-      first_lastname: app.first_lastname,
-      second_lastname: app.second_lastname,
-      phone: app.phone,
-      email: app.email,
+    return appointments.map((appointment) => ({
+      id: appointment.appointment_id,
+      patient_id: appointment.patient_id,
+      appointment_date: appointment.appointment_date,
+      start_time: appointment.start_time,
+      end_time: appointment.end_time,
+      status: appointment.status,
+      deposit_paid: appointment.deposit_paid,
+      deposit_amount: appointment.deposit_amount,
+      notes: appointment.notes,
+      first_name: appointment.first_name,
+      second_name: appointment.second_name,
+      first_lastname: appointment.first_lastname,
+      second_lastname: appointment.second_lastname,
+      phone: appointment.phone,
+      email: appointment.email,
       nombre_completo:
-        `${app.first_name} ${app.second_name || ""} ${app.first_lastname} ${app.second_lastname || ""}`
+        `${appointment.first_name} ${appointment.second_name || ""} ${
+          appointment.first_lastname
+        } ${appointment.second_lastname || ""}`
           .trim()
           .replace(/\s+/g, " "),
     }));
@@ -306,24 +285,31 @@ export async function getAppointmentsByDay(date: Date) {
   }
 }
 
-// Buscar pacientes por nombre completo (búsqueda por cualquier parte)
+// Buscar pacientes por nombre completo.
 export async function searchPatients(query: string) {
   try {
     const searchTerm = `%${query.trim()}%`;
 
     const patients = await sql`
-      SELECT p.*, u.email
+      SELECT
+        p.*,
+        u.email
       FROM tblpatients p
-      JOIN tblusers u ON p.user_id = u.id
+      JOIN tblusers u
+        ON p.user_id = u.id
       WHERE u.active = true
         AND p.active = true
         AND (
-          p.first_name ILIKE ${searchTerm} OR
-          p.second_name ILIKE ${searchTerm} OR
-          p.first_lastname ILIKE ${searchTerm} OR
-          p.second_lastname ILIKE ${searchTerm} OR
-          CONCAT(p.first_name, ' ', p.first_lastname) ILIKE ${searchTerm} OR
-          CONCAT(
+          p.first_name ILIKE ${searchTerm}
+          OR p.second_name ILIKE ${searchTerm}
+          OR p.first_lastname ILIKE ${searchTerm}
+          OR p.second_lastname ILIKE ${searchTerm}
+          OR CONCAT(
+            p.first_name,
+            ' ',
+            p.first_lastname
+          ) ILIKE ${searchTerm}
+          OR CONCAT(
             p.first_name,
             ' ',
             p.second_name,
@@ -333,7 +319,9 @@ export async function searchPatients(query: string) {
             p.second_lastname
           ) ILIKE ${searchTerm}
         )
-      ORDER BY p.first_name, p.first_lastname
+      ORDER BY
+        p.first_name,
+        p.first_lastname
       LIMIT 20
     `;
 
@@ -344,7 +332,7 @@ export async function searchPatients(query: string) {
   }
 }
 
-// Crear nuevo usuario (rol paciente) y paciente asociado
+// Crear nuevo usuario y paciente asociado.
 export async function createPatientAndUser(data: {
   username: string;
   email: string;
@@ -358,7 +346,6 @@ export async function createPatientAndUser(data: {
   notes?: string | null;
 }) {
   try {
-    // Verificar si el email ya existe
     const existingUser = await sql`
       SELECT id
       FROM tblusers
@@ -369,12 +356,9 @@ export async function createPatientAndUser(data: {
       throw new Error("El correo electrónico ya está registrado");
     }
 
-    // Generar username si no viene (usamos email)
     const username = data.username || data.email.split("@")[0];
 
     const result = await sql.begin(async (transaction) => {
-      // Crear usuario con rol_id = 2 (paciente).
-      // password_hash = 'x' para que posteriormente configure o recupere su contraseña.
       const [newUser] = await transaction`
         INSERT INTO tblusers (
           rol_id,
@@ -395,7 +379,6 @@ export async function createPatientAndUser(data: {
         RETURNING id
       `;
 
-      // Crear paciente
       const [newPatient] = await transaction`
         INSERT INTO tblpatients (
           user_id,
@@ -444,14 +427,13 @@ export async function createPatientAndUser(data: {
   }
 }
 
-// Obtener todos los horarios disponibles para un día específico
+// Obtener todos los horarios disponibles para un día específico.
 export async function getAvailableSlots(date: Date): Promise<string[]> {
   try {
     const settings = await getCalendarSettings();
     const dateStr = toCalendarDateString(date);
     const now = getConsultorioNow();
 
-    // No mostrar horarios de días anteriores.
     if (dateStr < now.dateStr) {
       return [];
     }
@@ -463,38 +445,52 @@ export async function getAvailableSlots(date: Date): Promise<string[]> {
       LIMIT 1
     `;
 
-    const ex = exception[0];
+    const dayException = exception[0];
 
-    // Si la fecha está marcada como no laborable, no existen horarios.
-    if (ex && ex.is_working_day === false) {
+    if (dayException && dayException.is_working_day === false) {
       return [];
     }
 
-    const start = normalizeTime(ex?.start_time || settings.start_time);
-    const end = normalizeTime(ex?.end_time || settings.end_time);
-    const lunchStart = normalizeTime(ex?.lunch_start || settings.lunch_start);
-    const lunchEnd = normalizeTime(ex?.lunch_end || settings.lunch_end);
+    const start = normalizeTime(
+      dayException?.start_time || settings.start_time,
+    );
+
+    const end = normalizeTime(dayException?.end_time || settings.end_time);
+
+    const lunchStart = normalizeTime(
+      dayException?.lunch_start || settings.lunch_start,
+    );
+
+    const lunchEnd = normalizeTime(
+      dayException?.lunch_end || settings.lunch_end,
+    );
+
     const slotDuration = Number(settings.slot_duration);
 
     if (!Number.isFinite(slotDuration) || slotDuration <= 0) {
-      console.error("Duración de cita inválida:", settings.slot_duration);
+      console.error(
+        "Duración de cita inválida:",
+        settings.slot_duration,
+      );
+
       return [];
     }
 
-    const startMin = timeToMinutes(start);
-    const endMin = timeToMinutes(end);
-    const lunchStartMin = timeToMinutes(lunchStart);
-    const lunchEndMin = timeToMinutes(lunchEnd);
+    const startMinutes = timeToMinutes(start);
+    const endMinutes = timeToMinutes(end);
+    const lunchStartMinutes = timeToMinutes(lunchStart);
+    const lunchEndMinutes = timeToMinutes(lunchEnd);
 
     const slots: string[] = [];
 
     for (
-      let slotMinutes = startMin;
-      slotMinutes < endMin;
+      let slotMinutes = startMinutes;
+      slotMinutes < endMinutes;
       slotMinutes += slotDuration
     ) {
       const isLunchTime =
-        slotMinutes >= lunchStartMin && slotMinutes < lunchEndMin;
+        slotMinutes >= lunchStartMinutes &&
+        slotMinutes < lunchEndMinutes;
 
       if (isLunchTime) {
         continue;
@@ -503,8 +499,7 @@ export async function getAvailableSlots(date: Date): Promise<string[]> {
       slots.push(minutesToTime(slotMinutes));
     }
 
-    // Obtener horarios ocupados.
-    const booked = await sql`
+    const bookedAppointments = await sql`
       SELECT start_time
       FROM tblappointments
       WHERE appointment_date = ${dateStr}
@@ -512,14 +507,15 @@ export async function getAvailableSlots(date: Date): Promise<string[]> {
     `;
 
     const bookedSet = new Set<string>(
-      booked.map((appointment) => normalizeTime(appointment.start_time)),
+      bookedAppointments.map((appointment) =>
+        normalizeTime(appointment.start_time),
+      ),
     );
 
-    // Obtener horas deshabilitadas de la excepción.
     const disabledHoursSet = new Set<string>();
 
-    if (ex?.disabled_hours) {
-      let disabledHours = ex.disabled_hours;
+    if (dayException?.disabled_hours) {
+      let disabledHours = dayException.disabled_hours;
 
       if (typeof disabledHours === "string") {
         try {
@@ -529,13 +525,16 @@ export async function getAvailableSlots(date: Date): Promise<string[]> {
             "No se pudieron interpretar las horas deshabilitadas:",
             parseError,
           );
+
           disabledHours = [];
         }
       }
 
       if (Array.isArray(disabledHours)) {
         for (const disabledHour of disabledHours) {
-          disabledHoursSet.add(normalizeTime(String(disabledHour)));
+          disabledHoursSet.add(
+            normalizeTime(String(disabledHour)),
+          );
         }
       }
     }
@@ -549,8 +548,6 @@ export async function getAvailableSlots(date: Date): Promise<string[]> {
         return false;
       }
 
-      // Si la fecha seleccionada es hoy, se eliminan las horas
-      // anteriores o iguales a la hora actual.
       if (
         dateStr === now.dateStr &&
         timeToMinutes(slot) <= now.currentMinutes
@@ -561,12 +558,16 @@ export async function getAvailableSlots(date: Date): Promise<string[]> {
       return true;
     });
   } catch (error) {
-    console.error("Error al obtener horarios disponibles:", error);
+    console.error(
+      "Error al obtener horarios disponibles:",
+      error,
+    );
+
     return [];
   }
 }
 
-// Crear cita
+// Crear una cita.
 export async function createAppointment(data: {
   patientId: number;
   appointmentDate: Date;
@@ -592,18 +593,23 @@ export async function createAppointment(data: {
     }
 
     if (dateStr < now.dateStr) {
-      throw new Error("No puedes agendar una cita en una fecha que ya pasó.");
+      throw new Error(
+        "No puedes agendar una cita en una fecha que ya pasó.",
+      );
     }
 
-    if (dateStr === now.dateStr && startMinutes <= now.currentMinutes) {
+    if (
+      dateStr === now.dateStr &&
+      startMinutes <= now.currentMinutes
+    ) {
       throw new Error(
         "No puedes agendar una cita en una hora que ya pasó o que ya comenzó.",
       );
     }
 
-    // Verificar configuración, horario laboral, comida, excepciones,
-    // horas deshabilitadas y citas ya registradas.
-    const availableSlots = await getAvailableSlots(data.appointmentDate);
+    const availableSlots = await getAvailableSlots(
+      data.appointmentDate,
+    );
 
     if (!availableSlots.includes(startTime)) {
       throw new Error(
@@ -611,13 +617,13 @@ export async function createAppointment(data: {
       );
     }
 
-    // Se usa una transacción y un bloqueo por fecha/hora para evitar
-    // que dos usuarios registren simultáneamente la misma cita.
     await sql.begin(async (transaction) => {
       const lockKey = `${dateStr}|${startTime}`;
 
       await transaction`
-        SELECT pg_advisory_xact_lock(hashtext(${lockKey})::bigint)
+        SELECT pg_advisory_xact_lock(
+          hashtext(${lockKey})::bigint
+        )
       `;
 
       const existingAppointment = await transaction`
@@ -665,7 +671,10 @@ export async function createAppointment(data: {
   } catch (error) {
     console.error("Error al crear cita:", error);
 
-    if (error instanceof Error && isKnownAppointmentError(error.message)) {
+    if (
+      error instanceof Error &&
+      isKnownAppointmentError(error.message)
+    ) {
       throw error;
     }
 
@@ -675,45 +684,65 @@ export async function createAppointment(data: {
   }
 }
 
-// Obtener total de citas de la semana actual (domingo a sábado)
+// Obtener total de citas de la semana actual.
 export async function getWeeklyAppointmentsCount(
   referenceDate: Date = new Date(),
 ) {
   try {
-    await completeExpiredAppointments();
     const dateStr = toCalendarDateString(referenceDate);
 
-    // Se crea la fecha a mediodía para evitar cambios de día por zona horaria.
-    const [year, month, day] = dateStr.split("-").map(Number);
-    const date = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+    const [year, month, day] = dateStr
+      .split("-")
+      .map(Number);
+
+    const date = new Date(
+      Date.UTC(year, month - 1, day, 12, 0, 0),
+    );
+
     const dayOfWeek = date.getUTCDay();
 
     const sunday = new Date(date);
-    sunday.setUTCDate(date.getUTCDate() - dayOfWeek);
+
+    sunday.setUTCDate(
+      date.getUTCDate() - dayOfWeek,
+    );
 
     const saturday = new Date(sunday);
-    saturday.setUTCDate(sunday.getUTCDate() + 6);
 
-    const sundayStr = sunday.toISOString().slice(0, 10);
-    const saturdayStr = saturday.toISOString().slice(0, 10);
+    saturday.setUTCDate(
+      sunday.getUTCDate() + 6,
+    );
+
+    const sundayStr = sunday
+      .toISOString()
+      .slice(0, 10);
+
+    const saturdayStr = saturday
+      .toISOString()
+      .slice(0, 10);
 
     const result = await sql`
       SELECT COUNT(*) AS total
       FROM tblappointments
-      WHERE appointment_date BETWEEN ${sundayStr} AND ${saturdayStr}
+      WHERE appointment_date
+        BETWEEN ${sundayStr} AND ${saturdayStr}
         AND status NOT IN ('cancelled', 'no_show')
     `;
 
     return Number(result[0]?.total || 0);
   } catch (error) {
-    console.error("Error al obtener citas semanales:", error);
+    console.error(
+      "Error al obtener citas semanales:",
+      error,
+    );
+
     return 0;
   }
 }
 
+// Obtener citas de hoy.
 export async function getTodayAppointments() {
   try {
-    await completeExpiredAppointments();
     const todayStr = getConsultorioNow().dateStr;
 
     const appointments = await sql`
@@ -728,43 +757,57 @@ export async function getTodayAppointments() {
         p.phone,
         u.email
       FROM tblappointments a
-      JOIN tblpatients p ON a.patient_id = p.id
-      JOIN tblusers u ON p.user_id = u.id
+      JOIN tblpatients p
+        ON a.patient_id = p.id
+      JOIN tblusers u
+        ON p.user_id = u.id
       WHERE a.appointment_date = ${todayStr}
         AND a.status NOT IN ('cancelled', 'no_show')
       ORDER BY a.start_time
     `;
 
-    console.log("Citas de hoy encontradas:", appointments.length);
+    console.log(
+      "Citas de hoy encontradas:",
+      appointments.length,
+    );
 
-    return appointments.map((app) => ({
-      id: app.appointment_id,
-      patient_id: app.patient_id,
-      appointment_date: app.appointment_date,
-      start_time: app.start_time,
-      end_time: app.end_time,
-      status: app.status,
-      deposit_paid: app.deposit_paid,
-      deposit_amount: app.deposit_amount,
-      notes: app.notes,
-      first_name: app.first_name,
-      second_name: app.second_name,
-      first_lastname: app.first_lastname,
-      second_lastname: app.second_lastname,
-      phone: app.phone,
-      email: app.email,
+    return appointments.map((appointment) => ({
+      id: appointment.appointment_id,
+      patient_id: appointment.patient_id,
+      appointment_date:
+        appointment.appointment_date,
+      start_time: appointment.start_time,
+      end_time: appointment.end_time,
+      status: appointment.status,
+      deposit_paid: appointment.deposit_paid,
+      deposit_amount: appointment.deposit_amount,
+      notes: appointment.notes,
+      first_name: appointment.first_name,
+      second_name: appointment.second_name,
+      first_lastname: appointment.first_lastname,
+      second_lastname: appointment.second_lastname,
+      phone: appointment.phone,
+      email: appointment.email,
       nombre_completo:
-        `${app.first_name} ${app.second_name || ""} ${app.first_lastname} ${app.second_lastname || ""}`
+        `${appointment.first_name} ${
+          appointment.second_name || ""
+        } ${appointment.first_lastname} ${
+          appointment.second_lastname || ""
+        }`
           .trim()
           .replace(/\s+/g, " "),
     }));
   } catch (error) {
-    console.error("Error al obtener citas de hoy:", error);
+    console.error(
+      "Error al obtener citas de hoy:",
+      error,
+    );
+
     return [];
   }
 }
 
-// Guardar configuración general
+// Guardar configuración general.
 export async function saveGeneralSettings(data: {
   startTime: string;
   endTime: string;
@@ -778,19 +821,24 @@ export async function saveGeneralSettings(data: {
     const lunchStart = normalizeTime(data.lunchStart);
     const lunchEnd = normalizeTime(data.lunchEnd);
 
-    if (timeToMinutes(endTime) <= timeToMinutes(startTime)) {
+    if (
+      timeToMinutes(endTime) <=
+      timeToMinutes(startTime)
+    ) {
       throw new Error(
         "La hora de cierre debe ser posterior a la hora de apertura.",
       );
     }
 
-    if (timeToMinutes(lunchEnd) <= timeToMinutes(lunchStart)) {
+    if (
+      timeToMinutes(lunchEnd) <=
+      timeToMinutes(lunchStart)
+    ) {
       throw new Error(
         "La hora de fin de comida debe ser posterior a la hora de inicio.",
       );
     }
 
-    // Actualizar la configuración general (solo hay una fila).
     await sql`
       UPDATE tblcalendar_settings
       SET
@@ -804,9 +852,13 @@ export async function saveGeneralSettings(data: {
     `;
 
     revalidateCalendar();
+
     return { success: true };
   } catch (error) {
-    console.error("Error al guardar configuración general:", error);
+    console.error(
+      "Error al guardar configuración general:",
+      error,
+    );
 
     throw new Error(
       error instanceof Error
@@ -816,7 +868,7 @@ export async function saveGeneralSettings(data: {
   }
 }
 
-// Guardar excepción por día
+// Guardar excepción por día.
 export async function saveDayException(data: {
   date: Date;
   startTime: string;
@@ -832,11 +884,14 @@ export async function saveDayException(data: {
     const endTime = normalizeTime(data.endTime);
     const lunchStart = normalizeTime(data.lunchStart);
     const lunchEnd = normalizeTime(data.lunchEnd);
-    const disabledHours = data.disabledHours.map(normalizeTime);
+
+    const disabledHours =
+      data.disabledHours.map(normalizeTime);
 
     if (
       data.isWorkingDay &&
-      timeToMinutes(endTime) <= timeToMinutes(startTime)
+      timeToMinutes(endTime) <=
+        timeToMinutes(startTime)
     ) {
       throw new Error(
         "La hora de cierre debe ser posterior a la hora de apertura.",
@@ -845,37 +900,39 @@ export async function saveDayException(data: {
 
     if (
       data.isWorkingDay &&
-      timeToMinutes(lunchEnd) <= timeToMinutes(lunchStart)
+      timeToMinutes(lunchEnd) <=
+        timeToMinutes(lunchStart)
     ) {
       throw new Error(
         "La hora de fin de comida debe ser posterior a la hora de inicio.",
       );
     }
 
-    // Primero eliminar cualquier excepción existente para esta fecha.
     await sql`
       DELETE FROM tblcalendar_exceptions
       WHERE exception_date = ${dateStr}
     `;
 
-    // Si es día laborable y no tiene configuraciones especiales,
-    // no se necesita guardar una excepción.
     const settings = await getCalendarSettings();
 
     const isDefaultConfig =
       data.isWorkingDay === true &&
-      startTime === normalizeTime(settings.start_time) &&
-      endTime === normalizeTime(settings.end_time) &&
-      lunchStart === normalizeTime(settings.lunch_start) &&
-      lunchEnd === normalizeTime(settings.lunch_end) &&
+      startTime ===
+        normalizeTime(settings.start_time) &&
+      endTime ===
+        normalizeTime(settings.end_time) &&
+      lunchStart ===
+        normalizeTime(settings.lunch_start) &&
+      lunchEnd ===
+        normalizeTime(settings.lunch_end) &&
       disabledHours.length === 0;
 
     if (isDefaultConfig) {
       revalidateCalendar();
+
       return { success: true };
     }
 
-    // Insertar nueva excepción.
     await sql`
       INSERT INTO tblcalendar_exceptions (
         exception_date,
@@ -898,9 +955,13 @@ export async function saveDayException(data: {
     `;
 
     revalidateCalendar();
+
     return { success: true };
   } catch (error) {
-    console.error("Error al guardar excepción del día:", error);
+    console.error(
+      "Error al guardar excepción del día:",
+      error,
+    );
 
     throw new Error(
       error instanceof Error
@@ -910,8 +971,10 @@ export async function saveDayException(data: {
   }
 }
 
-// Función para eliminar excepción y restaurar configuración general
-export async function restoreDefaultDayConfig(date: Date) {
+// Eliminar excepción y restaurar configuración general.
+export async function restoreDefaultDayConfig(
+  date: Date,
+) {
   try {
     const dateStr = toCalendarDateString(date);
 
@@ -921,14 +984,21 @@ export async function restoreDefaultDayConfig(date: Date) {
     `;
 
     revalidateCalendar();
+
     return { success: true };
   } catch (error) {
-    console.error("Error al restaurar configuración del día:", error);
-    throw new Error("No se pudo restaurar la configuración del día");
+    console.error(
+      "Error al restaurar configuración del día:",
+      error,
+    );
+
+    throw new Error(
+      "No se pudo restaurar la configuración del día",
+    );
   }
 }
 
-// Eliminar excepción por día (restaurar configuración general)
+// Eliminar excepción por día.
 export async function deleteDayException(date: Date) {
   try {
     const dateStr = toCalendarDateString(date);
@@ -939,17 +1009,23 @@ export async function deleteDayException(date: Date) {
     `;
 
     revalidateCalendar();
+
     return { success: true };
   } catch (error) {
-    console.error("Error al eliminar excepción del día:", error);
-    throw new Error("No se pudo eliminar la configuración del día");
+    console.error(
+      "Error al eliminar excepción del día:",
+      error,
+    );
+
+    throw new Error(
+      "No se pudo eliminar la configuración del día",
+    );
   }
 }
 
-// Obtiene las citas pendientes
+// Obtener cantidad de citas pendientes.
 export async function getPendingAppointmentsCount() {
   try {
-    await completeExpiredAppointments();
     const todayStr = getConsultorioNow().dateStr;
 
     const result = await sql`
@@ -961,7 +1037,146 @@ export async function getPendingAppointmentsCount() {
 
     return Number(result[0]?.total || 0);
   } catch (error) {
-    console.error("Error al obtener citas pendientes:", error);
+    console.error(
+      "Error al obtener citas pendientes:",
+      error,
+    );
+
     return 0;
+  }
+
+}
+/**
+ * Marca manualmente una cita como inasistencia.
+ *
+ * Solo permite actualizar citas programadas o confirmadas
+ * cuya hora de finalización ya haya pasado.
+ */
+export async function markAppointmentAsNoShow(
+  appointmentId: number,
+) {
+  try {
+    if (
+      !Number.isInteger(appointmentId) ||
+      appointmentId <= 0
+    ) {
+      return {
+        success: false,
+        message: "El identificador de la cita no es válido.",
+      };
+    }
+
+    const [appointment] = await sql`
+      SELECT
+        id,
+        status,
+        appointment_date,
+        start_time,
+        end_time,
+        (
+          appointment_date <
+            (NOW() AT TIME ZONE 'America/Mexico_City')::date
+          OR (
+            appointment_date =
+              (NOW() AT TIME ZONE 'America/Mexico_City')::date
+            AND end_time <=
+              (NOW() AT TIME ZONE 'America/Mexico_City')::time
+          )
+        ) AS has_finished
+      FROM tblappointments
+      WHERE id = ${appointmentId}
+      LIMIT 1
+    `;
+
+    if (!appointment) {
+      return {
+        success: false,
+        message: "La cita no existe.",
+      };
+    }
+
+    if (appointment.status === "no_show") {
+      return {
+        success: true,
+        message:
+          "La cita ya estaba marcada como inasistencia.",
+      };
+    }
+
+    if (appointment.status === "completed") {
+      return {
+        success: false,
+        message:
+          "Una cita completada no puede marcarse como inasistencia.",
+      };
+    }
+
+    if (appointment.status === "cancelled") {
+      return {
+        success: false,
+        message:
+          "Una cita cancelada no puede marcarse como inasistencia.",
+      };
+    }
+
+    if (!appointment.has_finished) {
+      return {
+        success: false,
+        message:
+          "La cita solo puede marcarse como inasistencia después de que termine su horario.",
+      };
+    }
+
+    const updatedAppointments = await sql`
+      UPDATE tblappointments
+      SET
+        status = 'no_show',
+        updated_at = NOW()
+      WHERE id = ${appointmentId}
+        AND status IN ('scheduled', 'confirmed')
+        AND (
+          appointment_date <
+            (NOW() AT TIME ZONE 'America/Mexico_City')::date
+          OR (
+            appointment_date =
+              (NOW() AT TIME ZONE 'America/Mexico_City')::date
+            AND end_time <=
+              (NOW() AT TIME ZONE 'America/Mexico_City')::time
+          )
+        )
+      RETURNING id
+    `;
+
+    if (updatedAppointments.length === 0) {
+      return {
+        success: false,
+        message:
+          "La cita no pudo actualizarse porque su estado cambió.",
+      };
+    }
+
+    revalidatePath("/admin/appointments");
+    revalidatePath("/admin/citas");
+    revalidatePath("/admin");
+    revalidateCalendar();
+
+    return {
+      success: true,
+      message:
+        "La cita fue marcada como inasistencia.",
+    };
+  } catch (error) {
+    console.error(
+      "Error al marcar la cita como inasistencia:",
+      error,
+    );
+
+    return {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "No se pudo actualizar la cita.",
+    };
   }
 }

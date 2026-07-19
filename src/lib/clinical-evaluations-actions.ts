@@ -191,33 +191,6 @@ export async function getAppointmentWithPatient(appointmentId: number) {
 // Obtener citas de hoy con información del paciente y evaluación inicial
 export async function getTodayAppointmentsWithPatients() {
   try {
-    /*
-     * Antes de consultar las citas, cambia a "completed"
-     * aquellas cuya fecha u hora de finalización ya pasó.
-     *
-     * Se utiliza la zona horaria del consultorio para evitar
-     * problemas con la hora UTC del servidor.
-     */
-    await sql`
-      UPDATE tblappointments
-      SET
-        status = 'completed',
-        updated_at = NOW()
-      WHERE status IN ('scheduled', 'confirmed')
-        AND (
-          appointment_date <
-            (NOW() AT TIME ZONE 'America/Mexico_City')::date
-
-          OR (
-            appointment_date =
-              (NOW() AT TIME ZONE 'America/Mexico_City')::date
-
-            AND end_time <=
-              (NOW() AT TIME ZONE 'America/Mexico_City')::time
-          )
-        )
-    `;
-
     const appointments = await sql`
       SELECT
         a.id,
@@ -259,7 +232,7 @@ export async function getTodayAppointmentsWithPatients() {
       WHERE a.appointment_date =
         (NOW() AT TIME ZONE 'America/Mexico_City')::date
 
-        AND a.status NOT IN ('cancelled', 'no_show')
+        AND a.status <> 'cancelled'
 
       ORDER BY a.start_time
     `;

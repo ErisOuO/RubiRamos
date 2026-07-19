@@ -142,25 +142,68 @@ export default function PatientModal({ isOpen, onClose, patient, mode, onSuccess
                 </div>
               )}
 
-              {/* Estadísticas de citas */}
-              <div>
-                <h3 className="text-lg font-semibold text-[#6B8E7B] mb-3">Estadísticas de Citas</h3>
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="bg-[#FAF9F7] p-3 rounded-lg text-center">
-                    <div className="text-2xl font-bold text-[#6B8E7B]">{patient.estadisticas?.total_citas || 0}</div>
-                    <div className="text-xs text-[#6E7C72]">Total Citas</div>
-                  </div>
-                  <div className="bg-[#FAF9F7] p-3 rounded-lg text-center">
-                    <div className="text-2xl font-bold text-[#BD7D4A]">{patient.estadisticas?.proximas_citas || 0}</div>
-                    <div className="text-xs text-[#6E7C72]">Próximas Citas</div>
-                  </div>
-                  <div className="bg-[#FAF9F7] p-3 rounded-lg text-center">
-                    <div className="text-2xl font-bold text-[#F58634]">{patient.estadisticas?.citas_anteriores || 0}</div>
-                    <div className="text-xs text-[#6E7C72]">Citas Anteriores</div>
+              {/* Estadísticas de asistencia */}
+                <div>
+                  <h3 className="mb-3 font-semibold text-[#2C3E34]">
+                    Estadísticas de Asistencia
+                  </h3>
+
+                  <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+                    <div className="rounded-lg border border-[#E6E3DE] bg-[#FAF9F7] p-3 text-center">
+                      <p className="text-2xl font-bold text-[#2C3E34]">
+                        {patient.estadisticas?.total_citas || 0}
+                      </p>
+                      <p className="text-xs text-[#6E7C72]">
+                        Total de citas
+                      </p>
+                    </div>
+
+                    <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-center">
+                      <p className="text-2xl font-bold text-blue-700">
+                        {patient.estadisticas?.proximas_citas || 0}
+                      </p>
+                      <p className="text-xs text-blue-700">
+                        Próximas citas
+                      </p>
+                    </div>
+
+                    <div className="rounded-lg border border-green-200 bg-green-50 p-3 text-center">
+                      <p className="text-2xl font-bold text-green-700">
+                        {patient.estadisticas?.citas_completadas || 0}
+                      </p>
+                      <p className="text-xs text-green-700">
+                        Completadas
+                      </p>
+                    </div>
+
+                    <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-center">
+                      <p className="text-2xl font-bold text-red-700">
+                        {patient.estadisticas?.inasistencias || 0}
+                      </p>
+                      <p className="text-xs text-red-700">
+                        Inasistencias
+                      </p>
+                    </div>
+
+                    <div className="rounded-lg border border-orange-200 bg-orange-50 p-3 text-center">
+                      <p className="text-2xl font-bold text-orange-700">
+                        {patient.estadisticas?.canceladas || 0}
+                      </p>
+                      <p className="text-xs text-orange-700">
+                        Canceladas
+                      </p>
+                    </div>
+
+                    <div className="rounded-lg border border-[#A8CF45] bg-[#A8CF45]/10 p-3 text-center">
+                      <p className="text-2xl font-bold text-[#2C3E34]">
+                        {patient.estadisticas?.porcentaje_asistencia || 0}%
+                      </p>
+                      <p className="text-xs text-[#6E7C72]">
+                        Asistencia
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-
               {/* Próxima cita */}
               {patient.proxima_cita && (
                 <div>
@@ -174,27 +217,139 @@ export default function PatientModal({ isOpen, onClose, patient, mode, onSuccess
               )}
 
               {/* Historial de citas */}
-              {patient.historial_citas && patient.historial_citas.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold text-[#6B8E7B] mb-3">Historial de Citas</h3>
-                  <div className="space-y-2 max-h-60 overflow-y-auto">
-                    {patient.historial_citas.map((cita: any) => (
-                      <div key={cita.id} className="bg-[#FAF9F7] p-3 rounded-lg border border-[#E6E3DE]">
-                        <div className="flex justify-between">
-                          <div>
-                            <div className="font-medium">{new Date(cita.appointment_date).toLocaleDateString('es-ES')} - {cita.start_time.slice(0,5)}</div>
-                            <div className="text-sm text-[#6E7C72]">{cita.start_time.slice(0,5)} - {cita.end_time.slice(0,5)}</div>
-                          </div>
-                          <div className={`px-2 py-1 text-xs rounded-full ${cita.deposit_paid ? 'bg-[#A8CF45]/20' : 'bg-[#F58634]/20'}`}>
-                            {cita.deposit_paid ? `Pagado ($${cita.deposit_amount})` : `Pendiente ($${cita.deposit_amount})`}
-                          </div>
-                        </div>
-                        {cita.notes && <div className="text-sm text-[#6E7C72] mt-1">Notas: {cita.notes}</div>}
+                {patient.historial_citas &&
+                  patient.historial_citas.length > 0 && (
+                    <div>
+                      <h3 className="mb-3 text-lg font-semibold text-[#6B8E7B]">
+                        Historial de Citas
+                      </h3>
+
+                      <div className="max-h-60 space-y-2 overflow-y-auto pr-2">
+                        {patient.historial_citas.map((cita: any) => {
+                          const statusConfig: Record<
+                            string,
+                            {
+                              label: string;
+                              className: string;
+                            }
+                          > = {
+                            scheduled: {
+                              label: "Programada",
+                              className:
+                                "border-[#5A8C7A]/30 bg-[#5A8C7A]/15 text-[#2C3E34]",
+                            },
+                            confirmed: {
+                              label: "Confirmada",
+                              className:
+                                "border-blue-200 bg-blue-50 text-blue-700",
+                            },
+                            completed: {
+                              label: "Completada",
+                              className:
+                                "border-green-200 bg-green-50 text-green-700",
+                            },
+                            no_show: {
+                              label: "No asistió",
+                              className:
+                                "border-red-200 bg-red-50 text-red-700",
+                            },
+                            cancelled: {
+                              label: "Cancelada",
+                              className:
+                                "border-orange-200 bg-orange-50 text-orange-700",
+                            },
+                          };
+
+                          const status =
+                            statusConfig[cita.status] || {
+                              label: cita.status || "Sin estado",
+                              className:
+                                "border-gray-200 bg-gray-50 text-gray-700",
+                            };
+
+                          /*
+                          * Se formatea la fecha manualmente para evitar
+                          * que JavaScript cambie el día por la zona horaria.
+                          */
+                          const appointmentDate = new Date(
+                                cita.appointment_date,
+                              );
+
+                            const formattedDate = Number.isNaN(
+                              appointmentDate.getTime(),
+                            )
+                              ? "Fecha no disponible"
+                              : new Intl.DateTimeFormat("es-MX", {
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                  year: "numeric",
+                                  timeZone: "UTC",
+                                }).format(appointmentDate);
+
+                          return (
+                            <div
+                              key={cita.id}
+                              className={`rounded-lg border p-3 ${
+                                cita.status === "no_show"
+                                  ? "border-red-200 bg-red-50/40"
+                                  : cita.status === "completed"
+                                    ? "border-green-200 bg-green-50/30"
+                                    : "border-[#E6E3DE] bg-[#FAF9F7]"
+                              }`}
+                            >
+                              <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
+                                <div>
+                                  <div className="font-medium text-[#2C3E34]">
+                                    {formattedDate}
+                                  </div>
+
+                                  <div className="mt-1 text-sm text-[#6E7C72]">
+                                    {cita.start_time?.slice(0, 5)} -{" "}
+                                    {cita.end_time?.slice(0, 5)}
+                                  </div>
+                                </div>
+
+                                <div className="flex flex-wrap items-center gap-2">
+                                  {/* Estado de la cita */}
+                                  <span
+                                    className={`rounded-full border px-2 py-1 text-xs font-semibold ${status.className}`}
+                                  >
+                                    {status.label}
+                                  </span>
+
+                                  {/* Estado del anticipo */}
+                                  <span
+                                    className={`rounded-full px-2 py-1 text-xs ${
+                                      cita.deposit_paid
+                                        ? "bg-[#A8CF45]/20 text-[#2C3E34]"
+                                        : "bg-[#F58634]/20 text-[#2C3E34]"
+                                    }`}
+                                  >
+                                    {cita.deposit_paid
+                                      ? `Pagado ($${Number(
+                                          cita.deposit_amount || 0,
+                                        ).toFixed(2)})`
+                                      : `Pendiente ($${Number(
+                                          cita.deposit_amount || 0,
+                                        ).toFixed(2)})`}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {cita.notes && (
+                                <div className="mt-2 border-t border-[#E6E3DE] pt-2 text-sm text-[#6E7C72]">
+                                  <span className="font-medium text-[#2C3E34]">
+                                    Notas:
+                                  </span>{" "}
+                                  {cita.notes}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+                    </div>
+                  )}
             </div>
           ) : (
             // Modo edición - formulario

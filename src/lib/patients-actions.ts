@@ -99,68 +99,224 @@ export async function getPatients(params?: {
 }
 
 // Obtener paciente por ID
+// Obtener paciente por ID
 export async function getPatientById(id: number) {
   try {
+    if (!Number.isInteger(id) || id <= 0) {
+      throw new Error('El identificador del paciente no es válido');
+    }
+
     const [patient] = await sql`
-      SELECT p.*, u.email, u.username
+      SELECT
+        p.*,
+        u.email,
+        u.username
       FROM tblpatients p
-      JOIN tblusers u ON p.user_id = u.id
-      WHERE p.id = ${id} AND p.active = true AND u.active = true
-    `;
-    
-    if (!patient) return null;
-    
-    // Obtener estadísticas de citas
-    const [stats] = await sql`
-      SELECT 
-        COUNT(*) as total_citas,
-        COUNT(CASE WHEN appointment_date >= CURRENT_DATE AND status = 'scheduled' THEN 1 END) as proximas_citas,
-        COUNT(CASE WHEN appointment_date < CURRENT_DATE AND status != 'cancelled' THEN 1 END) as citas_anteriores
-      FROM tblappointments
-      WHERE patient_id = ${id} AND status NOT IN ('cancelled', 'no_show')
-    `;
-    
-    // Obtener próxima cita
-    const [nextAppointment] = await sql`
-      SELECT a.*, 
-             p.first_name, p.second_name, p.first_lastname, p.second_lastname
-      FROM tblappointments a
-      JOIN tblpatients p ON a.patient_id = p.id
-      WHERE a.patient_id = ${id} 
-        AND a.appointment_date >= CURRENT_DATE 
-        AND a.status = 'scheduled'
-      ORDER BY a.appointment_date, a.start_time
+      JOIN tblusers u
+        ON p.user_id = u.id
+      WHERE p.id = ${id}
+        AND p.active = true
+        AND u.active = true
       LIMIT 1
     `;
-    
-    // Obtener historial de citas (últimas 10)
-    const appointmentHistory = await sql`
-      SELECT a.*, 
-             p.first_name, p.second_name, p.first_lastname, p.second_lastname
+
+    if (!patient) {
+      return null;
+    }
+
+    // Obtener estadísticas de asistencia del paciente.
+    const [stats] = await sql`
+      SELECT
+        COUNT(*) AS total_citas,
+
+        COUNT(*) FILTER (
+          WHERE status IN ('scheduled', 'confirmed')
+            AND (
+              appointment_date >
+                (
+                  NOW()
+                  AT TIME ZONE 'America/Mexico_City'
+                )::date
+              OR (
+                appointment_date =
+                  (
+                    NOW()
+                    AT TIME ZONE 'America/Mexico_City'
+                  )::date
+                AND start_time >
+                  (
+                    NOW()
+                    AT TIME ZONE 'America/Mexico_City'
+                  )::time
+              )
+            )
+        ) AS proximas_citas,
+
+        COUNT(*) FILTER (
+          WHERE status = 'completed'
+        ) AS citas_completadas,
+
+        COUNT(*) FILTER (
+          WHERE status = 'no_show'
+        ) AS inasistencias,
+
+        COUNT(*) FILTER (
+          WHERE status = 'cancelled'
+        ) AS canceladas,
+
+        COUNT(*) FILTER (
+          WHERE status IN ('completed', 'no_show')
+        ) AS citas_anteriores,
+
+        COALESCE(
+          ROUND(
+            (
+              100.0 *
+              COUNT(*) FILTER (
+                WHERE status = 'completed'
+              )
+            ) /
+            NULLIF(
+              COUNT(*) FILTER (
+                WHERE status IN (
+                  'completed',
+                  'no_show'
+                )
+              ),
+              0
+            ),
+            1
+          ),
+          0
+        ) AS porcentaje_asistencia
+
+      FROM tblappointments
+      WHERE patient_id = ${id}
+    `;
+
+    // Obtener la próxima cita realmente pendiente.
+    const [nextAppointment] = await sql`
+      SELECT
+        a.*,
+        p.first_name,
+        p.second_name,
+        p.first_lastname,
+        p.second_lastname
       FROM tblappointments a
-      JOIN tblpatients p ON a.patient_id = p.id
-      WHERE a.patient_id = ${id} AND a.status NOT IN ('cancelled', 'no_show')
-      ORDER BY a.appointment_date DESC, a.start_time DESC
+      JOIN tblpatients p
+        ON a.patient_id = p.id
+      WHERE a.patient_id = ${id}
+        AND a.status IN ('scheduled', 'confirmed')
+        AND (
+          a.appointment_date >
+            (
+              NOW()
+              AT TIME ZONE 'America/Mexico_City'
+            )::date
+          OR (
+            a.appointment_date =
+              (
+                NOW()
+                AT TIME ZONE 'America/Mexico_City'
+              )::date
+            AND a.start_time >
+              (
+                NOW()
+                AT TIME ZONE 'America/Mexico_City'
+              )::time
+          )
+        )
+      ORDER BY
+        a.appointment_date ASC,
+        a.start_time ASC
+      LIMIT 1
+    `;
+
+    /*
+     * Obtener historial de citas.
+     *
+     * Se incluyen las completadas, inasistencias,
+     * canceladas, programadas y confirmadas para que
+     * la nutrióloga pueda consultar el registro completo.
+     */
+    const appointmentHistory = await sql`
+      SELECT
+        a.*,
+        p.first_name,
+        p.second_name,
+        p.first_lastname,
+        p.second_lastname
+      FROM tblappointments a
+      JOIN tblpatients p
+        ON a.patient_id = p.id
+      WHERE a.patient_id = ${id}
+      ORDER BY
+        a.appointment_date DESC,
+        a.start_time DESC
       LIMIT 10
     `;
-    
+
     return {
       ...patient,
-      nombre_completo: `${patient.first_name} ${patient.second_name || ''} ${patient.first_lastname} ${patient.second_lastname || ''}`.trim().replace(/\s+/g, ' '),
+
+      nombre_completo:
+        `${patient.first_name} ` +
+        `${patient.second_name || ''} ` +
+        `${patient.first_lastname} ` +
+        `${patient.second_lastname || ''}`
+          .trim()
+          .replace(/\s+/g, ' '),
+
       estadisticas: {
-        total_citas: Number(stats.total_citas) || 0,
-        proximas_citas: Number(stats.proximas_citas) || 0,
-        citas_anteriores: Number(stats.citas_anteriores) || 0
+        total_citas:
+          Number(stats?.total_citas) || 0,
+
+        proximas_citas:
+          Number(stats?.proximas_citas) || 0,
+
+        citas_anteriores:
+          Number(stats?.citas_anteriores) || 0,
+
+        citas_completadas:
+          Number(stats?.citas_completadas) || 0,
+
+        inasistencias:
+          Number(stats?.inasistencias) || 0,
+
+        canceladas:
+          Number(stats?.canceladas) || 0,
+
+        porcentaje_asistencia:
+          Number(stats?.porcentaje_asistencia) || 0
       },
+
       proxima_cita: nextAppointment || null,
-      historial_citas: appointmentHistory.map(app => ({
-        ...app,
-        nombre_completo: `${app.first_name} ${app.second_name || ''} ${app.first_lastname} ${app.second_lastname || ''}`.trim().replace(/\s+/g, ' ')
-      }))
+
+      historial_citas: appointmentHistory.map(
+        appointment => ({
+          ...appointment,
+
+          nombre_completo:
+            `${appointment.first_name} ` +
+            `${appointment.second_name || ''} ` +
+            `${appointment.first_lastname} ` +
+            `${appointment.second_lastname || ''}`
+              .trim()
+              .replace(/\s+/g, ' ')
+        })
+      )
     };
   } catch (error) {
-    console.error('Error al obtener paciente por ID:', error);
-    throw new Error('No se pudo obtener el paciente');
+    console.error(
+      'Error al obtener paciente por ID:',
+      error
+    );
+
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : 'No se pudo obtener el paciente'
+    );
   }
 }
 

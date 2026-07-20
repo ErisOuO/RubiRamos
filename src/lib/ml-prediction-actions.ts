@@ -2,6 +2,7 @@
 
 import postgres from "postgres";
 
+
 const sql = postgres(
   process.env.POSTGRES_URL!,
   {
@@ -9,10 +10,51 @@ const sql = postgres(
   },
 );
 
-const ML_API_URL = (
-  process.env.ML_API_URL ||
-  "http://127.0.0.1:8000"
-).replace(/\/+$/, "");
+
+const LOCAL_ML_API_URL =
+  "http://127.0.0.1:8000";
+
+const PRODUCTION_ML_API_URL =
+  "https://rubi-ramos-ml-api.vercel.app";
+
+
+function getMlApiUrl(): string {
+  const configuredUrl =
+    process.env.ML_API_URL?.trim();
+
+  const configuredUrlIsLocal =
+    configuredUrl !== undefined &&
+    /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i.test(
+      configuredUrl,
+    );
+
+  /*
+   * En producción no se permite utilizar localhost,
+   * porque apuntaría al servidor interno de Vercel.
+   */
+  if (
+    process.env.NODE_ENV === "production" &&
+    (
+      !configuredUrl ||
+      configuredUrlIsLocal
+    )
+  ) {
+    return PRODUCTION_ML_API_URL;
+  }
+
+  /*
+   * En desarrollo se respeta ML_API_URL.
+   * Si no existe, utiliza FastAPI local.
+   */
+  return (
+    configuredUrl ||
+    LOCAL_ML_API_URL
+  ).replace(/\/+$/, "");
+}
+
+
+const ML_API_URL = getMlApiUrl();
+
 
 export interface AttendancePrediction {
   no_show_probability: number;
@@ -24,23 +66,67 @@ export interface AttendancePrediction {
   prediction: string;
 }
 
+
 interface PredictionResult {
   success: boolean;
   message: string;
   prediction?: AttendancePrediction;
 }
 
-function numberValue(value: unknown): number {
-  const convertedValue = Number(value);
 
-  return Number.isFinite(convertedValue)
+function numberValue(
+  value: unknown,
+): number {
+  const convertedValue = Number(
+    value,
+  );
+
+  return Number.isFinite(
+    convertedValue,
+  )
     ? convertedValue
     : 0;
 }
 
+
+function isAttendancePrediction(
+  value: unknown,
+): value is AttendancePrediction {
+  if (
+    typeof value !== "object" ||
+    value === null
+  ) {
+    return false;
+  }
+
+  const prediction =
+    value as Partial<AttendancePrediction>;
+
+  return (
+    typeof prediction.no_show_probability ===
+      "number" &&
+    typeof prediction.attendance_probability ===
+      "number" &&
+    typeof prediction.no_show_percentage ===
+      "number" &&
+    typeof prediction.attendance_percentage ===
+      "number" &&
+    (
+      prediction.risk_level === "Bajo" ||
+      prediction.risk_level === "Medio" ||
+      prediction.risk_level === "Alto"
+    ) &&
+    typeof prediction.predicted_no_show ===
+      "number" &&
+    typeof prediction.prediction ===
+      "string"
+  );
+}
+
+
 /**
  * Obtiene la información de una cita y consulta
- * el modelo de Machine Learning.
+ * la API del modelo de Machine Learning.
  */
 export async function predictAppointmentAttendance(
   appointmentId: number,
@@ -56,6 +142,7 @@ export async function predictAppointmentAttendance(
           "El identificador de la cita no es válido.",
       };
     }
+
 
     const [appointment] = await sql`
       SELECT
@@ -81,16 +168,19 @@ export async function predictAppointmentAttendance(
         )::float8 AS deposit_amount,
 
         EXTRACT(
-          ISODOW FROM a.appointment_date
+          ISODOW
+          FROM a.appointment_date
         )::integer AS day_of_week,
 
         EXTRACT(
-          HOUR FROM a.start_time
+          HOUR
+          FROM a.start_time
         )::integer AS appointment_hour,
 
         CASE
           WHEN EXTRACT(
-            ISODOW FROM a.appointment_date
+            ISODOW
+            FROM a.appointment_date
           )::integer = 6
             THEN 1
           ELSE 0
@@ -142,12 +232,15 @@ export async function predictAppointmentAttendance(
       LIMIT 1
     `;
 
+
     if (!appointment) {
       return {
         success: false,
-        message: "No se encontró la cita.",
+        message:
+          "No se encontró la cita.",
       };
     }
+
 
     const previousCompleted = numberValue(
       appointment.previous_completed,
@@ -161,26 +254,38 @@ export async function predictAppointmentAttendance(
       appointment.previous_cancelled,
     );
 
+
     const previousAppointments =
       previousCompleted +
       previousNoShow +
       previousCancelled;
 
+
     const attendanceHistory =
-      previousCompleted + previousNoShow;
+      previousCompleted +
+      previousNoShow;
+
 
     const previousAttendanceRate =
       attendanceHistory > 0
-        ? previousCompleted / attendanceHistory
+        ? previousCompleted /
+          attendanceHistory
         : 0;
 
+
     const requestBody = {
-      age: numberValue(appointment.age),
+      age: numberValue(
+        appointment.age,
+      ),
 
       gender_female: numberValue(
         appointment.gender_female,
       ),
 
+      /*
+       * La API los recibe por compatibilidad,
+       * aunque el modelo no los utiliza.
+       */
       deposit_paid: numberValue(
         appointment.deposit_paid,
       ),
@@ -201,25 +306,46 @@ export async function predictAppointmentAttendance(
         appointment.is_saturday,
       ),
 
-      previous_completed: previousCompleted,
-      previous_no_show: previousNoShow,
-      previous_cancelled: previousCancelled,
-      previous_appointments: previousAppointments,
+      previous_completed:
+        previousCompleted,
+
+      previous_no_show:
+        previousNoShow,
+
+      previous_cancelled:
+        previousCancelled,
+
+      previous_appointments:
+        previousAppointments,
 
       previous_attendance_rate:
         previousAttendanceRate,
     };
-    
+
+
+    console.log(
+      "Consultando API de Machine Learning:",
+      ML_API_URL,
+    );
+
     console.log(
       "Variables enviadas al modelo:",
       requestBody,
     );
-    const controller = new AbortController();
 
+
+    const controller =
+      new AbortController();
+
+    /*
+     * Se permiten 20 segundos por posibles
+     * arranques en frío de la función de Vercel.
+     */
     const timeout = setTimeout(
       () => controller.abort(),
-      10000,
+      20000,
     );
+
 
     let response: Response;
 
@@ -230,27 +356,46 @@ export async function predictAppointmentAttendance(
           method: "POST",
 
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
+
+            Accept:
+              "application/json",
           },
 
-          body: JSON.stringify(requestBody),
+          body: JSON.stringify(
+            requestBody,
+          ),
 
           cache: "no-store",
 
-          signal: controller.signal,
+          signal:
+            controller.signal,
         },
       );
     } finally {
-      clearTimeout(timeout);
+      clearTimeout(
+        timeout,
+      );
     }
 
+
     if (!response.ok) {
-      const errorText = await response.text();
+      const errorText =
+        await response.text();
 
       console.error(
         "Respuesta incorrecta de la API ML:",
-        response.status,
-        errorText,
+        {
+          url:
+            `${ML_API_URL}/predict`,
+
+          status:
+            response.status,
+
+          response:
+            errorText,
+        },
       );
 
       return {
@@ -260,14 +405,35 @@ export async function predictAppointmentAttendance(
       };
     }
 
-    const prediction =
-      (await response.json()) as AttendancePrediction;
+
+    const responseData: unknown =
+      await response.json();
+
+
+    if (
+      !isAttendancePrediction(
+        responseData,
+      )
+    ) {
+      console.error(
+        "La API devolvió una respuesta inválida:",
+        responseData,
+      );
+
+      return {
+        success: false,
+        message:
+          "La API de predicción devolvió una respuesta inválida.",
+      };
+    }
+
 
     return {
       success: true,
       message:
         "La predicción se generó correctamente.",
-      prediction,
+      prediction:
+        responseData,
     };
   } catch (error) {
     console.error(
@@ -275,19 +441,49 @@ export async function predictAppointmentAttendance(
       error,
     );
 
+
+    const isAbortError =
+      error instanceof Error &&
+      error.name === "AbortError";
+
+
     const isConnectionError =
       error instanceof Error &&
       (
-        error.name === "AbortError" ||
-        error.message.includes("fetch failed")
+        error.message.includes(
+          "fetch failed",
+        ) ||
+        error.message.includes(
+          "ECONNREFUSED",
+        ) ||
+        error.message.includes(
+          "ENOTFOUND",
+        )
       );
+
+
+    if (isAbortError) {
+      return {
+        success: false,
+        message:
+          "La API de predicción tardó demasiado en responder.",
+      };
+    }
+
+
+    if (isConnectionError) {
+      return {
+        success: false,
+        message:
+          "No se pudo conectar con la API de Machine Learning.",
+      };
+    }
+
 
     return {
       success: false,
-
-      message: isConnectionError
-        ? "No se pudo conectar con la API de Machine Learning. Verifica que FastAPI esté funcionando en el puerto 8000."
-        : "No se pudo generar la predicción de asistencia.",
+      message:
+        "No se pudo generar la predicción de asistencia.",
     };
   }
 }

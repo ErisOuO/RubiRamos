@@ -1,406 +1,2244 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { calculatePredictiveModel } from '@/lib/predictive-actions';
+import {
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
+
+import {
+  Activity,
+  AlertTriangle,
+  BrainCircuit,
+  ChevronDown,
+  ChevronUp,
+  Droplets,
+  Dumbbell,
+  RefreshCw,
+  Scale,
+  TrendingDown,
+  TrendingUp,
+} from 'lucide-react';
+
 import { toast } from 'react-hot-toast';
+
+import {
+  calculatePredictiveModel,
+} from '@/lib/predictive-actions';
+
 
 interface PredictiveModuleProps {
   patientId: number;
 }
 
-export default function PredictiveModule({ patientId }: PredictiveModuleProps) {
-  const [loading, setLoading] = useState(true);
-  const [modelData, setModelData] = useState<any>(null);
-  const [showDetails, setShowDetails] = useState(false);
 
-  useEffect(() => {
-    loadPredictiveModel();
-  }, [patientId]);
+interface WeightHistoryItem {
+  evaluationId: number;
+  date: string;
+  weight: number;
+  bodyFat: number | null;
+  visceralFat: number | null;
+  muscle: number | null;
+  totalWater: number | null;
+  waist: number | null;
+  height: number | null;
+}
 
-  const loadPredictiveModel = async () => {
-    setLoading(true);
-    try {
-      const result = await calculatePredictiveModel(patientId);
-      if (result.success) {
-        setModelData(result.data);
-      } else {
-        toast.error(result.message || 'No hay suficientes datos para la predicción');
-        setModelData(null);
-      }
-    } catch (error) {
-      toast.error('Error al cargar el modelo predictivo');
-      setModelData(null);
-    } finally {
-      setLoading(false);
-    }
+
+interface PatientData {
+  id: number;
+  nombre_completo: string;
+  height: number | null;
+  email: string | null;
+  username: string | null;
+}
+
+
+interface PredictionStatistics {
+  initialWeight: number;
+  currentWeight: number;
+  weightChange: number;
+  bmi: number | null;
+  idealWeight: number | null;
+  height: number | null;
+}
+
+
+interface EvaluationData {
+  evaluationId: number;
+  date: string;
+  weight: number;
+  bodyFat?: number | null;
+  muscle?: number | null;
+  totalWater?: number | null;
+}
+
+
+interface PredictionInput {
+  current_weight: number;
+  previous_weight_change: number;
+  days_since_previous: number;
+  body_fat_percentage: number;
+  muscle_percentage: number;
+  total_water_percentage: number;
+}
+
+
+interface WeightPrediction {
+  currentWeight: number;
+  predictedWeightChange: number;
+  predictedNextWeight: number;
+  tendency: string;
+  interpretation: string;
+  estimatedAverageErrorKg: number | null;
+  modelName: string;
+  featuresUsed: string[];
+  warning: string;
+}
+
+
+interface PredictiveModelData {
+  patient: PatientData;
+  weightHistory: WeightHistoryItem[];
+  statistics: PredictionStatistics;
+
+  latestEvaluation: EvaluationData;
+
+  previousEvaluation: {
+    evaluationId: number;
+    date: string;
+    weight: number;
   };
 
-  const formatDate = (date: string | Date) => {
-    return new Date(date).toLocaleDateString('es-ES', {
+  predictionInput: PredictionInput;
+  prediction: WeightPrediction;
+}
+
+
+const FEATURE_LABELS: Record<string, string> = {
+  current_weight:
+    'Peso actual',
+
+  previous_weight_change:
+    'Cambio de peso anterior',
+
+  days_since_previous:
+    'Días desde la evaluación anterior',
+
+  body_fat_percentage:
+    'Porcentaje de grasa corporal',
+
+  muscle_percentage:
+    'Porcentaje de músculo',
+
+  total_water_percentage:
+    'Porcentaje de agua corporal',
+};
+
+
+function formatDate(
+  date: string | Date,
+): string {
+  return new Date(
+    date,
+  ).toLocaleDateString(
+    'es-MX',
+    {
       year: 'numeric',
       month: '2-digit',
-      day: '2-digit'
-    });
-  };
+      day: '2-digit',
+    },
+  );
+}
 
-  const formatWeight = (weight: number) => {
-    return `${weight.toFixed(1)} kg`;
-  };
 
-  const getProgressColor = (percentage: number) => {
-    if (percentage >= 75) return 'bg-[#A8CF45]';
-    if (percentage >= 50) return 'bg-[#BD7D4A]';
-    if (percentage >= 25) return 'bg-[#F58634]';
-    return 'bg-[#5A8C7A]';
-  };
+function formatWeight(
+  weight: number,
+  decimals = 1,
+): string {
+  return `${weight.toFixed(decimals)} kg`;
+}
 
-  // Calcular el peso ideal basado en la estatura del paciente
-  const calculateIdealWeight = (heightCm: number | null): number | null => {
-    if (!heightCm || heightCm <= 0) return null;
-    const heightM = heightCm / 100;
-    const idealBmi = 22;
-    return idealBmi * (heightM * heightM);
+
+function formatPercentage(
+  value: number | null | undefined,
+): string {
+  if (
+    value === null ||
+    value === undefined
+  ) {
+    return '—';
+  }
+
+  return `${value.toFixed(1)}%`;
+}
+
+
+function getBmiCategory(
+  bmi: number | null,
+): {
+  label: string;
+  className: string;
+} {
+  if (bmi === null) {
+    return {
+      label: 'No disponible',
+      className:
+        'text-gray-500',
+    };
+  }
+
+  if (bmi < 18.5) {
+    return {
+      label: 'Bajo peso',
+      className:
+        'text-blue-600',
+    };
+  }
+
+  if (bmi < 25) {
+    return {
+      label: 'Peso saludable',
+      className:
+        'text-[#5A8C7A]',
+    };
+  }
+
+  if (bmi < 30) {
+    return {
+      label: 'Sobrepeso',
+      className:
+        'text-[#BD7D4A]',
+    };
+  }
+
+  if (bmi < 35) {
+    return {
+      label: 'Obesidad grado I',
+      className:
+        'text-orange-600',
+    };
+  }
+
+  if (bmi < 40) {
+    return {
+      label: 'Obesidad grado II',
+      className:
+        'text-red-600',
+    };
+  }
+
+  return {
+    label: 'Obesidad grado III',
+    className:
+      'text-red-700',
   };
+}
+
+
+function getProgressStatus(
+  progress: number,
+  weightLost: number,
+): string {
+  if (progress >= 75) {
+    return 'Muy cerca de la meta';
+  }
+
+  if (progress >= 50) {
+    return 'Buen progreso';
+  }
+
+  if (progress >= 25) {
+    return 'Progreso moderado';
+  }
+
+  if (progress > 0) {
+    return 'Iniciando el proceso';
+  }
+
+  if (weightLost < 0) {
+    return 'Aumento de peso detectado';
+  }
+
+  return 'Sin cambios significativos';
+}
+
+
+function getTendencyConfiguration(
+  tendency: string,
+) {
+  const normalizedTendency =
+    tendency.toLowerCase();
+
+  if (
+    normalizedTendency ===
+    'disminucion'
+  ) {
+    return {
+      label:
+        'Disminución estimada',
+
+      icon:
+        TrendingDown,
+
+      cardClass:
+        'border-emerald-200 bg-emerald-50',
+
+      iconClass:
+        'bg-emerald-100 text-emerald-700',
+
+      valueClass:
+        'text-emerald-700',
+    };
+  }
+
+  if (
+    normalizedTendency ===
+    'aumento'
+  ) {
+    return {
+      label:
+        'Aumento estimado',
+
+      icon:
+        TrendingUp,
+
+      cardClass:
+        'border-orange-200 bg-orange-50',
+
+      iconClass:
+        'bg-orange-100 text-orange-700',
+
+      valueClass:
+        'text-orange-700',
+    };
+  }
+
+  return {
+    label:
+      'Mantenimiento estimado',
+
+    icon:
+      Activity,
+
+    cardClass:
+      'border-blue-200 bg-blue-50',
+
+    iconClass:
+      'bg-blue-100 text-blue-700',
+
+    valueClass:
+      'text-blue-700',
+  };
+}
+
+
+export default function PredictiveModule({
+  patientId,
+}: PredictiveModuleProps) {
+  const [
+    loading,
+    setLoading,
+  ] = useState(true);
+
+  const [
+    modelData,
+    setModelData,
+  ] = useState<PredictiveModelData | null>(
+    null,
+  );
+
+  const [
+    errorMessage,
+    setErrorMessage,
+  ] = useState<string | null>(
+    null,
+  );
+
+  const [
+    showDetails,
+    setShowDetails,
+  ] = useState(false);
+
+
+  const loadPredictiveModel =
+    useCallback(
+      async () => {
+        setLoading(true);
+        setErrorMessage(null);
+
+        try {
+          const result =
+            await calculatePredictiveModel(
+              patientId,
+            );
+
+          if (
+            !result.success ||
+            !result.data
+          ) {
+            const message =
+              result.message ||
+              'No hay suficientes datos para realizar la predicción.';
+
+            setModelData(null);
+            setErrorMessage(message);
+
+            return;
+          }
+
+          setModelData(
+            result.data as PredictiveModelData,
+          );
+        } catch (error) {
+          console.error(
+            'Error al cargar el modelo predictivo:',
+            error,
+          );
+
+          const message =
+            error instanceof Error
+              ? error.message
+              : 'No se pudo cargar el modelo predictivo.';
+
+          setModelData(null);
+          setErrorMessage(message);
+
+          toast.error(message);
+        } finally {
+          setLoading(false);
+        }
+      },
+      [
+        patientId,
+      ],
+    );
+
+
+  useEffect(
+    () => {
+      void loadPredictiveModel();
+    },
+    [
+      loadPredictiveModel,
+    ],
+  );
+
 
   if (loading) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-[#E6E3DE] p-8 text-center">
-        <div className="flex justify-center">
-          <svg className="animate-spin h-8 w-8 text-[#5A8C7A]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-        </div>
-        <p className="mt-4 text-[#6E7C72]">Calculando modelo predictivo...</p>
-      </div>
-    );
-  }
-
-  if (!modelData) {
-    return (
-      <div className="bg-white rounded-xl shadow-sm border border-[#E6E3DE] p-8 text-center">
-        <p className="text-[#6E7C72]">No hay suficientes datos para realizar predicciones.</p>
-        <p className="text-sm text-[#6E7C72] mt-2">Se necesitan al menos 2 registros de peso para calcular el modelo.</p>
-      </div>
-    );
-  }
-
-  const { patient, weightHistory, statistics } = modelData;
-  
-  // Ordenar historial de pesos de más antiguo a más reciente
-  const sortedWeightHistory = [...weightHistory].sort((a, b) => 
-    new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
-  
-  const initialWeight = sortedWeightHistory[0]?.weight;
-  const currentWeight = sortedWeightHistory[sortedWeightHistory.length - 1]?.weight;
-  const weightLost = initialWeight - currentWeight;
-  const isLosingWeight = weightLost > 0;
-  
-  // Calcular el peso ideal usando la estatura del paciente
-  const idealWeight = calculateIdealWeight(patient.height);
-  
-  // Calcular IMC actual
-  const currentBmi = patient.height && currentWeight 
-    ? (currentWeight / Math.pow(patient.height / 100, 2)).toFixed(1)
-    : null;
-  
-  const bmiCategory = currentBmi 
-    ? parseFloat(currentBmi) < 18.5 ? 'Bajo peso'
-      : parseFloat(currentBmi) < 25 ? 'Normal'
-      : parseFloat(currentBmi) < 30 ? 'Sobrepeso'
-      : parseFloat(currentBmi) < 35 ? 'Obesidad Grado I'
-      : parseFloat(currentBmi) < 40 ? 'Obesidad Grado II'
-      : 'Obesidad Grado III'
-    : 'No disponible';
-  
-  // Calcular progreso hacia el peso ideal
-  const totalToLose = idealWeight ? initialWeight - idealWeight : null;
-  const progressPercentage = totalToLose && totalToLose > 0 && weightLost > 0
-    ? Math.min(Math.max((weightLost / totalToLose) * 100, 0), 100)
-    : 0;
-  
-  const progressStatus = progressPercentage >= 75 ? 'Muy cerca de la meta'
-    : progressPercentage >= 50 ? 'Buen progreso'
-    : progressPercentage >= 25 ? 'Progreso moderado'
-    : progressPercentage > 0 ? 'Iniciando el proceso'
-    : weightLost > 0 ? 'Iniciando el proceso'
-    : weightLost < 0 ? 'Aumento de peso detectado'
-    : 'Sin cambios significativos';
-
-  // Calcular la constante de decremento k usando la fórmula
-  let k = null;
-  let monthsToIdeal = null;
-  let predictions = [];
-
-  if (sortedWeightHistory.length >= 2 && isLosingWeight) {
-    // Calcular k usando el primer y último registro
-    const firstDate = new Date(sortedWeightHistory[0].date);
-    const lastDate = new Date(sortedWeightHistory[sortedWeightHistory.length - 1].date);
-    const monthsDiff = (lastDate.getFullYear() - firstDate.getFullYear()) * 12 + 
-                       (lastDate.getMonth() - firstDate.getMonth());
-    
-    if (monthsDiff > 0) {
-      k = Math.log(currentWeight / initialWeight) / monthsDiff;
-      
-      // Calcular meses para alcanzar peso ideal
-      if (idealWeight && idealWeight < currentWeight && k < 0) {
-        monthsToIdeal = Math.log(idealWeight / currentWeight) / k;
-        monthsToIdeal = Math.ceil(Math.max(monthsToIdeal, 0));
-      }
-      
-      // Generar predicciones
-      for (let i = 1; i <= 6; i++) {
-        const predictedWeight = currentWeight * Math.exp(k * i);
-        const predictionDate = new Date(lastDate);
-        predictionDate.setMonth(predictionDate.getMonth() + i);
-        predictions.push({
-          month: i,
-          date: predictionDate,
-          weight: Math.max(predictedWeight, 40),
-          isIdeal: idealWeight ? predictedWeight <= idealWeight : false
-        });
-      }
-    }
-  }
-
-  // Determinar la tendencia
-  let trend = 'Sin datos suficientes';
-  if (k !== null) {
-    trend = k < -0.05 ? 'Pérdida acelerada'
-      : k < -0.02 ? 'Pérdida moderada'
-      : k < 0 ? 'Pérdida lenta'
-      : k > 0 ? 'Aumento de peso'
-      : 'Pérdida constante';
-  }
-
-  return (
-    <div className="space-y-6">
-      {/* Tarjeta de resumen */}
-      <div className="bg-gradient-to-r from-[#5A8C7A] to-[#4A7C6A] rounded-xl shadow-sm p-6 text-white">
-        <h3 className="text-lg font-bold mb-4">Resumen del Progreso</h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
-            <p className="text-sm opacity-90">Peso inicial</p>
-            <p className="text-2xl font-bold">{formatWeight(initialWeight)}</p>
+      <div
+        className="
+          flex min-h-[340px]
+          items-center justify-center
+          rounded-xl border
+          border-[#E6E1DC]
+          bg-white
+        "
+      >
+        <div
+          className="
+            flex flex-col
+            items-center gap-4
+            text-center
+          "
+        >
+          <div
+            className="
+              flex h-14 w-14
+              items-center justify-center
+              rounded-full
+              bg-[#EEF5F2]
+            "
+          >
+            <RefreshCw
+              className="
+                h-7 w-7
+                animate-spin
+                text-[#5A8C7A]
+              "
+            />
           </div>
+
           <div>
-            <p className="text-sm opacity-90">Peso actual</p>
-            <p className="text-2xl font-bold">{formatWeight(currentWeight)}</p>
-          </div>
-          <div>
-            <p className="text-sm opacity-90">Peso perdido</p>
-            <p className={`text-2xl font-bold ${weightLost > 0 ? 'text-[#A8CF45]' : 'text-[#F58634]'}`}>
-              {weightLost > 0 ? formatWeight(weightLost) : formatWeight(Math.abs(weightLost))}
-              {weightLost < 0 && ' (aumento)'}
+            <p
+              className="
+                font-semibold
+                text-[#20433B]
+              "
+            >
+              Generando predicción
+            </p>
+
+            <p
+              className="
+                mt-1 text-sm
+                text-gray-500
+              "
+            >
+              Analizando el historial
+              antropométrico del paciente.
             </p>
           </div>
-          {idealWeight && (
-            <div>
-              <p className="text-sm opacity-90">Peso ideal</p>
-              <p className="text-2xl font-bold">{idealWeight.toFixed(1)} kg</p>
+        </div>
+      </div>
+    );
+  }
+
+
+  if (
+    !modelData
+  ) {
+    return (
+      <div
+        className="
+          rounded-xl border
+          border-amber-200
+          bg-amber-50
+          px-6 py-8
+        "
+      >
+        <div
+          className="
+            flex flex-col
+            items-center
+            text-center
+          "
+        >
+          <div
+            className="
+              mb-4 flex
+              h-14 w-14
+              items-center justify-center
+              rounded-full
+              bg-amber-100
+            "
+          >
+            <AlertTriangle
+              className="
+                h-7 w-7
+                text-amber-700
+              "
+            />
+          </div>
+
+          <h3
+            className="
+              text-lg font-semibold
+              text-amber-900
+            "
+          >
+            Predicción no disponible
+          </h3>
+
+          <p
+            className="
+              mt-2 max-w-xl
+              text-sm
+              text-amber-800
+            "
+          >
+            {
+              errorMessage ||
+              'Se necesitan al menos dos evaluaciones completas para realizar la predicción.'
+            }
+          </p>
+
+          <button
+            type="button"
+            onClick={
+              () => {
+                void loadPredictiveModel();
+              }
+            }
+            className="
+              mt-5 inline-flex
+              items-center gap-2
+              rounded-lg
+              bg-amber-700
+              px-4 py-2
+              text-sm font-semibold
+              text-white
+              transition-colors
+              hover:bg-amber-800
+            "
+          >
+            <RefreshCw
+              className="h-4 w-4"
+            />
+
+            Intentar nuevamente
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+
+  const {
+    patient,
+    weightHistory,
+    statistics,
+    latestEvaluation,
+    previousEvaluation,
+    predictionInput,
+    prediction,
+  } = modelData;
+
+
+  const sortedWeightHistory =
+    [
+      ...weightHistory,
+    ].sort(
+      (
+        firstRecord,
+        secondRecord,
+      ) =>
+        new Date(
+          firstRecord.date,
+        ).getTime() -
+        new Date(
+          secondRecord.date,
+        ).getTime(),
+    );
+
+
+  const initialWeight =
+    statistics.initialWeight;
+
+  const currentWeight =
+    statistics.currentWeight;
+
+  const idealWeight =
+    statistics.idealWeight;
+
+  const currentBmi =
+    statistics.bmi;
+
+  const weightLost =
+    initialWeight -
+    currentWeight;
+
+
+  const totalWeightToLose =
+    idealWeight !== null
+      ? initialWeight -
+        idealWeight
+      : null;
+
+
+  const progressPercentage =
+    totalWeightToLose !== null &&
+    totalWeightToLose > 0 &&
+    weightLost > 0
+      ? Math.min(
+          Math.max(
+            (
+              weightLost /
+              totalWeightToLose
+            ) * 100,
+            0,
+          ),
+          100,
+        )
+      : 0;
+
+
+  const progressStatus =
+    getProgressStatus(
+      progressPercentage,
+      weightLost,
+    );
+
+
+  const bmiCategory =
+    getBmiCategory(
+      currentBmi,
+    );
+
+
+  const tendencyConfiguration =
+    getTendencyConfiguration(
+      prediction.tendency,
+    );
+
+
+  const TendencyIcon =
+    tendencyConfiguration.icon;
+
+
+  const predictedDifference =
+    prediction.predictedNextWeight -
+    prediction.currentWeight;
+
+
+  return (
+    <div
+      className="
+        space-y-6
+      "
+    >
+      {/* Resumen del progreso */}
+      <section
+        className="
+          rounded-xl
+          bg-[#5A8C7A]
+          p-6
+          text-white
+          shadow-sm
+        "
+      >
+        <h3
+          className="
+            mb-5 text-lg
+            font-semibold
+          "
+        >
+          Resumen del progreso
+        </h3>
+
+        <div
+          className="
+            grid grid-cols-1
+            gap-5
+            sm:grid-cols-2
+            lg:grid-cols-4
+          "
+        >
+          <div>
+            <p
+              className="
+                text-sm
+                text-white/85
+              "
+            >
+              Peso inicial
+            </p>
+
+            <p
+              className="
+                mt-1 text-2xl
+                font-bold
+              "
+            >
+              {
+                formatWeight(
+                  initialWeight,
+                )
+              }
+            </p>
+          </div>
+
+          <div>
+            <p
+              className="
+                text-sm
+                text-white/85
+              "
+            >
+              Peso actual
+            </p>
+
+            <p
+              className="
+                mt-1 text-2xl
+                font-bold
+              "
+            >
+              {
+                formatWeight(
+                  currentWeight,
+                )
+              }
+            </p>
+          </div>
+
+          <div>
+            <p
+              className="
+                text-sm
+                text-white/85
+              "
+            >
+              {
+                weightLost >= 0
+                  ? 'Peso perdido'
+                  : 'Peso aumentado'
+              }
+            </p>
+
+            <p
+              className={`
+                mt-1 text-2xl
+                font-bold
+                ${
+                  weightLost >= 0
+                    ? 'text-[#C5E85B]'
+                    : 'text-orange-200'
+                }
+              `}
+            >
+              {
+                formatWeight(
+                  Math.abs(
+                    weightLost,
+                  ),
+                )
+              }
+            </p>
+          </div>
+
+          <div>
+            <p
+              className="
+                text-sm
+                text-white/85
+              "
+            >
+              Peso objetivo
+            </p>
+
+            <p
+              className="
+                mt-1 text-2xl
+                font-bold
+              "
+            >
+              {
+                idealWeight !== null
+                  ? formatWeight(
+                      idealWeight,
+                    )
+                  : 'No disponible'
+              }
+            </p>
+          </div>
+        </div>
+      </section>
+
+
+      {/* Progreso hacia la meta */}
+      <section
+        className="
+          rounded-xl border
+          border-[#E6E1DC]
+          bg-white
+          p-6
+          shadow-sm
+        "
+      >
+        <div
+          className="
+            mb-3 flex
+            items-center
+            justify-between
+            gap-4
+          "
+        >
+          <h3
+            className="
+              font-semibold
+              text-[#183B33]
+            "
+          >
+            Progreso hacia la meta
+          </h3>
+
+          <span
+            className="
+              text-sm font-bold
+              text-[#5A8C7A]
+            "
+          >
+            {
+              progressPercentage.toFixed(
+                1,
+              )
+            }%
+          </span>
+        </div>
+
+        <div
+          className="
+            h-3 overflow-hidden
+            rounded-full
+            bg-[#E5E3E0]
+          "
+        >
+          <div
+            className="
+              h-full rounded-full
+              bg-[#5A8C7A]
+              transition-all
+              duration-500
+            "
+            style={{
+              width:
+                `${progressPercentage}%`,
+            }}
+          />
+        </div>
+
+        <p
+          className="
+            mt-3 text-sm
+            text-[#52736B]
+          "
+        >
+          {progressStatus}
+        </p>
+      </section>
+
+
+      {/* IMC y predicción ML */}
+      <div
+        className="
+          grid grid-cols-1
+          gap-6
+          lg:grid-cols-2
+        "
+      >
+        {/* IMC */}
+        <section
+          className="
+            rounded-xl border
+            border-[#E6E1DC]
+            bg-white
+            p-6
+            shadow-sm
+          "
+        >
+          <div
+            className="
+              mb-5 flex
+              items-center gap-3
+            "
+          >
+            <div
+              className="
+                flex h-11 w-11
+                items-center justify-center
+                rounded-full
+                bg-[#EEF5F2]
+              "
+            >
+              <Activity
+                className="
+                  h-5 w-5
+                  text-[#5A8C7A]
+                "
+              />
             </div>
-          )}
-        </div>
-      </div>
 
-      {/* Barra de progreso */}
-      <div className="bg-white rounded-xl shadow-sm border border-[#E6E3DE] p-6">
-        <div className="flex justify-between items-center mb-2">
-          <h4 className="font-semibold text-[#2C3E34]">Progreso hacia la meta</h4>
-          <span className="text-sm font-bold text-[#5A8C7A]">{progressPercentage.toFixed(1)}%</span>
-        </div>
-        <div className="w-full bg-[#E6E3DE] rounded-full h-3">
-          <div 
-            className={`${getProgressColor(progressPercentage)} h-3 rounded-full transition-all duration-500`}
-            style={{ width: `${Math.min(progressPercentage, 100)}%` }}
-          ></div>
-        </div>
-        <p className="text-sm text-[#6E7C72] mt-2">{progressStatus}</p>
-      </div>
+            <h3
+              className="
+                text-lg font-semibold
+                text-[#3F7F70]
+              "
+            >
+              Índice de Masa Corporal
+              (IMC)
+            </h3>
+          </div>
 
-      {/* IMC y métricas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-[#E6E3DE] p-6">
-          <h4 className="font-semibold text-[#5A8C7A] mb-3">Índice de Masa Corporal (IMC)</h4>
-          {patient.height ? (
-            <>
-              <p className="text-3xl font-bold text-[#2C3E34]">{currentBmi}</p>
-              <p className={`text-sm mt-1 ${
-                currentBmi && parseFloat(currentBmi) < 25 ? 'text-[#A8CF45]' : 'text-[#F58634]'
-              }`}>
-                {bmiCategory}
-              </p>
-              <div className="mt-3 pt-3 border-t border-[#E6E3DE] text-xs text-[#6E7C72] space-y-1">
-                <p><strong>Fórmula:</strong> IMC = Peso / (Estatura)²</p>
-                <p><strong>Cálculo:</strong> {currentWeight} / ({patient.height / 100})² = {currentBmi}</p>
+          {
+            currentBmi !== null &&
+            statistics.height !== null
+              ? (
+                <>
+                  <p
+                    className="
+                      text-3xl font-bold
+                      text-[#183B33]
+                    "
+                  >
+                    {
+                      currentBmi.toFixed(
+                        1,
+                      )
+                    }
+                  </p>
+
+                  <p
+                    className={`
+                      mt-1 text-sm
+                      font-medium
+                      ${bmiCategory.className}
+                    `}
+                  >
+                    {bmiCategory.label}
+                  </p>
+
+                  <div
+                    className="
+                      mt-5 border-t
+                      border-[#E6E1DC]
+                      pt-4
+                      text-sm
+                      text-gray-600
+                    "
+                  >
+                    <p>
+                      <strong>
+                        Fórmula:
+                      </strong>{' '}
+
+                      IMC = Peso /
+                      (Estatura en metros)²
+                    </p>
+
+                    <p
+                      className="mt-2"
+                    >
+                      <strong>
+                        Cálculo:
+                      </strong>{' '}
+
+                      {
+                        currentWeight.toFixed(
+                          1,
+                        )
+                      }{' '}
+                      / (
+                      {
+                        (
+                          statistics.height /
+                          100
+                        ).toFixed(
+                          2,
+                        )
+                      }
+                      )² ={' '}
+                      {
+                        currentBmi.toFixed(
+                          1,
+                        )
+                      }
+                    </p>
+                  </div>
+                </>
+              )
+              : (
+                <p
+                  className="
+                    text-sm
+                    text-gray-500
+                  "
+                >
+                  Registre una estatura
+                  válida para calcular el
+                  IMC.
+                </p>
+              )
+          }
+        </section>
+
+
+        {/* Predicción con Machine Learning */}
+        <section
+          className={`
+            rounded-xl border
+            p-6 shadow-sm
+            ${tendencyConfiguration.cardClass}
+          `}
+        >
+          <div
+            className="
+              mb-5 flex
+              items-start
+              justify-between
+              gap-4
+            "
+          >
+            <div
+              className="
+                flex items-center
+                gap-3
+              "
+            >
+              <div
+                className={`
+                  flex h-11 w-11
+                  items-center justify-center
+                  rounded-full
+                  ${tendencyConfiguration.iconClass}
+                `}
+              >
+                <BrainCircuit
+                  className="
+                    h-6 w-6
+                  "
+                />
               </div>
-            </>
-          ) : (
-            <p className="text-[#6E7C72]">Registre la estatura del paciente para calcular el IMC</p>
-          )}
-        </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-[#E6E3DE] p-6">
-          <h4 className="font-semibold text-[#5A8C7A] mb-3">Modelo Matemático</h4>
-          <p className="text-sm text-[#6E7C72] mb-2">Tasa de decremento mensual (k):</p>
-          <p className="text-2xl font-mono font-bold text-[#2C3E34]">
-            {k !== null ? k.toFixed(4) : 'No disponible'}
+              <div>
+                <h3
+                  className="
+                    text-lg font-semibold
+                    text-[#183B33]
+                  "
+                >
+                  Predicción de peso
+                </h3>
+
+                <p
+                  className="
+                    text-xs
+                    text-gray-600
+                  "
+                >
+                  Modelo de Machine Learning
+                </p>
+              </div>
+            </div>
+
+            <span
+              className="
+                rounded-full
+                bg-white/80
+                px-3 py-1
+                text-xs font-semibold
+                text-[#52736B]
+              "
+            >
+              Bosque aleatorio
+            </span>
+          </div>
+
+          <p
+            className="
+              text-sm
+              text-gray-600
+            "
+          >
+            Peso estimado para la
+            siguiente evaluación
           </p>
-          <p className="text-xs text-[#6E7C72] mt-1">
-            Tendencia: {trend}
+
+          <p
+            className={`
+              mt-1 text-4xl
+              font-bold
+              ${tendencyConfiguration.valueClass}
+            `}
+          >
+            {
+              formatWeight(
+                prediction.predictedNextWeight,
+                2,
+              )
+            }
           </p>
-        </div>
+
+          <div
+            className="
+              mt-5 grid
+              grid-cols-2 gap-3
+            "
+          >
+            <div
+              className="
+                rounded-lg
+                bg-white/80
+                p-3
+              "
+            >
+              <p
+                className="
+                  text-xs
+                  text-gray-500
+                "
+              >
+                Peso actual
+              </p>
+
+              <p
+                className="
+                  mt-1 font-semibold
+                  text-[#183B33]
+                "
+              >
+                {
+                  formatWeight(
+                    prediction.currentWeight,
+                    2,
+                  )
+                }
+              </p>
+            </div>
+
+            <div
+              className="
+                rounded-lg
+                bg-white/80
+                p-3
+              "
+            >
+              <p
+                className="
+                  text-xs
+                  text-gray-500
+                "
+              >
+                Cambio estimado
+              </p>
+
+              <p
+                className={`
+                  mt-1 font-semibold
+                  ${tendencyConfiguration.valueClass}
+                `}
+              >
+                {
+                  predictedDifference > 0
+                    ? '+'
+                    : ''
+                }
+
+                {
+                  predictedDifference.toFixed(
+                    2,
+                  )
+                } kg
+              </p>
+            </div>
+          </div>
+
+          <div
+            className="
+              mt-4 flex
+              items-center gap-2
+            "
+          >
+            <TendencyIcon
+              className={`
+                h-5 w-5
+                ${tendencyConfiguration.valueClass}
+              `}
+            />
+
+            <p
+              className="
+                text-sm font-semibold
+                text-[#183B33]
+              "
+            >
+              {
+                tendencyConfiguration.label
+              }
+            </p>
+          </div>
+
+          <p
+            className="
+              mt-2 text-sm
+              text-gray-700
+            "
+          >
+            {
+              prediction.interpretation
+            }
+          </p>
+
+          {
+            prediction.estimatedAverageErrorKg !==
+            null && (
+              <p
+                className="
+                  mt-3 text-xs
+                  text-gray-500
+                "
+              >
+                Error promedio del modelo:
+                aproximadamente{' '}
+                {
+                  prediction
+                    .estimatedAverageErrorKg
+                    .toFixed(
+                      2,
+                    )
+                } kg.
+              </p>
+            )
+          }
+        </section>
       </div>
 
-      {/* Cálculo del Peso Ideal */}
-      {patient.height && idealWeight && (
-        <div className="bg-white rounded-xl shadow-sm border border-[#E6E3DE] p-6">
-          <h4 className="font-semibold text-[#5A8C7A] mb-3">Determinación del Peso Objetivo</h4>
-          <div className="space-y-3 text-sm text-[#2C3E34]">
-            <p><strong>Fórmula:</strong> Peso Objetivo = IMC ideal × (Estatura en metros)²</p>
-            <p><strong>IMC ideal:</strong> 22 (valor dentro del rango saludable 18.5 - 24.9)</p>
-            <p><strong>Estatura del paciente:</strong> {patient.height} cm = {patient.height / 100} m</p>
-            <div className="bg-[#FAF9F7] p-3 rounded-lg">
-              <p className="font-mono">Peso Objetivo = 22 × ({patient.height / 100})²</p>
-              <p className="font-mono mt-1">Peso Objetivo = 22 × {Math.pow(patient.height / 100, 2).toFixed(4)}</p>
-              <p className="font-mono font-bold text-[#5A8C7A] mt-1">Peso Objetivo = {idealWeight.toFixed(2)} kg</p>
+
+      {/* Datos utilizados por el modelo */}
+      <section
+        className="
+          rounded-xl border
+          border-[#E6E1DC]
+          bg-white
+          p-6
+          shadow-sm
+        "
+      >
+        <div
+          className="
+            mb-5 flex
+            items-center
+            justify-between
+            gap-4
+          "
+        >
+          <div>
+            <h3
+              className="
+                text-lg font-semibold
+                text-[#3F7F70]
+              "
+            >
+              Datos utilizados en la
+              predicción
+            </h3>
+
+            <p
+              className="
+                mt-1 text-sm
+                text-gray-500
+              "
+            >
+              Información de la evaluación
+              antropométrica más reciente.
+            </p>
+          </div>
+
+          <span
+            className="
+              rounded-full
+              bg-[#EEF5F2]
+              px-3 py-1
+              text-xs font-semibold
+              text-[#5A8C7A]
+            "
+          >
+            {
+              formatDate(
+                latestEvaluation.date,
+              )
+            }
+          </span>
+        </div>
+
+        <div
+          className="
+            grid grid-cols-1
+            gap-4
+            sm:grid-cols-2
+            lg:grid-cols-3
+          "
+        >
+          <div
+            className="
+              flex items-center
+              gap-3 rounded-lg
+              bg-[#FAF9F7]
+              p-4
+            "
+          >
+            <Scale
+              className="
+                h-5 w-5
+                text-[#5A8C7A]
+              "
+            />
+
+            <div>
+              <p
+                className="
+                  text-xs
+                  text-gray-500
+                "
+              >
+                Peso actual
+              </p>
+
+              <p
+                className="
+                  font-semibold
+                  text-[#183B33]
+                "
+              >
+                {
+                  formatWeight(
+                    predictionInput.current_weight,
+                    2,
+                  )
+                }
+              </p>
+            </div>
+          </div>
+
+          <div
+            className="
+              flex items-center
+              gap-3 rounded-lg
+              bg-[#FAF9F7]
+              p-4
+            "
+          >
+            <TrendingDown
+              className="
+                h-5 w-5
+                text-[#5A8C7A]
+              "
+            />
+
+            <div>
+              <p
+                className="
+                  text-xs
+                  text-gray-500
+                "
+              >
+                Cambio anterior
+              </p>
+
+              <p
+                className="
+                  font-semibold
+                  text-[#183B33]
+                "
+              >
+                {
+                  predictionInput
+                    .previous_weight_change >
+                  0
+                    ? '+'
+                    : ''
+                }
+
+                {
+                  predictionInput
+                    .previous_weight_change
+                    .toFixed(
+                      2,
+                    )
+                } kg
+              </p>
+            </div>
+          </div>
+
+          <div
+            className="
+              flex items-center
+              gap-3 rounded-lg
+              bg-[#FAF9F7]
+              p-4
+            "
+          >
+            <Activity
+              className="
+                h-5 w-5
+                text-[#5A8C7A]
+              "
+            />
+
+            <div>
+              <p
+                className="
+                  text-xs
+                  text-gray-500
+                "
+              >
+                Días entre evaluaciones
+              </p>
+
+              <p
+                className="
+                  font-semibold
+                  text-[#183B33]
+                "
+              >
+                {
+                  predictionInput
+                    .days_since_previous
+                } días
+              </p>
+            </div>
+          </div>
+
+          <div
+            className="
+              flex items-center
+              gap-3 rounded-lg
+              bg-[#FAF9F7]
+              p-4
+            "
+          >
+            <Activity
+              className="
+                h-5 w-5
+                text-[#BD7D4A]
+              "
+            />
+
+            <div>
+              <p
+                className="
+                  text-xs
+                  text-gray-500
+                "
+              >
+                Grasa corporal
+              </p>
+
+              <p
+                className="
+                  font-semibold
+                  text-[#183B33]
+                "
+              >
+                {
+                  formatPercentage(
+                    predictionInput
+                      .body_fat_percentage,
+                  )
+                }
+              </p>
+            </div>
+          </div>
+
+          <div
+            className="
+              flex items-center
+              gap-3 rounded-lg
+              bg-[#FAF9F7]
+              p-4
+            "
+          >
+            <Dumbbell
+              className="
+                h-5 w-5
+                text-[#5A8C7A]
+              "
+            />
+
+            <div>
+              <p
+                className="
+                  text-xs
+                  text-gray-500
+                "
+              >
+                Músculo
+              </p>
+
+              <p
+                className="
+                  font-semibold
+                  text-[#183B33]
+                "
+              >
+                {
+                  formatPercentage(
+                    predictionInput
+                      .muscle_percentage,
+                  )
+                }
+              </p>
+            </div>
+          </div>
+
+          <div
+            className="
+              flex items-center
+              gap-3 rounded-lg
+              bg-[#FAF9F7]
+              p-4
+            "
+          >
+            <Droplets
+              className="
+                h-5 w-5
+                text-blue-600
+              "
+            />
+
+            <div>
+              <p
+                className="
+                  text-xs
+                  text-gray-500
+                "
+              >
+                Agua corporal
+              </p>
+
+              <p
+                className="
+                  font-semibold
+                  text-[#183B33]
+                "
+              >
+                {
+                  formatPercentage(
+                    predictionInput
+                      .total_water_percentage,
+                  )
+                }
+              </p>
             </div>
           </div>
         </div>
-      )}
+      </section>
 
-      {/* Tiempo estimado para peso ideal */}
-      {monthsToIdeal && monthsToIdeal > 0 && (
-        <div className="bg-[#FAF9F7] rounded-xl shadow-sm border border-[#E6E3DE] p-6">
-          <h4 className="font-semibold text-[#5A8C7A] mb-2">Tiempo estimado para alcanzar el peso ideal</h4>
-          <p className="text-3xl font-bold text-[#2C3E34]">{monthsToIdeal} meses</p>
-          <p className="text-sm text-[#6E7C72] mt-2">
-            Basado en el ritmo actual de pérdida de peso. Este tiempo puede variar según la constancia del paciente.
+
+      {/* Peso objetivo */}
+      {
+        statistics.height !== null &&
+        idealWeight !== null && (
+          <section
+            className="
+              rounded-xl border
+              border-[#E6E1DC]
+              bg-white
+              p-6
+              shadow-sm
+            "
+          >
+            <h3
+              className="
+                text-lg font-semibold
+                text-[#3F7F70]
+              "
+            >
+              Determinación del peso
+              objetivo
+            </h3>
+
+            <div
+              className="
+                mt-4 space-y-2
+                text-sm
+                text-gray-700
+              "
+            >
+              <p>
+                <strong>
+                  Fórmula:
+                </strong>{' '}
+
+                Peso objetivo = IMC ideal ×
+                (Estatura en metros)²
+              </p>
+
+              <p>
+                <strong>
+                  IMC ideal utilizado:
+                </strong>{' '}
+
+                22
+              </p>
+
+              <p>
+                <strong>
+                  Estatura:
+                </strong>{' '}
+
+                {
+                  statistics.height.toFixed(
+                    1,
+                  )
+                } cm ={' '}
+                {
+                  (
+                    statistics.height /
+                    100
+                  ).toFixed(
+                    2,
+                  )
+                } m
+              </p>
+
+              <p>
+                <strong>
+                  Resultado:
+                </strong>{' '}
+
+                22 × (
+                {
+                  (
+                    statistics.height /
+                    100
+                  ).toFixed(
+                    2,
+                  )
+                }
+                )² ={' '}
+                {
+                  idealWeight.toFixed(
+                    2,
+                  )
+                } kg
+              </p>
+            </div>
+          </section>
+        )
+      }
+
+
+      {/* Historial de mediciones */}
+      <section
+        className="
+          overflow-hidden
+          rounded-xl border
+          border-[#E6E1DC]
+          bg-white
+          shadow-sm
+        "
+      >
+        <div
+          className="
+            border-b
+            border-[#E6E1DC]
+            px-6 py-5
+          "
+        >
+          <h3
+            className="
+              text-lg font-semibold
+              text-[#3F7F70]
+            "
+          >
+            Historial de mediciones
+          </h3>
+
+          <p
+            className="
+              mt-1 text-sm
+              text-gray-500
+            "
+          >
+            Evolución antropométrica
+            utilizada como referencia.
           </p>
         </div>
-      )}
 
-      {/* Predicciones */}
-      {predictions.length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm border border-[#E6E3DE] overflow-hidden">
-          <div className="bg-[#FAF9F7] px-6 py-4 border-b border-[#E6E3DE]">
-            <h3 className="text-lg font-bold text-[#5A8C7A]">Predicción de peso (próximos 6 meses)</h3>
-            <p className="text-sm text-[#6E7C72] mt-1">Basado en el modelo exponencial P(t) = P₀ · e^(kt)</p>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-[#E6E3DE]">
-              <thead className="bg-[#FAF9F7]">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Mes</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Fecha estimada</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Peso estimado</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Estado</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-[#E6E3DE]">
-                {predictions.map((pred) => (
-                  <tr key={pred.month} className="hover:bg-[#FAF9F7]">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#2C3E34]">Mes {pred.month}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6E7C72]">{formatDate(pred.date)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-[#2C3E34]">{formatWeight(pred.weight)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {pred.isIdeal ? (
-                        <span className="px-2 py-1 text-xs rounded-full bg-[#A8CF45]/20 text-[#2C3E34]">
-                          Alcanza peso ideal
-                        </span>
-                      ) : (
-                        <span className="px-2 py-1 text-xs rounded-full bg-[#E6E3DE] text-[#6E7C72]">
-                          En proceso
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* Historial de pesos */}
-      <div className="bg-white rounded-xl shadow-sm border border-[#E6E3DE] overflow-hidden">
-        <div className="bg-[#FAF9F7] px-6 py-4 border-b border-[#E6E3DE]">
-          <h3 className="text-lg font-bold text-[#5A8C7A]">Historial de mediciones</h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-[#E6E3DE]">
-            <thead className="bg-[#FAF9F7]">
+        <div
+          className="
+            overflow-x-auto
+          "
+        >
+          <table
+            className="
+              min-w-full
+              divide-y
+              divide-[#E6E1DC]
+            "
+          >
+            <thead
+              className="
+                bg-[#FAF9F7]
+              "
+            >
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Fecha</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Peso</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">% Grasa</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">% Músculo</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-[#6E7C72] uppercase tracking-wider">Cintura (cm)</th>
+                <th
+                  className="
+                    px-6 py-3
+                    text-left
+                    text-xs font-semibold
+                    uppercase
+                    tracking-wide
+                    text-gray-500
+                  "
+                >
+                  Fecha
+                </th>
+
+                <th
+                  className="
+                    px-6 py-3
+                    text-left
+                    text-xs font-semibold
+                    uppercase
+                    tracking-wide
+                    text-gray-500
+                  "
+                >
+                  Peso
+                </th>
+
+                <th
+                  className="
+                    px-6 py-3
+                    text-left
+                    text-xs font-semibold
+                    uppercase
+                    tracking-wide
+                    text-gray-500
+                  "
+                >
+                  Grasa
+                </th>
+
+                <th
+                  className="
+                    px-6 py-3
+                    text-left
+                    text-xs font-semibold
+                    uppercase
+                    tracking-wide
+                    text-gray-500
+                  "
+                >
+                  Músculo
+                </th>
+
+                <th
+                  className="
+                    px-6 py-3
+                    text-left
+                    text-xs font-semibold
+                    uppercase
+                    tracking-wide
+                    text-gray-500
+                  "
+                >
+                  Agua
+                </th>
+
+                <th
+                  className="
+                    px-6 py-3
+                    text-left
+                    text-xs font-semibold
+                    uppercase
+                    tracking-wide
+                    text-gray-500
+                  "
+                >
+                  Cintura
+                </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-[#E6E3DE]">
-              {sortedWeightHistory.map((record: any, idx: number) => (
-                <tr key={idx} className="hover:bg-[#FAF9F7]">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#2C3E34]">{formatDate(record.date)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-[#2C3E34]">{formatWeight(record.weight)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6E7C72]">{record.bodyFat ? `${record.bodyFat}%` : '—'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6E7C72]">{record.muscle ? `${record.muscle}%` : '—'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6E7C72]">{record.waist ? `${record.waist} cm` : '—'}</td>
-                </tr>
-              ))}
+
+            <tbody
+              className="
+                divide-y
+                divide-[#E6E1DC]
+                bg-white
+              "
+            >
+              {
+                sortedWeightHistory.map(
+                  (
+                    record,
+                  ) => (
+                    <tr
+                      key={
+                        record.evaluationId
+                      }
+                      className="
+                        transition-colors
+                        hover:bg-[#FAF9F7]
+                      "
+                    >
+                      <td
+                        className="
+                          whitespace-nowrap
+                          px-6 py-4
+                          text-sm
+                          text-gray-700
+                        "
+                      >
+                        {
+                          formatDate(
+                            record.date,
+                          )
+                        }
+                      </td>
+
+                      <td
+                        className="
+                          whitespace-nowrap
+                          px-6 py-4
+                          text-sm font-semibold
+                          text-[#183B33]
+                        "
+                      >
+                        {
+                          formatWeight(
+                            record.weight,
+                          )
+                        }
+                      </td>
+
+                      <td
+                        className="
+                          whitespace-nowrap
+                          px-6 py-4
+                          text-sm
+                          text-gray-600
+                        "
+                      >
+                        {
+                          formatPercentage(
+                            record.bodyFat,
+                          )
+                        }
+                      </td>
+
+                      <td
+                        className="
+                          whitespace-nowrap
+                          px-6 py-4
+                          text-sm
+                          text-gray-600
+                        "
+                      >
+                        {
+                          formatPercentage(
+                            record.muscle,
+                          )
+                        }
+                      </td>
+
+                      <td
+                        className="
+                          whitespace-nowrap
+                          px-6 py-4
+                          text-sm
+                          text-gray-600
+                        "
+                      >
+                        {
+                          formatPercentage(
+                            record.totalWater,
+                          )
+                        }
+                      </td>
+
+                      <td
+                        className="
+                          whitespace-nowrap
+                          px-6 py-4
+                          text-sm
+                          text-gray-600
+                        "
+                      >
+                        {
+                          record.waist !== null
+                            ? `${record.waist.toFixed(
+                                1,
+                              )} cm`
+                            : '—'
+                        }
+                      </td>
+                    </tr>
+                  ),
+                )
+              }
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
 
-      {/* Detalles del modelo (colapsable) */}
-      <div className="bg-white rounded-xl shadow-sm border border-[#E6E3DE] overflow-hidden">
+
+      {/* Detalles del modelo */}
+      <section
+        className="
+          overflow-hidden
+          rounded-xl border
+          border-[#E6E1DC]
+          bg-white
+          shadow-sm
+        "
+      >
         <button
-          onClick={() => setShowDetails(!showDetails)}
-          className="w-full px-6 py-4 flex justify-between items-center hover:bg-[#FAF9F7] transition-colors"
+          type="button"
+          onClick={
+            () =>
+              setShowDetails(
+                (
+                  currentValue,
+                ) =>
+                  !currentValue,
+              )
+          }
+          className="
+            flex w-full
+            items-center
+            justify-between
+            gap-4
+            px-6 py-4
+            text-left
+            transition-colors
+            hover:bg-[#FAF9F7]
+          "
         >
-          <span className="font-semibold text-[#5A8C7A]">Ver detalles del modelo matemático</span>
-          <svg className={`w-5 h-5 text-[#6E7C72] transition-transform ${showDetails ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-        
-        {showDetails && (
-          <div className="px-6 py-4 border-t border-[#E6E3DE] bg-[#FAF9F7] space-y-3">
-            <p className="text-sm text-[#2C3E34]">
-              <strong>Modelo utilizado:</strong> Decremento exponencial P(t) = P₀ · e^(kt)
-            </p>
-            <p className="text-sm text-[#2C3E34]">
-              <strong>Peso inicial (P₀):</strong> {formatWeight(initialWeight)}
-            </p>
-            <p className="text-sm text-[#2C3E34]">
-              <strong>Peso actual:</strong> {formatWeight(currentWeight)}
-            </p>
-            <p className="text-sm text-[#2C3E34]">
-              <strong>Constante de decremento (k):</strong> {k !== null ? k.toFixed(4) : 'No disponible'}
-            </p>
-            {k !== null && (
-              <p className="text-sm text-[#2C3E34]">
-                <strong>Ecuación del modelo:</strong> P(t) = {currentWeight.toFixed(1)} · e^({k.toFixed(4)} · t)
-              </p>
-            )}
-            {patient.height && idealWeight && (
-              <p className="text-sm text-[#2C3E34]">
-                <strong>Cálculo del peso ideal:</strong> {idealWeight.toFixed(2)} kg = 22 × ({patient.height / 100})²
-              </p>
-            )}
-            {monthsToIdeal && monthsToIdeal > 0 && (
-              <p className="text-sm text-[#2C3E34]">
-                <strong>Tiempo estimado:</strong> {monthsToIdeal} meses para alcanzar el peso ideal
-              </p>
-            )}
-            <p className="text-sm text-[#6E7C72] italic mt-2">
-              Este modelo asume que la pérdida de peso es proporcional al peso actual, lo que significa que al inicio la pérdida es más rápida y se desacelera con el tiempo.
-            </p>
+          <div
+            className="
+              flex items-center gap-3
+            "
+          >
+            <BrainCircuit
+              className="
+                h-5 w-5
+                text-[#5A8C7A]
+              "
+            />
+
+            <span
+              className="
+                font-semibold
+                text-[#183B33]
+              "
+            >
+              Ver detalles del modelo
+              predictivo
+            </span>
           </div>
-        )}
-      </div>
+
+          {
+            showDetails
+              ? (
+                <ChevronUp
+                  className="
+                    h-5 w-5
+                    text-gray-500
+                  "
+                />
+              )
+              : (
+                <ChevronDown
+                  className="
+                    h-5 w-5
+                    text-gray-500
+                  "
+                />
+              )
+          }
+        </button>
+
+        {
+          showDetails && (
+            <div
+              className="
+                border-t
+                border-[#E6E1DC]
+                bg-[#FAF9F7]
+                px-6 py-5
+              "
+            >
+              <div
+                className="
+                  grid grid-cols-1
+                  gap-6
+                  lg:grid-cols-2
+                "
+              >
+                <div>
+                  <h4
+                    className="
+                      font-semibold
+                      text-[#183B33]
+                    "
+                  >
+                    Información del modelo
+                  </h4>
+
+                  <dl
+                    className="
+                      mt-3 space-y-3
+                      text-sm
+                    "
+                  >
+                    <div>
+                      <dt
+                        className="
+                          text-gray-500
+                        "
+                      >
+                        Algoritmo
+                      </dt>
+
+                      <dd
+                        className="
+                          font-medium
+                          text-gray-800
+                        "
+                      >
+                        Bosque aleatorio
+                        para regresión
+                      </dd>
+                    </div>
+
+                    <div>
+                      <dt
+                        className="
+                          text-gray-500
+                        "
+                      >
+                        Variable predicha
+                      </dt>
+
+                      <dd
+                        className="
+                          font-medium
+                          text-gray-800
+                        "
+                      >
+                        Cambio de peso en la
+                        siguiente evaluación
+                      </dd>
+                    </div>
+
+                    <div>
+                      <dt
+                        className="
+                          text-gray-500
+                        "
+                      >
+                        Evaluación anterior
+                      </dt>
+
+                      <dd
+                        className="
+                          font-medium
+                          text-gray-800
+                        "
+                      >
+                        {
+                          formatDate(
+                            previousEvaluation.date,
+                          )
+                        }{' '}
+                        —{' '}
+                        {
+                          formatWeight(
+                            previousEvaluation.weight,
+                            2,
+                          )
+                        }
+                      </dd>
+                    </div>
+
+                    <div>
+                      <dt
+                        className="
+                          text-gray-500
+                        "
+                      >
+                        Evaluación actual
+                      </dt>
+
+                      <dd
+                        className="
+                          font-medium
+                          text-gray-800
+                        "
+                      >
+                        {
+                          formatDate(
+                            latestEvaluation.date,
+                          )
+                        }{' '}
+                        —{' '}
+                        {
+                          formatWeight(
+                            latestEvaluation.weight,
+                            2,
+                          )
+                        }
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+
+                <div>
+                  <h4
+                    className="
+                      font-semibold
+                      text-[#183B33]
+                    "
+                  >
+                    Variables analizadas
+                  </h4>
+
+                  <ul
+                    className="
+                      mt-3 space-y-2
+                      text-sm
+                      text-gray-700
+                    "
+                  >
+                    {
+                      prediction.featuresUsed.map(
+                        (
+                          feature,
+                        ) => (
+                          <li
+                            key={
+                              feature
+                            }
+                            className="
+                              flex items-center
+                              gap-2
+                            "
+                          >
+                            <span
+                              className="
+                                h-2 w-2
+                                rounded-full
+                                bg-[#5A8C7A]
+                              "
+                            />
+
+                            {
+                              FEATURE_LABELS[
+                                feature
+                              ] ||
+                              feature
+                            }
+                          </li>
+                        ),
+                      )
+                    }
+                  </ul>
+                </div>
+              </div>
+
+              <div
+                className="
+                  mt-6 rounded-lg
+                  border border-amber-200
+                  bg-amber-50
+                  p-4
+                "
+              >
+                <div
+                  className="
+                    flex items-start
+                    gap-3
+                  "
+                >
+                  <AlertTriangle
+                    className="
+                      mt-0.5 h-5 w-5
+                      shrink-0
+                      text-amber-700
+                    "
+                  />
+
+                  <p
+                    className="
+                      text-sm
+                      text-amber-900
+                    "
+                  >
+                    {
+                      prediction.warning
+                    }
+                  </p>
+                </div>
+              </div>
+            </div>
+          )
+        }
+      </section>
     </div>
   );
 }

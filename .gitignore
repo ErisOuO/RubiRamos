@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Entorno y archivos temporales de Python
+ML/.venv/
+**/__pycache__/
+**/.ipynb_checkpoints/
+*.pyc

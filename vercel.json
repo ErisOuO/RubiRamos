@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/**/*.py": {
+      "excludeFiles": "{ML/**,node_modules/**,.next/**,.git/**,**/__pycache__/**,**/.ipynb_checkpoints/**}"
+    }
+  }
+}

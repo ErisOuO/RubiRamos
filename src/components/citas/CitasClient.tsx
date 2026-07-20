@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 
 import ClinicalEvaluationModal from "./ClinicalEvaluationModal";
+import AttendancePredictionButton from "./AttendancePredictionButton";
 import { markAppointmentAsNoShow } from "@/lib/appointments-actions";
 
 interface CitasClientProps {
@@ -269,81 +270,81 @@ export default function CitasClient({
                   )}
                 </div>
 
-                {/* Botones de acción */}
-                <div className="flex flex-shrink-0 flex-col gap-2">
-                  {appointment.status === "no_show" ? (
-                    <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-center">
-                      <p className="text-sm font-semibold text-red-700">
-                        Inasistencia registrada
-                      </p>
+                  {/* Botones de acción */}
+                  <div className="flex flex-shrink-0 flex-col gap-2">
+                    {appointment.status === "no_show" ? (
+                      <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-center">
+                        <p className="text-sm font-semibold text-red-700">
+                          Inasistencia registrada
+                        </p>
 
-                      <p className="mt-1 text-xs text-red-600">
-                        Esta cita no puede iniciar una
-                        consulta.
-                      </p>
-                    </div>
-                  ) : (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleOpenEvaluation(
-                            appointment,
-                            "initial",
-                          )
-                        }
-                        className="rounded-lg bg-[#5A8C7A] px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#4A7C6A]"
-                      >
-                        {appointment.has_initial_evaluation
-                          ? "Ver Evaluación Inicial"
-                          : "Evaluación Inicial"}
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleOpenEvaluation(
-                            appointment,
-                            "followup",
-                          )
-                        }
-                        className={`rounded-lg px-5 py-2 text-sm font-semibold text-white transition-colors ${
-                          appointment.status ===
-                          "completed"
-                            ? "bg-[#5A8C7A] hover:bg-[#4A7C6A]"
-                            : "bg-[#BD7D4A] hover:bg-[#F58634]"
-                        }`}
-                      >
-                        {appointment.status ===
-                        "completed"
-                          ? "Ver Evaluación"
-                          : "Iniciar Consulta"}
-                      </button>
-
-                      {(appointment.status ===
-                        "scheduled" ||
-                        appointment.status ===
-                          "confirmed") && (
+                        <p className="mt-1 text-xs text-red-600">
+                          Esta cita no puede iniciar una consulta.
+                        </p>
+                      </div>
+                    ) : (
+                      <>
                         <button
                           type="button"
                           onClick={() =>
-                            handleNoShow(appointment)
+                            handleOpenEvaluation(
+                              appointment,
+                              "initial",
+                            )
                           }
-                          disabled={
-                            updatingAppointmentId ===
-                            appointment.id
-                          }
-                          className="rounded-lg bg-red-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="rounded-lg bg-[#5A8C7A] px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#4A7C6A]"
                         >
-                          {updatingAppointmentId ===
-                          appointment.id
-                            ? "Actualizando..."
-                            : "No asistió"}
+                          {appointment.has_initial_evaluation
+                            ? "Ver Evaluación Inicial"
+                            : "Evaluación Inicial"}
                         </button>
-                      )}
-                    </>
-                  )}
-                </div>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleOpenEvaluation(
+                              appointment,
+                              "followup",
+                            )
+                          }
+                          className={`rounded-lg px-5 py-2 text-sm font-semibold text-white transition-colors ${
+                            appointment.status === "completed"
+                              ? "bg-[#5A8C7A] hover:bg-[#4A7C6A]"
+                              : "bg-[#BD7D4A] hover:bg-[#F58634]"
+                          }`}
+                        >
+                          {appointment.status === "completed"
+                            ? "Ver Evaluación"
+                            : "Iniciar Consulta"}
+                        </button>
+
+                        {(appointment.status === "scheduled" ||
+                          appointment.status === "confirmed") && (
+                          <>
+                            <AttendancePredictionButton
+                              appointmentId={appointment.id}
+                            />
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleNoShow(appointment)
+                              }
+                              disabled={
+                                updatingAppointmentId === appointment.id
+                              }
+                              className="rounded-lg bg-red-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              {updatingAppointmentId ===
+                              appointment.id
+                                ? "Actualizando..."
+                                : "No asistió"}
+                            </button>
+                          </>
+                        )}
+                      </>
+                    )}
+                  </div>
               </div>
             </div>
           </div>

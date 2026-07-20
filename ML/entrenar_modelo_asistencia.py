@@ -44,15 +44,11 @@ RANDOM_STATE = 42
 TEST_SIZE = 0.25
 
 FEATURE_COLUMNS = [
-    "age",
-    "gender_female",
     "day_of_week",
     "appointment_hour",
-    "is_saturday",
     "previous_completed",
     "previous_no_show",
     "previous_cancelled",
-    "previous_appointments",
     "previous_attendance_rate",
 ]
 

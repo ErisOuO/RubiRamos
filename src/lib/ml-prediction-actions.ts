@@ -29,7 +29,7 @@ function getMlApiUrl(): string {
     );
 
   /*
-   * En producción no se permite utilizar localhost,
+   * En producción no debe utilizarse localhost,
    * porque apuntaría al servidor interno de Vercel.
    */
   if (
@@ -44,7 +44,7 @@ function getMlApiUrl(): string {
 
   /*
    * En desarrollo se respeta ML_API_URL.
-   * Si no existe, utiliza FastAPI local.
+   * Si no existe, utiliza la API local.
    */
   return (
     configuredUrl ||
@@ -53,39 +53,99 @@ function getMlApiUrl(): string {
 }
 
 
-const ML_API_URL = getMlApiUrl();
+const ML_API_URL =
+  getMlApiUrl();
 
 
 export interface AttendancePrediction {
   no_show_probability: number;
+
   attendance_probability: number;
+
   no_show_percentage: number;
+
   attendance_percentage: number;
-  risk_level: "Bajo" | "Medio" | "Alto";
+
+  risk_level:
+    | "Bajo"
+    | "Medio"
+    | "Alto";
+
   predicted_no_show: number;
+
   prediction: string;
+
+  target_name: string;
+
+  model_name: string;
 }
 
 
 interface PredictionResult {
   success: boolean;
+
   message: string;
+
   prediction?: AttendancePrediction;
+}
+
+
+interface ApiErrorResponse {
+  detail?: string;
+
+  message?: string;
 }
 
 
 function numberValue(
   value: unknown,
 ): number {
-  const convertedValue = Number(
-    value,
-  );
+  const convertedValue =
+    Number(value);
 
   return Number.isFinite(
     convertedValue,
   )
     ? convertedValue
     : 0;
+}
+
+
+/**
+ * Redondea un porcentaje a dos decimales,
+ * igual que el dataset utilizado para entrenar.
+ */
+function roundPercentage(
+  value: number,
+): number {
+  return Math.round(
+    value * 100,
+  ) / 100;
+}
+
+
+/**
+ * Calcula el porcentaje histórico de un estado.
+ *
+ * Cuando el paciente no tiene citas anteriores,
+ * devuelve 0.
+ */
+function calculateHistoryPercentage(
+  statusCount: number,
+  totalPreviousAppointments: number,
+): number {
+  if (
+    totalPreviousAppointments <= 0
+  ) {
+    return 0;
+  }
+
+  return roundPercentage(
+    (
+      statusCount /
+      totalPreviousAppointments
+    ) * 100,
+  );
 }
 
 
@@ -100,44 +160,74 @@ function isAttendancePrediction(
   }
 
   const prediction =
-    value as Partial<AttendancePrediction>;
+    value as
+      Partial<AttendancePrediction>;
 
   return (
-    typeof prediction.no_show_probability ===
+    typeof prediction
+      .no_show_probability ===
       "number" &&
-    typeof prediction.attendance_probability ===
+
+    typeof prediction
+      .attendance_probability ===
       "number" &&
-    typeof prediction.no_show_percentage ===
+
+    typeof prediction
+      .no_show_percentage ===
       "number" &&
-    typeof prediction.attendance_percentage ===
+
+    typeof prediction
+      .attendance_percentage ===
       "number" &&
+
     (
-      prediction.risk_level === "Bajo" ||
-      prediction.risk_level === "Medio" ||
-      prediction.risk_level === "Alto"
+      prediction.risk_level ===
+        "Bajo" ||
+
+      prediction.risk_level ===
+        "Medio" ||
+
+      prediction.risk_level ===
+        "Alto"
     ) &&
-    typeof prediction.predicted_no_show ===
+
+    typeof prediction
+      .predicted_no_show ===
       "number" &&
-    typeof prediction.prediction ===
+
+    typeof prediction
+      .prediction ===
+      "string" &&
+
+    typeof prediction
+      .target_name ===
+      "string" &&
+
+    typeof prediction
+      .model_name ===
       "string"
   );
 }
 
 
 /**
- * Obtiene la información de una cita y consulta
- * la API del modelo de Machine Learning.
+ * Obtiene la información de una cita,
+ * transforma el historial del paciente
+ * en porcentajes y consulta la API ML.
  */
 export async function predictAppointmentAttendance(
   appointmentId: number,
 ): Promise<PredictionResult> {
   try {
     if (
-      !Number.isInteger(appointmentId) ||
+      !Number.isInteger(
+        appointmentId,
+      ) ||
       appointmentId <= 0
     ) {
       return {
         success: false,
+
         message:
           "El identificador de la cita no es válido.",
       };
@@ -149,42 +239,24 @@ export async function predictAppointmentAttendance(
         a.id,
         a.patient_id,
         a.status,
-
-        p.age,
-
-        CASE
-          WHEN p.gender = 'F' THEN 1
-          ELSE 0
-        END AS gender_female,
-
-        CASE
-          WHEN a.deposit_paid = true THEN 1
-          ELSE 0
-        END AS deposit_paid,
-
-        COALESCE(
-          a.deposit_amount,
-          0
-        )::float8 AS deposit_amount,
+        a.appointment_date,
+        a.start_time,
 
         EXTRACT(
-          ISODOW
-          FROM a.appointment_date
-        )::integer AS day_of_week,
+          YEAR FROM AGE(
+            a.appointment_date,
+            p.fecha_nacimiento
+          )
+        )::integer AS age,
 
         EXTRACT(
-          HOUR
-          FROM a.start_time
-        )::integer AS appointment_hour,
+          MONTH FROM a.appointment_date
+        )::integer AS appointment_month,
 
-        CASE
-          WHEN EXTRACT(
-            ISODOW
-            FROM a.appointment_date
-          )::integer = 6
-            THEN 1
-          ELSE 0
-        END AS is_saturday,
+        EXTRACT(
+          DAY FROM a.appointment_date
+        )::integer
+          AS appointment_day_of_month,
 
         COUNT(previous.id) FILTER (
           WHERE previous.status = 'completed'
@@ -200,23 +272,43 @@ export async function predictAppointmentAttendance(
 
       FROM tblappointments a
 
-      JOIN tblpatients p
+      INNER JOIN tblpatients p
         ON p.id = a.patient_id
 
       LEFT JOIN tblappointments previous
-        ON previous.patient_id = a.patient_id
+        ON previous.patient_id =
+          a.patient_id
+
         AND (
           previous.appointment_date <
             a.appointment_date
+
           OR (
             previous.appointment_date =
               a.appointment_date
+
             AND previous.start_time <
               a.start_time
+          )
+
+          OR (
+            previous.appointment_date =
+              a.appointment_date
+
+            AND previous.start_time =
+              a.start_time
+
+            AND previous.id < a.id
           )
         )
 
       WHERE a.id = ${appointmentId}
+
+        AND p.fecha_nacimiento
+          IS NOT NULL
+
+        AND a.appointment_date >=
+          p.fecha_nacimiento
 
       GROUP BY
         a.id,
@@ -224,10 +316,7 @@ export async function predictAppointmentAttendance(
         a.status,
         a.appointment_date,
         a.start_time,
-        a.deposit_paid,
-        a.deposit_amount,
-        p.age,
-        p.gender
+        p.fecha_nacimiento
 
       LIMIT 1
     `;
@@ -236,90 +325,88 @@ export async function predictAppointmentAttendance(
     if (!appointment) {
       return {
         success: false,
+
         message:
-          "No se encontró la cita.",
+          "No se encontró la cita o el paciente no tiene una fecha de nacimiento válida.",
       };
     }
 
 
-    const previousCompleted = numberValue(
-      appointment.previous_completed,
-    );
+    const previousCompleted =
+      numberValue(
+        appointment
+          .previous_completed,
+      );
 
-    const previousNoShow = numberValue(
-      appointment.previous_no_show,
-    );
+    const previousNoShow =
+      numberValue(
+        appointment
+          .previous_no_show,
+      );
 
-    const previousCancelled = numberValue(
-      appointment.previous_cancelled,
-    );
+    const previousCancelled =
+      numberValue(
+        appointment
+          .previous_cancelled,
+      );
 
 
-    const previousAppointments =
+    const totalPreviousAppointments =
       previousCompleted +
       previousNoShow +
       previousCancelled;
 
 
-    const attendanceHistory =
-      previousCompleted +
-      previousNoShow;
-
-
-    const previousAttendanceRate =
-      attendanceHistory > 0
-        ? previousCompleted /
-          attendanceHistory
-        : 0;
-
-
-    const requestBody = {
-      age: numberValue(
-        appointment.age,
-      ),
-
-      gender_female: numberValue(
-        appointment.gender_female,
-      ),
-
-      /*
-       * La API los recibe por compatibilidad,
-       * aunque el modelo no los utiliza.
-       */
-      deposit_paid: numberValue(
-        appointment.deposit_paid,
-      ),
-
-      deposit_amount: numberValue(
-        appointment.deposit_amount,
-      ),
-
-      day_of_week: numberValue(
-        appointment.day_of_week,
-      ),
-
-      appointment_hour: numberValue(
-        appointment.appointment_hour,
-      ),
-
-      is_saturday: numberValue(
-        appointment.is_saturday,
-      ),
-
-      previous_completed:
+    const previousCompletedPercentage =
+      calculateHistoryPercentage(
         previousCompleted,
+        totalPreviousAppointments,
+      );
 
-      previous_no_show:
+    const previousNoShowPercentage =
+      calculateHistoryPercentage(
         previousNoShow,
+        totalPreviousAppointments,
+      );
 
-      previous_cancelled:
+    const previousCancelledPercentage =
+      calculateHistoryPercentage(
         previousCancelled,
+        totalPreviousAppointments,
+      );
 
-      previous_appointments:
-        previousAppointments,
 
-      previous_attendance_rate:
-        previousAttendanceRate,
+    /*
+     * Estas son exactamente las seis
+     * variables utilizadas durante
+     * el entrenamiento del modelo.
+     */
+    const requestBody = {
+      age:
+        numberValue(
+          appointment.age,
+        ),
+
+      appointment_month:
+        numberValue(
+          appointment
+            .appointment_month,
+        ),
+
+      appointment_day_of_month:
+        numberValue(
+          appointment
+            .appointment_day_of_month,
+        ),
+
+      previous_completed_percentage:
+        previousCompletedPercentage,
+
+      previous_no_show_percentage:
+        previousNoShowPercentage,
+
+      previous_cancelled_percentage:
+        previousCancelledPercentage,
     };
 
 
@@ -333,18 +420,31 @@ export async function predictAppointmentAttendance(
       requestBody,
     );
 
+    console.log(
+      "Historial anterior de la cita:",
+      {
+        previousCompleted,
+        previousNoShow,
+        previousCancelled,
+        totalPreviousAppointments,
+      },
+    );
+
 
     const controller =
       new AbortController();
 
     /*
-     * Se permiten 20 segundos por posibles
-     * arranques en frío de la función de Vercel.
+     * Se permiten 20 segundos debido
+     * a posibles arranques en frío
+     * de la función de Vercel.
      */
-    const timeout = setTimeout(
-      () => controller.abort(),
-      20000,
-    );
+    const timeout =
+      setTimeout(
+        () =>
+          controller.abort(),
+        20_000,
+      );
 
 
     let response: Response;
@@ -363,11 +463,13 @@ export async function predictAppointmentAttendance(
               "application/json",
           },
 
-          body: JSON.stringify(
-            requestBody,
-          ),
+          body:
+            JSON.stringify(
+              requestBody,
+            ),
 
-          cache: "no-store",
+          cache:
+            "no-store",
 
           signal:
             controller.signal,
@@ -381,7 +483,7 @@ export async function predictAppointmentAttendance(
 
 
     if (!response.ok) {
-      const errorText =
+      const responseText =
         await response.text();
 
       console.error(
@@ -394,14 +496,32 @@ export async function predictAppointmentAttendance(
             response.status,
 
           response:
-            errorText,
+            responseText,
         },
       );
 
+      let apiMessage =
+        "La API de predicción no pudo procesar la cita.";
+
+      try {
+        const parsedError =
+          JSON.parse(
+            responseText,
+          ) as ApiErrorResponse;
+
+        apiMessage =
+          parsedError.detail ||
+          parsedError.message ||
+          apiMessage;
+      } catch {
+        // La API no devolvió JSON.
+      }
+
       return {
         success: false,
+
         message:
-          "La API de predicción no pudo procesar la cita.",
+          apiMessage,
       };
     }
 
@@ -422,6 +542,7 @@ export async function predictAppointmentAttendance(
 
       return {
         success: false,
+
         message:
           "La API de predicción devolvió una respuesta inválida.",
       };
@@ -430,8 +551,10 @@ export async function predictAppointmentAttendance(
 
     return {
       success: true,
+
       message:
         "La predicción se generó correctamente.",
+
       prediction:
         responseData,
     };
@@ -444,7 +567,8 @@ export async function predictAppointmentAttendance(
 
     const isAbortError =
       error instanceof Error &&
-      error.name === "AbortError";
+      error.name ===
+        "AbortError";
 
 
     const isConnectionError =
@@ -453,9 +577,11 @@ export async function predictAppointmentAttendance(
         error.message.includes(
           "fetch failed",
         ) ||
+
         error.message.includes(
           "ECONNREFUSED",
         ) ||
+
         error.message.includes(
           "ENOTFOUND",
         )
@@ -465,6 +591,7 @@ export async function predictAppointmentAttendance(
     if (isAbortError) {
       return {
         success: false,
+
         message:
           "La API de predicción tardó demasiado en responder.",
       };
@@ -474,6 +601,7 @@ export async function predictAppointmentAttendance(
     if (isConnectionError) {
       return {
         success: false,
+
         message:
           "No se pudo conectar con la API de Machine Learning.",
       };
@@ -482,6 +610,7 @@ export async function predictAppointmentAttendance(
 
     return {
       success: false,
+
       message:
         "No se pudo generar la predicción de asistencia.",
     };

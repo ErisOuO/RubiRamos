@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 
 import ClinicalEvaluationModal from "./ClinicalEvaluationModal";
-import AttendancePredictionButton from "./AttendancePredictionButton";
 import { markAppointmentAsNoShow } from "@/lib/appointments-actions";
 
 interface CitasClientProps {
@@ -321,10 +320,6 @@ export default function CitasClient({
                         {(appointment.status === "scheduled" ||
                           appointment.status === "confirmed") && (
                           <>
-                            <AttendancePredictionButton
-                              appointmentId={appointment.id}
-                            />
-
                             <button
                               type="button"
                               onClick={() =>

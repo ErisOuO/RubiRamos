@@ -56,13 +56,34 @@ interface CreateAppointmentResult {
 
   depositAmount?: number;
 
-  message?: string;
+  message: string;
 }
 
 
 // ============================================================
 // FUNCIONES AUXILIARES
 // ============================================================
+
+function revalidateAppointmentPages() {
+  const paths = [
+    '/admin',
+    '/admin/appointments',
+    '/admin/pagos',
+    '/admin/calendar',
+    '/admin/patient/calendar',
+    '/patient/calendar',
+    '/calendar',
+  ];
+
+  paths.forEach(
+    path => {
+      revalidatePath(
+        path,
+      );
+    },
+  );
+}
+
 
 function isFileValue(
   value: unknown,
@@ -99,12 +120,26 @@ function normalizeDateValue(
       value.getTime(),
     )
   ) {
-    return value
-      .toISOString()
-      .slice(
-        0,
-        10,
+    const year =
+      value.getFullYear();
+
+    const month =
+      String(
+        value.getMonth() + 1,
+      ).padStart(
+        2,
+        '0',
       );
+
+    const day =
+      String(
+        value.getDate(),
+      ).padStart(
+        2,
+        '0',
+      );
+
+    return `${year}-${month}-${day}`;
   }
 
   const stringValue =
@@ -426,9 +461,9 @@ export async function getPatientUpcomingAppointments(
     );
 
     const todayStr =
-      today
-        .toISOString()
-        .split('T')[0];
+      normalizeDateValue(
+        today,
+      );
 
 
     const appointments =
@@ -530,13 +565,27 @@ export async function getAvailableSlotsForPatient(
   patientId: number,
 ) {
   try {
+    /*
+     * Se valida para evitar recibir identificadores
+     * incorrectos desde el navegador.
+     */
+    if (
+      !Number.isInteger(
+        patientId,
+      ) ||
+      patientId <= 0
+    ) {
+      return [];
+    }
+
+
     const settings =
       await getCalendarSettings();
 
     const dateStr =
-      date
-        .toISOString()
-        .split('T')[0];
+      normalizeDateValue(
+        date,
+      );
 
 
     const exception =
@@ -598,7 +647,9 @@ export async function getAvailableSlotsForPatient(
         hours,
         minutes,
       ] =
-        String(time)
+        String(
+          time,
+        )
           .split(':')
           .map(Number);
 
@@ -701,7 +752,7 @@ export async function getAvailableSlotsForPatient(
       new Set(
         booked.map(
           bookedAppointment =>
-            String(
+            normalizeTimeValue(
               bookedAppointment.start_time,
             ),
         ),
@@ -841,7 +892,12 @@ export async function createPatientAppointment(
               )
             : input.notes
         ) ?? '',
-      ).trim();
+      )
+        .trim()
+        .slice(
+          0,
+          500,
+        );
 
 
     const receiptValue =
@@ -858,9 +914,13 @@ export async function createPatientAppointment(
       ) ||
       patientId <= 0
     ) {
-      throw new Error(
-        'El paciente no es válido.',
-      );
+      return {
+        success:
+          false,
+
+        message:
+          'El paciente no es válido.',
+      };
     }
 
 
@@ -869,18 +929,26 @@ export async function createPatientAppointment(
         appointmentDate,
       )
     ) {
-      throw new Error(
-        'La fecha de la cita no es válida.',
-      );
+      return {
+        success:
+          false,
+
+        message:
+          'La fecha de la cita no es válida.',
+      };
     }
 
 
     if (
       !startTime
     ) {
-      throw new Error(
-        'El horario de la cita no es válido.',
-      );
+      return {
+        success:
+          false,
+
+        message:
+          'El horario de la cita no es válido.',
+      };
     }
 
 
@@ -890,9 +958,13 @@ export async function createPatientAppointment(
       ) ||
       receiptValue.size <= 0
     ) {
-      throw new Error(
-        'Debes adjuntar el comprobante del anticipo.',
-      );
+      return {
+        success:
+          false,
+
+        message:
+          'Debes adjuntar el comprobante del anticipo.',
+      };
     }
 
 
@@ -901,9 +973,13 @@ export async function createPatientAppointment(
         receiptValue.type,
       )
     ) {
-      throw new Error(
-        'El comprobante debe ser una imagen JPG, PNG o WEBP.',
-      );
+      return {
+        success:
+          false,
+
+        message:
+          'El comprobante debe ser una imagen JPG, PNG o WEBP.',
+      };
     }
 
 
@@ -911,15 +987,19 @@ export async function createPatientAppointment(
       receiptValue.size >
       MAX_RECEIPT_SIZE
     ) {
-      throw new Error(
-        'El comprobante no puede superar los 5 MB.',
-      );
+      return {
+        success:
+          false,
+
+        message:
+          'El comprobante no puede superar los 5 MB.',
+      };
     }
 
 
     /*
-     * El monto se obtiene desde la configuración
-     * del calendario, no desde el navegador.
+     * El monto se obtiene directamente desde
+     * PostgreSQL y no desde el navegador.
      */
     const [
       calendarSettings,
@@ -957,14 +1037,18 @@ export async function createPatientAppointment(
       ) ||
       depositAmount <= 0
     ) {
-      throw new Error(
-        'El monto del anticipo no está configurado correctamente.',
-      );
+      return {
+        success:
+          false,
+
+        message:
+          'El monto del anticipo no está configurado correctamente.',
+      };
     }
 
 
     /*
-     * Verificar que el horario siga libre.
+     * Verificar que el horario siga disponible.
      */
     const existingAppointment =
       await sql`
@@ -992,9 +1076,13 @@ export async function createPatientAppointment(
       existingAppointment.length >
       0
     ) {
-      throw new Error(
-        'Este horario ya no está disponible.',
-      );
+      return {
+        success:
+          false,
+
+        message:
+          'Este horario ya no está disponible. Actualiza el calendario y selecciona otro.',
+      };
     }
 
 
@@ -1028,8 +1116,8 @@ export async function createPatientAppointment(
 
 
     /*
-     * La cita queda reservada pero todavía
-     * no confirmada.
+     * La cita queda reservada, pero pendiente
+     * de la aprobación de la nutrióloga.
      */
     const [
       createdAppointment,
@@ -1073,21 +1161,7 @@ export async function createPatientAppointment(
       `;
 
 
-    revalidatePath(
-      '/admin/patient/calendar',
-    );
-
-    revalidatePath(
-      '/patient/calendar',
-    );
-
-    revalidatePath(
-      '/admin/appointments',
-    );
-
-    revalidatePath(
-      '/admin',
-    );
+    revalidateAppointmentPages();
 
 
     return {
@@ -1112,8 +1186,8 @@ export async function createPatientAppointment(
     };
   } catch (error) {
     /*
-     * Eliminar el archivo de Cloudinary si
-     * la inserción en PostgreSQL falla.
+     * Si la imagen se subió, pero PostgreSQL falló,
+     * se elimina para evitar archivos huérfanos.
      */
     if (
       uploadedPublicId
@@ -1141,27 +1215,157 @@ export async function createPatientAppointment(
     );
 
 
-    const databaseError =
+    const serverError =
       error as {
         code?: string;
+
+        message?: string;
+
+        http_code?: number;
+
+        name?: string;
       };
 
 
+    /*
+     * Restricción única de fecha y horario,
+     * o referencia de pago repetida.
+     */
     if (
-      databaseError.code ===
+      serverError.code ===
         '23505'
     ) {
-      throw new Error(
-        'Este horario acaba de ser reservado por otro paciente.',
-      );
+      return {
+        success:
+          false,
+
+        message:
+          'Este horario acaba de ser reservado por otro paciente. Actualiza el calendario y selecciona otro.',
+      };
     }
 
 
-    throw new Error(
+    /*
+     * La base de datos de producción todavía
+     * no contiene alguna de las columnas nuevas.
+     */
+    if (
+      serverError.code ===
+        '42703' ||
+      serverError.code ===
+        '42P01'
+    ) {
+      return {
+        success:
+          false,
+
+        message:
+          'La configuración del módulo de pagos no está completa en la base de datos de producción.',
+      };
+    }
+
+
+    const errorMessage =
       error instanceof Error
         ? error.message
-        : 'No se pudo enviar la solicitud de cita.',
-    );
+        : '';
+
+
+    const normalizedErrorMessage =
+      errorMessage.toLowerCase();
+
+
+    /*
+     * Errores de Cloudinary o credenciales.
+     */
+    const isCloudinaryError =
+      serverError.http_code !==
+        undefined ||
+
+      normalizedErrorMessage.includes(
+        'cloudinary',
+      ) ||
+
+      normalizedErrorMessage.includes(
+        'api_key',
+      ) ||
+
+      normalizedErrorMessage.includes(
+        'api secret',
+      ) ||
+
+      normalizedErrorMessage.includes(
+        'upload',
+      ) ||
+
+      normalizedErrorMessage.includes(
+        'must supply cloud_name',
+      );
+
+
+    if (
+      isCloudinaryError
+    ) {
+      return {
+        success:
+          false,
+
+        message:
+          'No se pudo subir el comprobante. Revisa la configuración de Cloudinary en Vercel.',
+      };
+    }
+
+
+    /*
+     * Error de conexión con PostgreSQL.
+     */
+    const isDatabaseConnectionError =
+      normalizedErrorMessage.includes(
+        'connect',
+      ) ||
+
+      normalizedErrorMessage.includes(
+        'connection',
+      ) ||
+
+      normalizedErrorMessage.includes(
+        'timeout',
+      ) ||
+
+      normalizedErrorMessage.includes(
+        'econnreset',
+      ) ||
+
+      normalizedErrorMessage.includes(
+        'enotfound',
+      );
+
+
+    if (
+      isDatabaseConnectionError
+    ) {
+      return {
+        success:
+          false,
+
+        message:
+          'No se pudo conectar con la base de datos. Intenta nuevamente en unos momentos.',
+      };
+    }
+
+
+    /*
+     * No se vuelve a lanzar el error. De esta forma
+     * Next.js no muestra el cuadro genérico de producción.
+     */
+    return {
+      success:
+        false,
+
+      message:
+        errorMessage ||
+        'No se pudo enviar la solicitud de cita.',
+    };
   }
 }
 
@@ -1229,21 +1433,7 @@ export async function cancelAppointment(
     }
 
 
-    revalidatePath(
-      '/admin/patient/calendar',
-    );
-
-    revalidatePath(
-      '/patient/calendar',
-    );
-
-    revalidatePath(
-      '/admin/appointments',
-    );
-
-    revalidatePath(
-      '/admin',
-    );
+    revalidateAppointmentPages();
 
 
     return {
@@ -1362,8 +1552,8 @@ export async function rescheduleAppointment(
 
     /*
      * Se conserva el estado del pago.
-     * Una cita pendiente no se aprobará
-     * automáticamente al reagendarla.
+     * Reagendar no aprueba automáticamente
+     * una solicitud pendiente.
      */
     const result =
       await sql`
@@ -1403,21 +1593,7 @@ export async function rescheduleAppointment(
     }
 
 
-    revalidatePath(
-      '/admin/patient/calendar',
-    );
-
-    revalidatePath(
-      '/patient/calendar',
-    );
-
-    revalidatePath(
-      '/admin/appointments',
-    );
-
-    revalidatePath(
-      '/admin',
-    );
+    revalidateAppointmentPages();
 
 
     return {

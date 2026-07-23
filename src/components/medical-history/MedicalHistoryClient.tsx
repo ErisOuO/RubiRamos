@@ -384,7 +384,7 @@ export default function MedicalHistoryClient({ initialPatients = [], preselected
                 }}
                 className={`px-6 py-2 font-semibold transition-colors whitespace-nowrap ${showPredictiveModule ? 'text-[#5A8C7A] border-b-2 border-[#5A8C7A]' : 'text-[#6E7C72] hover:text-[#2C3E34]'}`}
               >
-                Módulo Predictivo
+                Progreso del paciente
               </button>
             </div>
 

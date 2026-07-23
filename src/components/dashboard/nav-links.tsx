@@ -16,7 +16,8 @@ import {
   ChevronUpIcon,
   UserCircleIcon,
   SpeakerWaveIcon,
-  BanknotesIcon
+  BanknotesIcon,
+  BookOpenIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -31,6 +32,7 @@ const adminMainLinks = [
   { name: 'Pagos', href: '/admin/pagos', icon: BanknotesIcon },
   { name: 'Calendario', href: '/admin/calendar', icon: CalendarIcon },
   { name: 'Historial Médico', href: '/admin/historial', icon: IdentificationIcon },
+  { name: 'Menús Alimenticios', href: '/admin/menus', icon: BookOpenIcon },
   { name: 'Productos', href: '/admin/productos', icon: ShoppingBagIcon },
 ];
 

@@ -2,300 +2,1482 @@
 
 import postgres from 'postgres';
 import { revalidatePath } from 'next/cache';
+import cloudinary from './cloudinary';
+import type { UploadApiResponse } from 'cloudinary';
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
-// Obtener configuración del calendario
+const sql = postgres(
+  process.env.POSTGRES_URL!,
+  {
+    ssl: 'require',
+  },
+);
+
+
+const MAX_RECEIPT_SIZE =
+  5 * 1024 * 1024;
+
+
+const ALLOWED_RECEIPT_TYPES =
+  new Set([
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+  ]);
+
+
+interface LegacyCreateAppointmentData {
+  patientId: number;
+
+  appointmentDate:
+    | Date
+    | string;
+
+  startTime: string;
+
+  endTime?: string;
+
+  depositPaid?: boolean;
+
+  depositAmount?: number;
+
+  notes?: string;
+
+  receipt?: File;
+}
+
+
+interface CreateAppointmentResult {
+  success: boolean;
+
+  appointmentId?: number;
+
+  paymentReference?: string;
+
+  depositAmount?: number;
+
+  message?: string;
+}
+
+
+// ============================================================
+// FUNCIONES AUXILIARES
+// ============================================================
+
+function isFileValue(
+  value: unknown,
+): value is File {
+  if (
+    typeof value !== 'object' ||
+    value === null
+  ) {
+    return false;
+  }
+
+  const possibleFile =
+    value as Partial<File>;
+
+  return (
+    typeof possibleFile.arrayBuffer ===
+      'function' &&
+    typeof possibleFile.size ===
+      'number' &&
+    typeof possibleFile.type ===
+      'string' &&
+    typeof possibleFile.name ===
+      'string'
+  );
+}
+
+
+function normalizeDateValue(
+  value: unknown,
+): string {
+  if (
+    value instanceof Date &&
+    !Number.isNaN(
+      value.getTime(),
+    )
+  ) {
+    return value
+      .toISOString()
+      .slice(
+        0,
+        10,
+      );
+  }
+
+  const stringValue =
+    String(
+      value ?? '',
+    ).trim();
+
+  const dateMatch =
+    stringValue.match(
+      /^\d{4}-\d{2}-\d{2}/,
+    );
+
+  return dateMatch?.[0] ?? '';
+}
+
+
+function normalizeTimeValue(
+  value: unknown,
+): string {
+  const stringValue =
+    String(
+      value ?? '',
+    ).trim();
+
+  if (
+    /^\d{2}:\d{2}$/.test(
+      stringValue,
+    )
+  ) {
+    return `${stringValue}:00`;
+  }
+
+  if (
+    /^\d{2}:\d{2}:\d{2}$/.test(
+      stringValue,
+    )
+  ) {
+    return stringValue;
+  }
+
+  return '';
+}
+
+
+function calculateEndTime(
+  startTime: string,
+  durationMinutes: number,
+): string {
+  const [
+    hour,
+    minute,
+  ] =
+    startTime
+      .split(':')
+      .map(Number);
+
+  const totalMinutes =
+    hour * 60 +
+    minute +
+    durationMinutes;
+
+  const endHour =
+    Math.floor(
+      totalMinutes / 60,
+    ) % 24;
+
+  const endMinute =
+    totalMinutes % 60;
+
+  return (
+    `${String(endHour).padStart(2, '0')}:` +
+    `${String(endMinute).padStart(2, '0')}:00`
+  );
+}
+
+
+function createPaymentReference(
+  patientId: number,
+  appointmentDate: string,
+  startTime: string,
+): string {
+  const compactDate =
+    appointmentDate.replace(
+      /-/g,
+      '',
+    );
+
+  const compactTime =
+    startTime
+      .replace(
+        /:/g,
+        '',
+      )
+      .slice(
+        0,
+        4,
+      );
+
+  return (
+    `RUBI-${patientId}-${compactDate}-${compactTime}`
+  );
+}
+
+
+async function uploadPaymentReceipt(
+  receiptFile: File,
+  paymentReference: string,
+): Promise<UploadApiResponse> {
+  const fileBuffer =
+    Buffer.from(
+      await receiptFile.arrayBuffer(),
+    );
+
+  return new Promise(
+    (
+      resolve,
+      reject,
+    ) => {
+      const uploadStream =
+        cloudinary.uploader.upload_stream(
+          {
+            folder:
+              'rubi-ramos/comprobantes-anticipo',
+
+            resource_type:
+              'image',
+
+            public_id:
+              paymentReference.toLowerCase(),
+
+            overwrite:
+              true,
+
+            unique_filename:
+              false,
+          },
+          (
+            error,
+            result,
+          ) => {
+            if (error) {
+              reject(
+                error,
+              );
+
+              return;
+            }
+
+            if (!result) {
+              reject(
+                new Error(
+                  'Cloudinary no devolvió la información del comprobante.',
+                ),
+              );
+
+              return;
+            }
+
+            resolve(
+              result,
+            );
+          },
+        );
+
+      uploadStream.end(
+        fileBuffer,
+      );
+    },
+  );
+}
+
+
+// ============================================================
+// CONFIGURACIÓN DEL CALENDARIO
+// ============================================================
+
 export async function getCalendarSettings() {
   try {
-    const [settings] = await sql`
-      SELECT * FROM tblcalendar_settings LIMIT 1
-    `;
+    const [settings] =
+      await sql`
+        SELECT
+          *
+
+        FROM tblcalendar_settings
+
+        LIMIT 1
+      `;
+
     return settings;
   } catch (error) {
-    console.error('Error al obtener configuración:', error);
+    console.error(
+      'Error al obtener configuración:',
+      error,
+    );
+
     return {
-      start_time: '08:00:00',
-      end_time: '18:00:00',
-      lunch_start: '12:00:00',
-      lunch_end: '13:00:00',
-      slot_duration: 30,
-      deposit_amount: 100
+      start_time:
+        '08:00:00',
+
+      end_time:
+        '18:00:00',
+
+      lunch_start:
+        '12:00:00',
+
+      lunch_end:
+        '13:00:00',
+
+      slot_duration:
+        30,
+
+      deposit_amount:
+        100,
     };
   }
 }
 
-// Obtener excepciones para un rango de fechas
-export async function getExceptions(startDate: Date, endDate: Date) {
+
+// ============================================================
+// EXCEPCIONES DEL CALENDARIO
+// ============================================================
+
+export async function getExceptions(
+  startDate: Date,
+  endDate: Date,
+) {
   try {
-    const exceptions = await sql`
-      SELECT * FROM tblcalendar_exceptions
-      WHERE exception_date BETWEEN ${startDate} AND ${endDate}
-    `;
+    const exceptions =
+      await sql`
+        SELECT
+          *
+
+        FROM tblcalendar_exceptions
+
+        WHERE exception_date
+          BETWEEN ${startDate}
+          AND ${endDate}
+      `;
+
     return exceptions;
   } catch (error) {
-    console.error('Error al obtener excepciones:', error);
+    console.error(
+      'Error al obtener excepciones:',
+      error,
+    );
+
     return [];
   }
 }
 
-// Obtener citas del paciente por rango de fechas
-export async function getPatientAppointmentsByDateRange(patientId: number, startDate: Date, endDate: Date) {
+
+// ============================================================
+// CITAS DEL PACIENTE POR RANGO
+// ============================================================
+
+export async function getPatientAppointmentsByDateRange(
+  patientId: number,
+  startDate: Date,
+  endDate: Date,
+) {
   try {
-    const appointments = await sql`
-      SELECT appointment_date, COUNT(*) as total, array_agg(start_time) as times
-      FROM tblappointments
-      WHERE patient_id = ${patientId}
-        AND appointment_date BETWEEN ${startDate} AND ${endDate}
-        AND status NOT IN ('cancelled', 'no_show')
-      GROUP BY appointment_date
-    `;
+    const appointments =
+      await sql`
+        SELECT
+          appointment_date,
+
+          COUNT(*) AS total,
+
+          ARRAY_AGG(
+            start_time
+          ) AS times
+
+        FROM tblappointments
+
+        WHERE patient_id =
+          ${patientId}
+
+          AND appointment_date
+            BETWEEN ${startDate}
+            AND ${endDate}
+
+          AND status NOT IN (
+            'cancelled',
+            'no_show'
+          )
+
+        GROUP BY
+          appointment_date
+      `;
+
     return appointments;
   } catch (error) {
-    console.error('Error al obtener citas del paciente:', error);
+    console.error(
+      'Error al obtener citas del paciente:',
+      error,
+    );
+
     return [];
   }
 }
 
-// Obtener todas las citas del paciente (próximas)
-export async function getPatientUpcomingAppointments(patientId: number) {
+
+// ============================================================
+// CITAS PRÓXIMAS DEL PACIENTE
+// ============================================================
+
+export async function getPatientUpcomingAppointments(
+  patientId: number,
+) {
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayStr = today.toISOString().split('T')[0];
-    
-    const appointments = await sql`
-      SELECT 
-        a.*,
-        a.id as appointment_id
-      FROM tblappointments a
-      WHERE a.patient_id = ${patientId}
-        AND a.appointment_date >= ${todayStr}
-        AND a.status NOT IN ('cancelled', 'no_show')
-      ORDER BY a.appointment_date ASC, a.start_time ASC
-    `;
-    
-    return appointments.map(app => ({
-      id: app.appointment_id,
-      appointment_date: app.appointment_date,
-      start_time: app.start_time,
-      end_time: app.end_time,
-      status: app.status,
-      deposit_paid: app.deposit_paid,
-      deposit_amount: app.deposit_amount,
-      notes: app.notes
-    }));
+    const today =
+      new Date();
+
+    today.setHours(
+      0,
+      0,
+      0,
+      0,
+    );
+
+    const todayStr =
+      today
+        .toISOString()
+        .split('T')[0];
+
+
+    const appointments =
+      await sql`
+        SELECT
+          a.*,
+
+          a.id AS appointment_id
+
+        FROM tblappointments a
+
+        WHERE a.patient_id =
+          ${patientId}
+
+          AND a.appointment_date >=
+            ${todayStr}
+
+          AND a.status NOT IN (
+            'cancelled',
+            'no_show'
+          )
+
+        ORDER BY
+          a.appointment_date ASC,
+
+          a.start_time ASC
+      `;
+
+
+    return appointments.map(
+      appointment => ({
+        id:
+          Number(
+            appointment.appointment_id,
+          ),
+
+        appointment_date:
+          appointment.appointment_date,
+
+        start_time:
+          appointment.start_time,
+
+        end_time:
+          appointment.end_time,
+
+        status:
+          appointment.status,
+
+        deposit_paid:
+          Boolean(
+            appointment.deposit_paid,
+          ),
+
+        deposit_amount:
+          Number(
+            appointment.deposit_amount ??
+            0,
+          ),
+
+        notes:
+          appointment.notes,
+
+        payment_status:
+          appointment.payment_status,
+
+        payment_reference:
+          appointment.payment_reference,
+
+        payment_receipt_url:
+          appointment.payment_receipt_url,
+
+        payment_submitted_at:
+          appointment.payment_submitted_at,
+
+        payment_reviewed_at:
+          appointment.payment_reviewed_at,
+
+        payment_review_notes:
+          appointment.payment_review_notes,
+      }),
+    );
   } catch (error) {
-    console.error('Error al obtener citas del paciente:', error);
+    console.error(
+      'Error al obtener citas del paciente:',
+      error,
+    );
+
     return [];
   }
 }
 
-// Obtener horarios disponibles para un día específico
-export async function getAvailableSlotsForPatient(date: Date, patientId: number) {
-  try {
-    const settings = await getCalendarSettings();
-    const dateStr = date.toISOString().split('T')[0];
-    
-    // Verificar excepción del día
-    const exception = await sql`
-      SELECT * FROM tblcalendar_exceptions WHERE exception_date = ${dateStr}
-    `;
-    const isException = exception.length > 0;
-    const ex = exception[0];
 
-    if (isException && ex.is_working_day === false) {
+// ============================================================
+// HORARIOS DISPONIBLES
+// ============================================================
+
+export async function getAvailableSlotsForPatient(
+  date: Date,
+  patientId: number,
+) {
+  try {
+    const settings =
+      await getCalendarSettings();
+
+    const dateStr =
+      date
+        .toISOString()
+        .split('T')[0];
+
+
+    const exception =
+      await sql`
+        SELECT
+          *
+
+        FROM tblcalendar_exceptions
+
+        WHERE exception_date =
+          ${dateStr}
+      `;
+
+
+    const isException =
+      exception.length > 0;
+
+    const selectedException =
+      exception[0];
+
+
+    if (
+      isException &&
+      selectedException
+        .is_working_day ===
+        false
+    ) {
       return [];
     }
 
-    let start = ex?.start_time || settings.start_time;
-    let end = ex?.end_time || settings.end_time;
-    let lunchStart = ex?.lunch_start || settings.lunch_start;
-    let lunchEnd = ex?.lunch_end || settings.lunch_end;
-    const slotDuration = settings.slot_duration;
 
-    const toMinutes = (time: string) => {
-      const [h, m] = time.split(':').map(Number);
-      return h * 60 + m;
+    const start =
+      selectedException?.start_time ||
+      settings.start_time;
+
+    const end =
+      selectedException?.end_time ||
+      settings.end_time;
+
+    const lunchStart =
+      selectedException?.lunch_start ||
+      settings.lunch_start;
+
+    const lunchEnd =
+      selectedException?.lunch_end ||
+      settings.lunch_end;
+
+    const slotDuration =
+      Number(
+        settings.slot_duration ||
+        30,
+      );
+
+
+    const toMinutes = (
+      time: string,
+    ) => {
+      const [
+        hours,
+        minutes,
+      ] =
+        String(time)
+          .split(':')
+          .map(Number);
+
+      return (
+        hours * 60 +
+        minutes
+      );
     };
-    
-    let startMin = toMinutes(start);
-    let endMin = toMinutes(end);
-    let lunchStartMin = toMinutes(lunchStart);
-    let lunchEndMin = toMinutes(lunchEnd);
 
-    // Generar slots
-    const slots = [];
-    for (let t = startMin; t < endMin; t += slotDuration) {
-      if (t >= lunchStartMin && t < lunchEndMin) continue;
-      const hour = Math.floor(t / 60);
-      const minute = t % 60;
-      const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00`;
-      slots.push(timeStr);
+
+    const startMinutes =
+      toMinutes(
+        start,
+      );
+
+    const endMinutes =
+      toMinutes(
+        end,
+      );
+
+    const lunchStartMinutes =
+      toMinutes(
+        lunchStart,
+      );
+
+    const lunchEndMinutes =
+      toMinutes(
+        lunchEnd,
+      );
+
+
+    const slots: string[] =
+      [];
+
+
+    for (
+      let currentMinutes =
+        startMinutes;
+
+      currentMinutes <
+        endMinutes;
+
+      currentMinutes +=
+        slotDuration
+    ) {
+      if (
+        currentMinutes >=
+          lunchStartMinutes &&
+        currentMinutes <
+          lunchEndMinutes
+      ) {
+        continue;
+      }
+
+      const hour =
+        Math.floor(
+          currentMinutes / 60,
+        );
+
+      const minute =
+        currentMinutes % 60;
+
+      const timeString =
+        `${String(hour).padStart(
+          2,
+          '0',
+        )}:${String(minute).padStart(
+          2,
+          '0',
+        )}:00`;
+
+      slots.push(
+        timeString,
+      );
     }
 
-    // Obtener slots ocupados por otras citas
-    const booked = await sql`
-      SELECT start_time FROM tblappointments
-      WHERE appointment_date = ${dateStr} 
-        AND status NOT IN ('cancelled', 'no_show')
-    `;
-    const bookedSet = new Set(booked.map(b => b.start_time));
 
-    // Obtener horas deshabilitadas
-    let disabledHoursSet = new Set<string>();
-    if (ex?.disabled_hours) {
-      let disabledHours = ex.disabled_hours;
-      if (typeof disabledHours === 'string') {
-        disabledHours = JSON.parse(disabledHours);
+    /*
+     * Las citas pendientes de revisión también
+     * bloquean el horario para evitar duplicados.
+     */
+    const booked =
+      await sql`
+        SELECT
+          start_time
+
+        FROM tblappointments
+
+        WHERE appointment_date =
+          ${dateStr}
+
+          AND status NOT IN (
+            'cancelled',
+            'no_show'
+          )
+      `;
+
+
+    const bookedSet =
+      new Set(
+        booked.map(
+          bookedAppointment =>
+            String(
+              bookedAppointment.start_time,
+            ),
+        ),
+      );
+
+
+    const disabledHoursSet =
+      new Set<string>();
+
+
+    if (
+      selectedException?.disabled_hours
+    ) {
+      let disabledHours =
+        selectedException
+          .disabled_hours;
+
+
+      if (
+        typeof disabledHours ===
+          'string'
+      ) {
+        try {
+          disabledHours =
+            JSON.parse(
+              disabledHours,
+            );
+        } catch {
+          disabledHours =
+            [];
+        }
       }
-      if (Array.isArray(disabledHours)) {
-        disabledHours.forEach((hour: string) => disabledHoursSet.add(hour + ':00'));
+
+
+      if (
+        Array.isArray(
+          disabledHours,
+        )
+      ) {
+        disabledHours.forEach(
+          (
+            disabledHour: string,
+          ) => {
+            const normalizedHour =
+              normalizeTimeValue(
+                disabledHour,
+              );
+
+            if (
+              normalizedHour
+            ) {
+              disabledHoursSet.add(
+                normalizedHour,
+              );
+            }
+          },
+        );
       }
     }
 
-    const available = slots.filter(slot => !bookedSet.has(slot) && !disabledHoursSet.has(slot));
-    return available;
+
+    return slots.filter(
+      slot =>
+        !bookedSet.has(
+          slot,
+        ) &&
+        !disabledHoursSet.has(
+          slot,
+        ),
+    );
   } catch (error) {
-    console.error('Error al obtener horarios disponibles:', error);
+    console.error(
+      'Error al obtener horarios disponibles:',
+      error,
+    );
+
     return [];
   }
 }
 
-// Crear cita para paciente
-export async function createPatientAppointment(data: {
-  patientId: number;
-  appointmentDate: Date;
-  startTime: string;
-  endTime: string;
-  depositPaid: boolean;
-  depositAmount: number;
-  notes?: string;
-}) {
+
+// ============================================================
+// CREAR CITA CON COMPROBANTE
+// ============================================================
+
+export async function createPatientAppointment(
+  input:
+    | FormData
+    | LegacyCreateAppointmentData,
+): Promise<CreateAppointmentResult> {
+  let uploadedPublicId:
+    | string
+    | null = null;
+
+
   try {
-    // Verificar que el horario no esté ocupado
-    const dateStr = data.appointmentDate.toISOString().split('T')[0];
-    const existing = await sql`
-      SELECT id FROM tblappointments
-      WHERE appointment_date = ${dateStr}
-        AND start_time = ${data.startTime}
-        AND status NOT IN ('cancelled', 'no_show')
-    `;
-    
-    if (existing.length > 0) {
-      throw new Error('Este horario ya no está disponible');
+    const isFormDataInput =
+      input instanceof FormData;
+
+
+    const patientId =
+      Number(
+        isFormDataInput
+          ? input.get(
+              'patientId',
+            )
+          : input.patientId,
+      );
+
+
+    const appointmentDate =
+      normalizeDateValue(
+        isFormDataInput
+          ? input.get(
+              'appointmentDate',
+            )
+          : input.appointmentDate,
+      );
+
+
+    const startTime =
+      normalizeTimeValue(
+        isFormDataInput
+          ? input.get(
+              'startTime',
+            )
+          : input.startTime,
+      );
+
+
+    const notes =
+      String(
+        (
+          isFormDataInput
+            ? input.get(
+                'notes',
+              )
+            : input.notes
+        ) ?? '',
+      ).trim();
+
+
+    const receiptValue =
+      isFormDataInput
+        ? input.get(
+            'receipt',
+          )
+        : input.receipt;
+
+
+    if (
+      !Number.isInteger(
+        patientId,
+      ) ||
+      patientId <= 0
+    ) {
+      throw new Error(
+        'El paciente no es válido.',
+      );
     }
 
-    // Calcular end_time (30 minutos después)
-    const [hour, minute] = data.startTime.split(':').map(Number);
-    const endDate = new Date();
-    endDate.setHours(hour, minute + 30, 0);
-    const endTime = `${endDate.getHours().toString().padStart(2, '0')}:${endDate.getMinutes().toString().padStart(2, '0')}:00`;
 
-    await sql`
-      INSERT INTO tblappointments (
-        patient_id, appointment_date, start_time, end_time,
-        deposit_paid, deposit_amount, notes, status
-      ) VALUES (
-        ${data.patientId}, ${dateStr}, ${data.startTime},
-        ${endTime}, ${data.depositPaid}, ${data.depositAmount},
-        ${data.notes || null}, 'scheduled'
+    if (
+      !/^\d{4}-\d{2}-\d{2}$/.test(
+        appointmentDate,
       )
-    `;
-    
-    revalidatePath('/patient/calendar');
-    return { success: true };
-  } catch (error) {
-    console.error('Error al crear cita:', error);
-    throw new Error(error instanceof Error ? error.message : 'No se pudo crear la cita');
-  }
-}
-
-// Cancelar cita
-export async function cancelAppointment(appointmentId: number, patientId: number) {
-  try {
-    const result = await sql`
-      UPDATE tblappointments
-      SET status = 'cancelled'
-      WHERE id = ${appointmentId} AND patient_id = ${patientId}
-      RETURNING id
-    `;
-    
-    if (result.length === 0) {
-      throw new Error('Cita no encontrada o no pertenece al paciente');
+    ) {
+      throw new Error(
+        'La fecha de la cita no es válida.',
+      );
     }
-    
-    revalidatePath('/patient/calendar');
-    return { success: true };
+
+
+    if (
+      !startTime
+    ) {
+      throw new Error(
+        'El horario de la cita no es válido.',
+      );
+    }
+
+
+    if (
+      !isFileValue(
+        receiptValue,
+      ) ||
+      receiptValue.size <= 0
+    ) {
+      throw new Error(
+        'Debes adjuntar el comprobante del anticipo.',
+      );
+    }
+
+
+    if (
+      !ALLOWED_RECEIPT_TYPES.has(
+        receiptValue.type,
+      )
+    ) {
+      throw new Error(
+        'El comprobante debe ser una imagen JPG, PNG o WEBP.',
+      );
+    }
+
+
+    if (
+      receiptValue.size >
+      MAX_RECEIPT_SIZE
+    ) {
+      throw new Error(
+        'El comprobante no puede superar los 5 MB.',
+      );
+    }
+
+
+    /*
+     * El monto se obtiene desde la configuración
+     * del calendario, no desde el navegador.
+     */
+    const [
+      calendarSettings,
+    ] =
+      await sql`
+        SELECT
+          slot_duration,
+          deposit_amount
+
+        FROM tblcalendar_settings
+
+        LIMIT 1
+      `;
+
+
+    const slotDuration =
+      Number(
+        calendarSettings
+          ?.slot_duration ??
+        30,
+      );
+
+
+    const depositAmount =
+      Number(
+        calendarSettings
+          ?.deposit_amount ??
+        100,
+      );
+
+
+    if (
+      !Number.isFinite(
+        depositAmount,
+      ) ||
+      depositAmount <= 0
+    ) {
+      throw new Error(
+        'El monto del anticipo no está configurado correctamente.',
+      );
+    }
+
+
+    /*
+     * Verificar que el horario siga libre.
+     */
+    const existingAppointment =
+      await sql`
+        SELECT
+          id
+
+        FROM tblappointments
+
+        WHERE appointment_date =
+          ${appointmentDate}
+
+          AND start_time =
+            ${startTime}
+
+          AND status NOT IN (
+            'cancelled',
+            'no_show'
+          )
+
+        LIMIT 1
+      `;
+
+
+    if (
+      existingAppointment.length >
+      0
+    ) {
+      throw new Error(
+        'Este horario ya no está disponible.',
+      );
+    }
+
+
+    const endTime =
+      calculateEndTime(
+        startTime,
+        slotDuration,
+      );
+
+
+    const paymentReference =
+      createPaymentReference(
+        patientId,
+        appointmentDate,
+        startTime,
+      );
+
+
+    /*
+     * Subir el comprobante a Cloudinary.
+     */
+    const uploadResult =
+      await uploadPaymentReceipt(
+        receiptValue,
+        paymentReference,
+      );
+
+
+    uploadedPublicId =
+      uploadResult.public_id;
+
+
+    /*
+     * La cita queda reservada pero todavía
+     * no confirmada.
+     */
+    const [
+      createdAppointment,
+    ] =
+      await sql`
+        INSERT INTO tblappointments (
+          patient_id,
+          appointment_date,
+          start_time,
+          end_time,
+          deposit_paid,
+          deposit_amount,
+          notes,
+          status,
+          payment_status,
+          payment_reference,
+          payment_receipt_url,
+          payment_receipt_public_id,
+          payment_submitted_at
+        )
+
+        VALUES (
+          ${patientId},
+          ${appointmentDate},
+          ${startTime},
+          ${endTime},
+          FALSE,
+          ${depositAmount},
+          ${notes || null},
+          'pending_payment',
+          'submitted',
+          ${paymentReference},
+          ${uploadResult.secure_url},
+          ${uploadResult.public_id},
+          NOW()
+        )
+
+        RETURNING
+          id,
+          payment_reference
+      `;
+
+
+    revalidatePath(
+      '/admin/patient/calendar',
+    );
+
+    revalidatePath(
+      '/patient/calendar',
+    );
+
+    revalidatePath(
+      '/admin/appointments',
+    );
+
+    revalidatePath(
+      '/admin',
+    );
+
+
+    return {
+      success:
+        true,
+
+      appointmentId:
+        Number(
+          createdAppointment.id,
+        ),
+
+      paymentReference:
+        String(
+          createdAppointment
+            .payment_reference,
+        ),
+
+      depositAmount,
+
+      message:
+        'Comprobante enviado. La cita quedará confirmada cuando la nutrióloga apruebe el anticipo.',
+    };
   } catch (error) {
-    console.error('Error al cancelar cita:', error);
-    throw new Error('No se pudo cancelar la cita');
+    /*
+     * Eliminar el archivo de Cloudinary si
+     * la inserción en PostgreSQL falla.
+     */
+    if (
+      uploadedPublicId
+    ) {
+      try {
+        await cloudinary
+          .uploader
+          .destroy(
+            uploadedPublicId,
+          );
+      } catch (
+        cleanupError
+      ) {
+        console.error(
+          'No se pudo eliminar el comprobante después del error:',
+          cleanupError,
+        );
+      }
+    }
+
+
+    console.error(
+      'Error al crear cita:',
+      error,
+    );
+
+
+    const databaseError =
+      error as {
+        code?: string;
+      };
+
+
+    if (
+      databaseError.code ===
+        '23505'
+    ) {
+      throw new Error(
+        'Este horario acaba de ser reservado por otro paciente.',
+      );
+    }
+
+
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : 'No se pudo enviar la solicitud de cita.',
+    );
   }
 }
 
-// Editar cita (cambiar fecha/hora)
-export async function rescheduleAppointment(
-  appointmentId: number, 
-  patientId: number, 
-  newDate: Date, 
-  newStartTime: string
+
+// ============================================================
+// CANCELAR CITA
+// ============================================================
+
+export async function cancelAppointment(
+  appointmentId: number,
+  patientId: number,
 ) {
   try {
-    const dateStr = newDate.toISOString().split('T')[0];
-    
-    // Verificar que el nuevo horario esté disponible
-    const existing = await sql`
-      SELECT id FROM tblappointments
-      WHERE appointment_date = ${dateStr}
-        AND start_time = ${newStartTime}
-        AND status NOT IN ('cancelled', 'no_show')
-        AND id != ${appointmentId}
-    `;
-    
-    if (existing.length > 0) {
-      throw new Error('El nuevo horario no está disponible');
+    const result =
+      await sql`
+        UPDATE tblappointments
+
+        SET
+          status =
+            'cancelled',
+
+          payment_status =
+            CASE
+              WHEN payment_status IN (
+                'pending',
+                'submitted'
+              )
+                THEN 'rejected'
+
+              ELSE payment_status
+            END,
+
+          payment_review_notes =
+            CASE
+              WHEN payment_status IN (
+                'pending',
+                'submitted'
+              )
+                THEN 'Solicitud cancelada por el paciente.'
+
+              ELSE payment_review_notes
+            END,
+
+          updated_at =
+            NOW()
+
+        WHERE id =
+          ${appointmentId}
+
+          AND patient_id =
+            ${patientId}
+
+        RETURNING
+          id
+      `;
+
+
+    if (
+      result.length ===
+      0
+    ) {
+      throw new Error(
+        'Cita no encontrada o no pertenece al paciente.',
+      );
     }
 
-    // Calcular end_time
-    const [hour, minute] = newStartTime.split(':').map(Number);
-    const endDate = new Date();
-    endDate.setHours(hour, minute + 30, 0);
-    const endTime = `${endDate.getHours().toString().padStart(2, '0')}:${endDate.getMinutes().toString().padStart(2, '0')}:00`;
 
-    const result = await sql`
-      UPDATE tblappointments
-      SET appointment_date = ${dateStr},
-          start_time = ${newStartTime},
-          end_time = ${endTime},
-          status = 'scheduled'
-      WHERE id = ${appointmentId} AND patient_id = ${patientId}
-      RETURNING id
-    `;
-    
-    if (result.length === 0) {
-      throw new Error('Cita no encontrada o no pertenece al paciente');
-    }
-    
-    revalidatePath('/patient/calendar');
-    return { success: true };
+    revalidatePath(
+      '/admin/patient/calendar',
+    );
+
+    revalidatePath(
+      '/patient/calendar',
+    );
+
+    revalidatePath(
+      '/admin/appointments',
+    );
+
+    revalidatePath(
+      '/admin',
+    );
+
+
+    return {
+      success:
+        true,
+    };
   } catch (error) {
-    console.error('Error al reagendar cita:', error);
-    throw new Error(error instanceof Error ? error.message : 'No se pudo reagendar la cita');
+    console.error(
+      'Error al cancelar cita:',
+      error,
+    );
+
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : 'No se pudo cancelar la cita.',
+    );
   }
 }
 
-// Obtener datos del paciente por userId
-export async function getPatientByUserId(userId: number) {
+
+// ============================================================
+// REAGENDAR CITA
+// ============================================================
+
+export async function rescheduleAppointment(
+  appointmentId: number,
+  patientId: number,
+  newDate: Date,
+  newStartTime: string,
+) {
   try {
-    const [patient] = await sql`
-      SELECT p.*, u.email, u.username
-      FROM tblpatients p
-      JOIN tblusers u ON p.user_id = u.id
-      WHERE p.user_id = ${userId} AND p.active = true
-    `;
+    const dateStr =
+      normalizeDateValue(
+        newDate,
+      );
+
+    const normalizedStartTime =
+      normalizeTimeValue(
+        newStartTime,
+      );
+
+
+    if (
+      !dateStr ||
+      !normalizedStartTime
+    ) {
+      throw new Error(
+        'La fecha o el horario no son válidos.',
+      );
+    }
+
+
+    const existing =
+      await sql`
+        SELECT
+          id
+
+        FROM tblappointments
+
+        WHERE appointment_date =
+          ${dateStr}
+
+          AND start_time =
+            ${normalizedStartTime}
+
+          AND status NOT IN (
+            'cancelled',
+            'no_show'
+          )
+
+          AND id !=
+            ${appointmentId}
+
+        LIMIT 1
+      `;
+
+
+    if (
+      existing.length >
+      0
+    ) {
+      throw new Error(
+        'El nuevo horario no está disponible.',
+      );
+    }
+
+
+    const [
+      settings,
+    ] =
+      await sql`
+        SELECT
+          slot_duration
+
+        FROM tblcalendar_settings
+
+        LIMIT 1
+      `;
+
+
+    const slotDuration =
+      Number(
+        settings
+          ?.slot_duration ??
+        30,
+      );
+
+
+    const endTime =
+      calculateEndTime(
+        normalizedStartTime,
+        slotDuration,
+      );
+
+
+    /*
+     * Se conserva el estado del pago.
+     * Una cita pendiente no se aprobará
+     * automáticamente al reagendarla.
+     */
+    const result =
+      await sql`
+        UPDATE tblappointments
+
+        SET
+          appointment_date =
+            ${dateStr},
+
+          start_time =
+            ${normalizedStartTime},
+
+          end_time =
+            ${endTime},
+
+          updated_at =
+            NOW()
+
+        WHERE id =
+          ${appointmentId}
+
+          AND patient_id =
+            ${patientId}
+
+        RETURNING
+          id
+      `;
+
+
+    if (
+      result.length ===
+      0
+    ) {
+      throw new Error(
+        'Cita no encontrada o no pertenece al paciente.',
+      );
+    }
+
+
+    revalidatePath(
+      '/admin/patient/calendar',
+    );
+
+    revalidatePath(
+      '/patient/calendar',
+    );
+
+    revalidatePath(
+      '/admin/appointments',
+    );
+
+    revalidatePath(
+      '/admin',
+    );
+
+
+    return {
+      success:
+        true,
+    };
+  } catch (error) {
+    console.error(
+      'Error al reagendar cita:',
+      error,
+    );
+
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : 'No se pudo reagendar la cita.',
+    );
+  }
+}
+
+
+// ============================================================
+// OBTENER PACIENTE POR USUARIO
+// ============================================================
+
+export async function getPatientByUserId(
+  userId: number,
+) {
+  try {
+    const [
+      patient,
+    ] =
+      await sql`
+        SELECT
+          p.*,
+
+          u.email,
+
+          u.username
+
+        FROM tblpatients p
+
+        INNER JOIN tblusers u
+          ON u.id =
+            p.user_id
+
+        WHERE p.user_id =
+          ${userId}
+
+          AND p.active =
+            TRUE
+      `;
+
     return patient;
   } catch (error) {
-    console.error('Error al obtener paciente:', error);
+    console.error(
+      'Error al obtener paciente:',
+      error,
+    );
+
     return null;
   }
 }

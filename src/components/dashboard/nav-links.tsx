@@ -15,7 +15,8 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   UserCircleIcon,
-  SpeakerWaveIcon
+  SpeakerWaveIcon,
+  BanknotesIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -27,6 +28,7 @@ const adminMainLinks = [
   { name: 'Muro', href: '/admin/muro', icon: ClipboardDocumentCheckIcon },
   { name: 'Pacientes', href: '/admin/pacientes', icon: UserGroupIcon },
   { name: 'Citas', href: '/admin/appointments', icon: NumberedListIcon },
+  { name: 'Pagos', href: '/admin/pagos', icon: BanknotesIcon },
   { name: 'Calendario', href: '/admin/calendar', icon: CalendarIcon },
   { name: 'Historial Médico', href: '/admin/historial', icon: IdentificationIcon },
   { name: 'Productos', href: '/admin/productos', icon: ShoppingBagIcon },

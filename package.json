@@ -35,6 +35,7 @@
     "react-hot-toast": "^2.6.0",
     "react-icons": "^5.5.0",
     "resend": "^4.6.0",
+    "stripe": "^22.3.2",
     "tls": "^0.0.1",
     "use-debounce": "^10.1.0",
     "zod": "^3.25.57"
